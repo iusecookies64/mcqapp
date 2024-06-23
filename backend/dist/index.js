@@ -1,21 +1,32 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
-const client = new pg_1.Client({
-    connectionString: "postgresql://postgres:123456@localhost:5432/postgres",
+// require("dotenv").config();
+const dotenv_1 = require("dotenv");
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const user_1 = __importDefault(require("./routes/user"));
+const contest_1 = __importDefault(require("./routes/contest"));
+// const socketHandler = require("./socket");
+// adding env variables to node process
+(0, dotenv_1.config)();
+const port = process.env.PORT || 3000;
+const app = (0, express_1.default)();
+// const server = createServer(app);
+// const io = new Server(server);
+// io.on("connection", socketHandler);
+app.use((0, cors_1.default)({
+    origin: "*",
+}));
+app.use(express_1.default.json()); // req.body parser
+app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.static("./public"));
+app.use("/users", user_1.default);
+app.use("/contest", contest_1.default);
+app.listen(port, () => {
+    console.log("Server Running On Port", port);
 });
-const print = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield client.connect();
-    const result = yield client.query("SELECT * FROM us");
-    console.log(result);
-});
-print();
+// server.listen(port);
+// module.exports = io;
