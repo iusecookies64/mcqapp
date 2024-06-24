@@ -3,6 +3,7 @@ import authorizeUser from "../middlewares";
 import {
   CreateContest,
   GetMyContests,
+  GetParticipants,
   GetPastContests,
   GetUpcomingContests,
   PublishContest,
@@ -22,5 +23,7 @@ router.get("/upcoming-contests", authorizeUser, GetUpcomingContests);
 router.get("/past-contests", authorizeUser, GetPastContests);
 
 router.get("/my-contests", authorizeUser, GetMyContests);
+
+router.get("/get-participats", authorizeUser, GetParticipants);
 
 export default router;

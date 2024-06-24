@@ -221,7 +221,7 @@ WHERE
   participants.contest_id=$1
 `;
 
-export const GetParticipant = asyncErrorHandler(async (req, res) => {
+export const GetParticipants = asyncErrorHandler(async (req, res) => {
   const { contest_id } = req.body;
   const { user_id } = req as CustomRequest;
   // checking if contest are still in manager, then scores are not updated
