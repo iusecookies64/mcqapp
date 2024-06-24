@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import JWT, { JwtPayload } from "jsonwebtoken";
 import client from "../models";
+import CustomError from "../utils/CustomError";
+import { VerifyToken } from "../utils/verifyToken";
+import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 
 const jwtPassword = process.env.SECRET || "123456";
-
-export interface CustomPayload extends JwtPayload {
-  username: string;
-  user_id: Number;
-}
 
 export interface CustomRequest extends Request {
   user_id: Number;
@@ -18,31 +16,25 @@ const queryString = `
 SELECT * FROM users WHERE username=$1 AND user_id=$2
 `;
 
-export default async function authorizeUser(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
+const authorizeUser = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (token == undefined) throw Error;
-    const decoded = JWT.verify(token, jwtPassword) as CustomPayload;
-    const res = await client.query(queryString, [
-      decoded.username,
-      decoded.user_id,
+    const payload = await VerifyToken(token);
+    const result = await client.query(queryString, [
+      payload.username,
+      payload.user_id,
     ]);
 
     // if no such user exist throw errro
-    if (res.rowCount == 0) throw Error;
+    if (result.rowCount == 0)
+      throw new CustomError("Unauthorized Request", 401);
 
     // adding username and user_id to req, as it might be useful later on
-    (req as CustomRequest).user_id = decoded.user_id;
-    (req as CustomRequest).username = decoded.username;
+    (req as CustomRequest).user_id = payload.user_id;
+    (req as CustomRequest).username = payload.username;
     next();
-  } catch (err) {
-    res.status(401).json({
-      message: "Unauthorized",
-      success: false,
-    });
   }
-}
+);
+
+export default authorizeUser;

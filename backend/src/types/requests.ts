@@ -22,6 +22,11 @@ export interface CreateContestRequest extends Request {
   };
 }
 
+export type PublishContestBody = {
+  contest_id: string;
+  publish: boolean;
+};
+
 export interface CreateQuestionRequest extends Request {
   body: {
     question: QuestionTable;
@@ -42,3 +47,16 @@ export interface AcceptInvitationRequest extends Request {
     user_id: Number;
   };
 }
+
+export type EnterContestRequest = {
+  contest_id: number;
+  user_id: number;
+};
+
+export type SubmitResponseRequest = {
+  contest_id: number;
+  user_id: number;
+  question_id: number;
+  username: string;
+  response: string;
+};

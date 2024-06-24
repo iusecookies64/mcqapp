@@ -7,18 +7,20 @@ import cors from "cors";
 import userRouter from "./routes/user";
 import contestRouter from "./routes/contest";
 import questionRouter from "./routes/question";
-
-// const socketHandler = require("./socket");
+import invitationRouter from "./routes/invitation";
+import { GlobalErrorHandler } from "./controllers/errorController";
+import CustomError from "./utils/CustomError";
+import { SocketHandler } from "./controllers/socketController";
 
 // adding env variables to node process
 config();
 
 const port = process.env.PORT || 3000;
 const app = express();
-// const server = createServer(app);
-// const io = new Server(server);
+const server = createServer(app);
+const io = new Server(server);
 
-// io.on("connection", socketHandler);
+io.on("connection", SocketHandler);
 
 app.use(
   cors({
@@ -33,11 +35,13 @@ app.use(express.static("./public"));
 app.use("/users", userRouter);
 app.use("/contest", contestRouter);
 app.use("/question", questionRouter);
-
-app.listen(port, () => {
-  console.log("Server Running On Port", port);
+app.use("/invitation", invitationRouter);
+app.all("*", (req, res, next) => {
+  throw new CustomError("Oops! Error 404 Not Found", 404);
 });
 
-// server.listen(port);
+app.use(GlobalErrorHandler);
 
-// module.exports = io;
+server.listen(port, () => {
+  console.log("Server Up And Running On Port", port);
+});

@@ -25,6 +25,7 @@ CREATE TABLE contests (
   title VARCHAR(100) NOT NULL,
   max_participants INTEGER NOT NULL CHECK (max_participants <= 20),
   start_time TIMESTAMPTZ NOT NULL,
+  end_time TIMESTAMPTZ NOT NULL,
   duration INTEGER NOT NULL,
   invite_only BOOLEAN NOT NULL,
   published BOOLEAN DEFAULT FALSE,
