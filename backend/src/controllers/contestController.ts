@@ -1,5 +1,10 @@
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
-import { CreateContestRequest, PublishContestBody } from "../types/requests";
+import {
+  CreateContestBody,
+  PublishContestBody,
+  UpdateContestBody,
+  GetParticipantsBody,
+} from "../types/requests";
 import client from "../models";
 import { CustomRequest } from "../middlewares";
 import { manager } from "./gameController";
@@ -9,40 +14,38 @@ INSERT INTO contests (created_by, title, max_participants, start_time, end_time,
 VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 `;
 
-export const CreateContest = asyncErrorHandler(
-  async (req: CreateContestRequest, res) => {
-    const {
-      created_by,
-      title,
-      max_participants,
-      start_time,
-      duration,
-      invite_only,
-    } = req.body.contest;
+export const CreateContest = asyncErrorHandler(async (req, res) => {
+  const {
+    created_by,
+    title,
+    max_participants,
+    start_time,
+    duration,
+    invite_only,
+  } = req.body as CreateContestBody;
 
-    // calculating end_time from start_time + duration
-    const endTime = new Date(start_time);
-    endTime.setMinutes(endTime.getMinutes() + duration);
-    // end time in iso string
-    const end_time = endTime.toISOString();
+  // calculating end_time from start_time + duration
+  const endTime = new Date(start_time);
+  endTime.setMinutes(endTime.getMinutes() + duration);
+  // end time in iso string
+  const end_time = endTime.toISOString();
 
-    const queryResult = await client.query(createContestQuery, [
-      created_by,
-      title,
-      max_participants,
-      start_time,
-      end_time,
-      duration,
-      invite_only,
-    ]);
+  const queryResult = await client.query(createContestQuery, [
+    created_by,
+    title,
+    max_participants,
+    start_time,
+    end_time,
+    duration,
+    invite_only,
+  ]);
 
-    res.status(200).json({
-      message: "Contest Created Successfully",
-      data: queryResult.rows[0],
-      status: "success",
-    });
-  }
-);
+  res.status(200).json({
+    message: "Contest Created Successfully",
+    data: queryResult.rows[0],
+    status: "success",
+  });
+});
 
 const updateContestQuery = `
 UPDATE contests 
@@ -56,40 +59,38 @@ WHERE contest_id=$7
 RETURNING *
 `;
 
-export const UpdateContest = asyncErrorHandler(
-  async (req: CreateContestRequest, res) => {
-    const {
-      title,
-      max_participants,
-      start_time,
-      duration,
-      invite_only,
-      contest_id,
-    } = req.body.contest;
+export const UpdateContest = asyncErrorHandler(async (req, res) => {
+  const {
+    title,
+    max_participants,
+    start_time,
+    duration,
+    invite_only,
+    contest_id,
+  } = req.body as UpdateContestBody;
 
-    // calculating end_time from start_time + duration
-    const endTime = new Date(start_time);
-    endTime.setMinutes(endTime.getMinutes() + duration);
-    // end time in iso string
-    const end_time = endTime.toISOString();
+  // calculating end_time from start_time + duration
+  const endTime = new Date(start_time);
+  endTime.setMinutes(endTime.getMinutes() + duration);
+  // end time in iso string
+  const end_time = endTime.toISOString();
 
-    const queryResult = await client.query(updateContestQuery, [
-      title,
-      max_participants,
-      start_time,
-      end_time,
-      duration,
-      invite_only,
-      contest_id,
-    ]);
+  const queryResult = await client.query(updateContestQuery, [
+    title,
+    max_participants,
+    start_time,
+    end_time,
+    duration,
+    invite_only,
+    contest_id,
+  ]);
 
-    res.status(200).json({
-      message: "Contest Updated Successfully",
-      data: queryResult.rows[0],
-      status: "success",
-    });
-  }
-);
+  res.status(200).json({
+    message: "Contest Updated Successfully",
+    data: queryResult.rows[0],
+    status: "success",
+  });
+});
 
 const publishContestQuery = `
 UPDATE contests SET published=$1 WHERE contest_id=$2 AND created_by=$3
@@ -130,7 +131,7 @@ FROM
 JOIN
   users ON contests.created_by = users.user_id
 WHERE
-  contests.end_time > NOW() AND contests.invite_only = FALSE
+  contests.end_time > NOW() AND contests.invite_only = FALSE AND contests.published=TRUE
 
 UNION
 
@@ -155,7 +156,7 @@ WHERE
 `;
 
 export const GetUpcomingContests = asyncErrorHandler(async (req, res) => {
-  const { user_id, username } = req as CustomRequest;
+  const { user_id } = req as CustomRequest;
   const queryResult = await client.query(getUpcomingContestsQuery, [user_id]);
   res.status(200).json({
     message: "All Upcoming Contests",
@@ -182,7 +183,7 @@ JOIN
 JOIN
   users ON contests.created_by = users.user_id
 WHERE
-  participants.user_id = $1 AND contest.start
+  participants.user_id = $1 AND contests.end_time < NOW()
 `;
 
 export const GetPastContests = asyncErrorHandler(async (req, res) => {
@@ -222,7 +223,7 @@ WHERE
 `;
 
 export const GetParticipants = asyncErrorHandler(async (req, res) => {
-  const { contest_id } = req.body;
+  const { contest_id } = req.body as GetParticipantsBody;
   const { user_id } = req as CustomRequest;
   // checking if contest are still in manager, then scores are not updated
   if (manager.isPresent(contest_id)) {

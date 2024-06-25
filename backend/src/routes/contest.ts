@@ -24,6 +24,6 @@ router.get("/past-contests", authorizeUser, GetPastContests);
 
 router.get("/my-contests", authorizeUser, GetMyContests);
 
-router.get("/get-participats", authorizeUser, GetParticipants);
+router.get("/get-participants", authorizeUser, GetParticipants);
 
 export default router;

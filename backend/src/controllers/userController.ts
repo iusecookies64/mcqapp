@@ -7,14 +7,14 @@ import bcrypt from "bcrypt";
 import client from "../models";
 import CustomError from "../utils/CustomError";
 
-const saltRounds = process.env.SALT || 10;
+const saltRounds = parseInt(process.env.SALT || "0") || 10;
 const jwtSecret = process.env.SECRET || "123456";
 
 const UsernameCheck = zod.string().min(1).max(50);
 const EmailCheck = zod.string().max(50).email();
 const PasswordCheck = zod.string().min(6).max(50);
 const createUserQuery = `
-INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING user_id;
+INSERT INTO users (username, email, password) VALUES ($1, $2, $3);
 `;
 // function to handle signup requests
 export const Signup = asyncErrorHandler(async (req, res) => {

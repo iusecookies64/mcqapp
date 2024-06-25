@@ -19,7 +19,7 @@ SELECT * FROM users WHERE username=$1 AND user_id=$2
 const authorizeUser = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.replace("Bearer ", "");
-    if (token == undefined) throw Error;
+    if (token == undefined) throw new CustomError("Invalid Token", 401);
     const payload = await VerifyToken(token);
     const result = await client.query(queryString, [
       payload.username,

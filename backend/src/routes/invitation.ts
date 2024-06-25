@@ -16,6 +16,6 @@ router.post("/accept-invite", authorizeUser, AcceptInvite);
 
 router.post("/delete", authorizeUser, DeleteInvite);
 
-router.get("all-invitations", authorizeUser, GetAllInvitations);
+router.get("/all-invitations", authorizeUser, GetAllInvitations);
 
 export default router;

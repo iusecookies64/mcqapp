@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// require("dotenv").config();
 const dotenv_1 = require("dotenv");
+// adding env variables to node process
+(0, dotenv_1.config)();
 const express_1 = __importDefault(require("express"));
 const socket_io_1 = require("socket.io");
 const node_http_1 = require("node:http");
@@ -16,8 +17,6 @@ const invitation_1 = __importDefault(require("./routes/invitation"));
 const errorController_1 = require("./controllers/errorController");
 const CustomError_1 = __importDefault(require("./utils/CustomError"));
 const socketController_1 = require("./controllers/socketController");
-// adding env variables to node process
-(0, dotenv_1.config)();
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 const server = (0, node_http_1.createServer)(app);

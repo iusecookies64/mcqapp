@@ -5,19 +5,20 @@ import { scheduleJob } from "node-schedule";
 
 class GameManager {
   private activeGames: Map<number, GameState>;
-  private upcoming_games_fetching_period = 5; // every 5 minutes fetch upcoming contests and put in manager
-  private finished_games_removing_period = 7; // every 7 minutes remove finished contests from manager
+  private period1 = 5; // every 5 minutes fetch upcoming contests and put in manager
+  private period2 = 7; // every 7 minutes remove finished contests from manager
 
   constructor() {
     this.activeGames = new Map<number, GameState>();
 
-    scheduleJob("*/5 * * * *", this.getUpcomingGames);
-    scheduleJob("*/7 * * * *", this.removeFinishedGames);
+    // scheduleJob("*/10 * * * * *", this.getUpcomingGames);
+    // // scheduleJob(`*/${this.period2} * * * *`, this.removeFinishedGames);
+    // scheduleJob(`*/5 * * * * *`, this.removeFinishedGames);
   }
 
   async removeFinishedGames(): Promise<void> {
     const unfinishedGames = new Map<number, GameState>();
-    for (const [contest_id, gameState] of this.activeGames) {
+    for (const [contest_id, gameState] of this.activeGames.entries()) {
       if (!gameState.isEnded()) {
         unfinishedGames.set(contest_id, gameState);
       } else {
@@ -30,11 +31,9 @@ class GameManager {
 
   async getUpcomingGames(): Promise<void> {
     const queryUpcomingContests = `
-      SELECT contest_id FROM contests WHERE start_time < NOW() + INTERVAL $1
+      SELECT contest_id FROM contests WHERE start_time < NOW() + INTERVAL '10 minutes'
     `;
-    const queryResult = await client.query(queryUpcomingContests, [
-      `${2 * this.upcoming_games_fetching_period} minutes`,
-    ]);
+    const queryResult = await client.query(queryUpcomingContests);
     // pushing all upcoming games to active
     queryResult.rows.forEach(({ contest_id }) => {
       // checking if games already in activeGames

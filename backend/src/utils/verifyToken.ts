@@ -10,10 +10,13 @@ export interface CustomPayload extends JwtPayload {
 }
 
 export const VerifyToken = async (token: string): Promise<CustomPayload> => {
-  return new Promise((reject, resolve) => {
+  return new Promise((resolve, reject) => {
     JWT.verify(token, jwtSecret, (err, decoded) => {
-      if (err) throw new CustomError("Unauthorized Request", 401);
-      else resolve(decoded as CustomPayload);
+      if (err) {
+        throw new CustomError("Unauthorized Request", 401);
+      } else {
+        resolve(decoded as CustomPayload);
+      }
     });
   });
 };

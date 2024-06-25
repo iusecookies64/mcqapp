@@ -1,5 +1,6 @@
-// require("dotenv").config();
 import { config } from "dotenv";
+// adding env variables to node process
+config();
 import express from "express";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
@@ -11,9 +12,6 @@ import invitationRouter from "./routes/invitation";
 import { GlobalErrorHandler } from "./controllers/errorController";
 import CustomError from "./utils/CustomError";
 import { SocketHandler } from "./controllers/socketController";
-
-// adding env variables to node process
-config();
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -36,6 +34,7 @@ app.use("/users", userRouter);
 app.use("/contest", contestRouter);
 app.use("/question", questionRouter);
 app.use("/invitation", invitationRouter);
+
 app.all("*", (req, res, next) => {
   throw new CustomError("Oops! Error 404 Not Found", 404);
 });

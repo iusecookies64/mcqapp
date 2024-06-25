@@ -16,15 +16,31 @@ export interface SigninRequest extends Request {
   };
 }
 
-export interface CreateContestRequest extends Request {
-  body: {
-    contest: ContestTable;
-  };
-}
+export type CreateContestBody = {
+  created_by: number;
+  title: string;
+  max_participants: number;
+  start_time: string;
+  duration: number;
+  invite_only: boolean;
+};
+
+export type UpdateContestBody = {
+  title: string;
+  max_participants: number;
+  start_time: string;
+  duration: number;
+  invite_only: boolean;
+  contest_id: number;
+};
 
 export type PublishContestBody = {
-  contest_id: string;
+  contest_id: number;
   publish: boolean;
+};
+
+export type GetParticipantsBody = {
+  contest_id: number;
 };
 
 export interface CreateQuestionRequest extends Request {
@@ -34,19 +50,14 @@ export interface CreateQuestionRequest extends Request {
   };
 }
 
-export interface SendInviteRequest extends Request {
-  body: {
-    contest_id: Number;
-    user_id: Number;
-  };
-}
+export type SendInviteBody = {
+  contest_id: number;
+  to_username: string;
+};
 
-export interface AcceptInvitationRequest extends Request {
-  body: {
-    contest_id: Number;
-    user_id: Number;
-  };
-}
+export type AcceptInviteBody = {
+  invitation_id: number;
+};
 
 export type EnterContestRequest = {
   contest_id: number;
