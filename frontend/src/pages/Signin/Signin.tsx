@@ -8,7 +8,7 @@ import { setAuthorizationToken } from "../../utils/authToken";
 import { toast } from "react-toastify";
 import { errorHandler } from "../../utils/errorHandler";
 import { useSetRecoilState } from "recoil";
-import { tokenAtom } from "../../atoms/userAtom";
+import { tokenAtom, userDataAtom } from "../../atoms/userAtom";
 
 type SigninForm = {
   username: string;
@@ -17,6 +17,7 @@ type SigninForm = {
 
 export const Signin = () => {
   const setTokenState = useSetRecoilState(tokenAtom);
+  const setUserData = useSetRecoilState(userDataAtom);
   const navigate = useNavigate();
   const {
     register,
@@ -31,6 +32,11 @@ export const Signin = () => {
         setAuthorizationToken(response.data.token);
         // updating token atom
         setTokenState(response.data.token);
+        // setting user data
+        setUserData({
+          user_id: response.data.user_id,
+          username: response.data.username,
+        });
         toast.success(response.data.message);
         navigate("/");
       },

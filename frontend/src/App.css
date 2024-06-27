@@ -1,7 +1,7 @@
 .app {
-  @apply h-[100dvh] dark:bg-primary bg-white dark:text-white flex flex-col justify-start items-center font-sans select-none relative;
+  @apply h-[100dvh] dark:bg-primary bg-white dark:text-white flex flex-col justify-start items-center font-sans select-none relative overflow-hidden;
 }
 
 .app-options {
-  @apply flex flex-col gap-8 absolute top-1/2 -translate-y-1/2 right-0 px-8;
+  @apply flex flex-col justify-center gap-8 absolute top-0 right-0 h-full px-8;
 }

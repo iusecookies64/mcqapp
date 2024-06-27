@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { ReactNode, useState } from "react";
+import "./Panel.style.css";
 
 type Props = {
   children: ReactNode;
@@ -7,11 +9,27 @@ type Props = {
 };
 
 export const Panel = ({ children, isOpen, setIsOpen }: Props) => {
+  const [position, setPosition] = useState<"0%" | "-100%">("-100%");
+  const onClose = () => {
+    setPosition("0%");
+    setTimeout(() => {
+      setIsOpen(false);
+      setPosition("-100%");
+    }, 200);
+  };
   return (
-    <div className="custom-panel">
-      <motion.div>
-        <div>{children}</div>
-      </motion.div>
-    </div>
+    <>
+      {isOpen && (
+        <div className="custom-panel" onClick={onClose}>
+          <motion.div
+            transition={{ ease: "easeOut", duration: 0.2 }}
+            animate={{ x: position }}
+            className="panel-container"
+          >
+            {children}
+          </motion.div>
+        </div>
+      )}
+    </>
   );
 };

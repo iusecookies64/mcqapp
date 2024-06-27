@@ -1,19 +1,18 @@
 // import { getTheme, toggleTheme } from "../../utils/initializeTheme";
 // import { Icon, IconList } from "../Icon/Icon";
 // import { Button } from "../button/Button";
-import { useRecoilValueLoadable } from "recoil";
 import "./NavBar.style.css";
 import { useState } from "react";
-import { userNameState } from "../../atoms/userAtom";
 import moon from "./dark-mode.png";
 import sun from "./light-mode.png";
 import { getTheme, initializeTheme, toggleTheme } from "../../utils/theme";
+import { useUserData } from "../../hooks/useUserData";
 
 export const NavBar = () => {
   // initializing theme
   initializeTheme();
   const [theme, setTheme] = useState<"dark" | "light">(getTheme());
-  const userNameLoadable = useRecoilValueLoadable(userNameState);
+  const { userData } = useUserData();
   const toggleThemeWithState = () => {
     toggleTheme();
     setTheme((prevTheme) => {
@@ -48,12 +47,7 @@ export const NavBar = () => {
             <img src={moon} />
           </div>
         )}
-        {userNameLoadable.state === "loading" && <div>Loading...</div>}
-        {userNameLoadable.state === "hasValue" && (
-          <div>
-            Hello, {userNameLoadable.contents?.username || "Please Login"}
-          </div>
-        )}
+        <div>Hello, {userData.username || "Please Login"}</div>
       </div>
     </div>
   );

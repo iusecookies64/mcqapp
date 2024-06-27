@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom";
 import "./App.css";
 import { Icon, IconList } from "./components/Icon/Icon";
 import { Logout } from "./components/logout/Logout";
+import { Notifications } from "./components/notification/Notification";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
       <Tooltip id="my-tooltip" />
       <div className="app-options">
         <Logout />
-        <Icon icon={IconList.bell} toolTip="Notifications" />
+        <Notifications />
         <Icon icon={IconList.plus} toolTip="Create New Contest" />
         <Icon icon={IconList.gear} toolTip="User Settings" />
       </div>

@@ -29,7 +29,6 @@ export const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
       width: width,
       height: height,
     });
-    console.log(activeTab);
   }, [activeTab]);
 
   return (

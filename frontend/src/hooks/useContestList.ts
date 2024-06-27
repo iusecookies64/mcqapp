@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
-import { Contest } from "../types/models";
-import api from "../utils/api";
-import { errorHandler } from "../utils/errorHandler";
 import { AxiosResponse } from "axios";
+import { sendRequest } from "../utils/sendRequest";
+import { RequestMethods } from "../types/requests";
+import { SetterOrUpdater, useRecoilState } from "recoil";
+import {
+  upcomingContestsAtom,
+  participatedContestsAtom,
+  myContestsAtom,
+  contestsFetchedAtom,
+} from "../atoms/contestAtom";
+import { Contest } from "../types/models";
 
-export enum ContestType {
-  upcomingContests = "/upcoming-contests",
-  pastContests = "/past-contests",
-  myContests = "/my-contests",
+export enum ContestURL {
+  upcomingContests = "/contest/upcoming-contests",
+  participatedContests = "/contest/participated-contests",
+  myContests = "/contest/my-contests",
+  createContest = "/contest/create",
+  updateContest = "/contest/update",
 }
 
 export type CreateContestData = {
@@ -28,117 +37,108 @@ export type UpdateContestData = {
   contest_id: number;
 };
 
-enum RequestMethod {
-  post = "post",
-  get = "get",
-  delete = "delete",
-}
-
-export const useContestList = (contest: ContestType) => {
-  const [contestList, setContestList] = useState<Contest[]>([]);
+export const useContestList = () => {
+  const [upcomingContests, setUpcomingContests] =
+    useRecoilState(upcomingContestsAtom);
+  const [participatedContests, setParticipatedContests] = useRecoilState(
+    participatedContestsAtom
+  );
+  const [myContests, setMyContests] = useRecoilState(myContestsAtom);
+  const [contestsFetched, setContestFetched] =
+    useRecoilState(contestsFetchedAtom);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
-  const [refreshContestList, setRefreshContestList] = useState<number>(0);
-
-  const sendRequest = (
-    method: RequestMethod,
-    url: string,
-    data: object,
-    responseHandler: (response: AxiosResponse) => void
-  ) => {
-    setIsLoading(true);
-    if (method !== "post") {
-      api[method](url).then(
-        (response) => {
-          responseHandler(response);
-          setIsLoading(false);
-        },
-        (err) => {
-          setIsLoading(false);
-          setError(true);
-          errorHandler(err);
-        }
-      );
-    } else {
-      api.post(url, data).then(
-        (response) => {
-          responseHandler(response);
-          setIsLoading(false);
-        },
-        (err) => {
-          setIsLoading(false);
-          setError(true);
-          errorHandler(err);
-        }
-      );
-    }
-  };
 
   const createContest = (contestData: CreateContestData) => {
     sendRequest(
-      RequestMethod.post,
-      "/contest/create",
+      RequestMethods.post,
+      ContestURL.createContest,
       contestData,
       (response: AxiosResponse) => {
-        setContestList((prevList) => {
-          return [...prevList, response.data.data];
+        setMyContests((prevList) => {
+          if (prevList) return [...prevList, response.data.data];
+          else return [response.data.data];
         });
-        setIsLoading(false);
-      }
+      },
+      setIsLoading,
+      setError
     );
   };
 
   const updateContest = (updatedData: UpdateContestData, index: number) => {
     sendRequest(
-      RequestMethod.post,
-      "/contest/create",
+      RequestMethods.post,
+      ContestURL.upcomingContests,
       updatedData,
       (response) => {
-        setContestList((prevList) => {
-          prevList[index] = response.data.data;
-          return [...prevList];
+        setMyContests((prevList) => {
+          if (prevList) {
+            prevList[index] = response.data.data;
+            return [...prevList];
+          } else {
+            return [];
+          }
         });
-        setIsLoading(false);
-      }
+      },
+      setIsLoading,
+      setError
     );
   };
 
   const deleteContest = (contest_id: number, index: number) => {
     sendRequest(
-      RequestMethod.delete,
+      RequestMethods.delete,
       `/contest/delete/${contest_id}`,
       {},
       () => {
-        setContestList((prevList) => {
-          prevList.splice(index, 1);
-          return [...prevList];
+        setMyContests((prevList) => {
+          if (prevList) {
+            prevList.splice(index, 1);
+            return [...prevList];
+          } else {
+            return [];
+          }
         });
-        setIsLoading(false);
-      }
+      },
+      setIsLoading,
+      setError
+    );
+  };
+
+  const fetchContestList = (
+    url: string,
+    setContestList: SetterOrUpdater<Contest[]>
+  ) => {
+    sendRequest(
+      RequestMethods.get,
+      url,
+      {},
+      (response: AxiosResponse) => {
+        setContestList(response.data.data || []);
+      },
+      setIsLoading,
+      setError
     );
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    setError(false);
-    api.get(contest).then(
-      (response) => {
-        setContestList(response.data);
-        setIsLoading(false);
-      },
-      (err) => {
-        setIsLoading(false);
-        setError(true);
-        errorHandler(err);
-      }
-    );
-  }, [refreshContestList, contest]);
+    if (contestsFetched === false) {
+      fetchContestList(ContestURL.upcomingContests, setUpcomingContests);
+      fetchContestList(
+        ContestURL.participatedContests,
+        setParticipatedContests
+      );
+      fetchContestList(ContestURL.myContests, setMyContests);
+      setContestFetched(true);
+    }
+  }, []);
 
   return {
-    contestList,
+    upcomingContests,
+    participatedContests,
+    myContests,
     isLoading,
     error,
-    setRefreshContestList,
     createContest,
     updateContest,
     deleteContest,

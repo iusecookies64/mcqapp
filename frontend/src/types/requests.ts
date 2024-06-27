@@ -1,5 +1,11 @@
 import { Question, Options } from "./models";
 
+export enum RequestMethods {
+  post = "post",
+  get = "get",
+  delete = "delete",
+}
+
 export type SignupRequest = {
   username: string;
   email: string;

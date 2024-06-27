@@ -10,8 +10,8 @@ export type Contest = {
   created_by: number;
   title: string;
   max_participants: number;
-  start_time: Date;
-  end_time: Date;
+  start_time: string;
+  end_time: string;
   duration: number;
   invite_only: boolean;
   published: boolean;
