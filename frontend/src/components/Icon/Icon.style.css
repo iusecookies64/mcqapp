@@ -1,0 +1,7 @@
+.icon-container {
+  @apply flex justify-center items-center h-12 text-2xl w-12 bg-slate-200 cursor-pointer rounded-full dark:bg-purple;
+}
+
+.icon-style {
+  @apply text-gray dark:text-gray-light;
+}

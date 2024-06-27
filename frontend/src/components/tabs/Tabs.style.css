@@ -1,0 +1,15 @@
+.tabs-container {
+  @apply border-b-2 dark:border-purple relative dark:text-purple;
+}
+
+.tabs {
+  @apply flex gap-4 z-10;
+}
+
+.tabs > div {
+  @apply px-3 py-2 rounded cursor-pointer z-10 font-semibold dark:text-gray-light;
+}
+
+.active-tab {
+  @apply text-white dark:text-gray-light z-10;
+}

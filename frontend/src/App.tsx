@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/ReactToastify.css";
+import { Tooltip } from "react-tooltip";
+import { NavBar } from "./components/navbar/NavBar";
+import { Outlet } from "react-router-dom";
+import "./App.css";
+import { Icon, IconList } from "./components/Icon/Icon";
+import { Logout } from "./components/logout/Logout";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app">
+      <NavBar />
+      <Outlet />
+      <ToastContainer
+        position="top-center"
+        pauseOnHover
+        autoClose={5000}
+        hideProgressBar
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        theme="dark"
+      />
+      <Tooltip id="my-tooltip" />
+      <div className="app-options">
+        <Logout />
+        <Icon icon={IconList.bell} toolTip="Notifications" />
+        <Icon icon={IconList.plus} toolTip="Create New Contest" />
+        <Icon icon={IconList.gear} toolTip="User Settings" />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;

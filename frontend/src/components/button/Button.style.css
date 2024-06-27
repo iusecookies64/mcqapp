@@ -1,0 +1,15 @@
+.custom-button {
+  @apply px-4 py-2 rounded-sm font-medium text-lg;
+}
+
+.button-primary {
+  @apply bg-black text-gray-light;
+}
+
+.button-secondary {
+  @apply bg-gray text-gray-light;
+}
+
+.button-tertiary {
+  @apply bg-gray-light text-black border border-black;
+}
