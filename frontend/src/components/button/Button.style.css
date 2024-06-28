@@ -3,7 +3,7 @@
 }
 
 .button-primary {
-  @apply bg-black text-gray-light;
+  @apply bg-black text-gray-light dark:bg-purple;
 }
 
 .button-secondary {

@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import "./Modal.style.css";
+import { Icon, IconList } from "../Icon/Icon";
 
 type Props = {
   children: ReactNode;
@@ -13,11 +14,12 @@ export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
       {isOpen && (
         <div className="custom-modal" onClick={() => setIsOpen(false)}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <div
-              className="flex justify-end pt-2 cursor-pointer"
-              onClick={() => setIsOpen(false)}
-            >
-              X
+            <div className="flex justify-end pt-4">
+              <Icon
+                icon={IconList.xmark}
+                variant="secondary"
+                onClick={() => setIsOpen(false)}
+              />
             </div>
             {children}
           </div>

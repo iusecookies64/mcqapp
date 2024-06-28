@@ -9,9 +9,6 @@ export const Contests = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const { upcomingContests, participatedContests, myContests, isLoading } =
     useContestList();
-  console.log(upcomingContests);
-  console.log(participatedContests);
-  console.log(myContests);
   return (
     <div className="contest-list-container">
       <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />

@@ -4,10 +4,11 @@ import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 interface Props {
   inputLabel: string;
   inputType: string;
-  placeholder: string;
+  placeholder?: string;
   register: UseFormRegisterReturn;
   error?: FieldError;
   errorMessage?: string;
+  className?: string;
 }
 
 export const Input = ({
@@ -16,13 +17,14 @@ export const Input = ({
   error,
   errorMessage,
   inputType,
-  placeholder,
+  className = "",
+  placeholder = "",
 }: Props) => {
   return (
     <div className="custom-input">
       <label>{inputLabel}</label>
       <input
-        className=""
+        className={className}
         {...register}
         type={inputType}
         placeholder={placeholder}

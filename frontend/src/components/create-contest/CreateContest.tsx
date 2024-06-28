@@ -1,19 +1,27 @@
-import { CreateContestData } from "../../hooks/useContestList";
+import { useState } from "react";
+import { useContestList } from "../../hooks/useContestList";
+import { Icon, IconList } from "../Icon/Icon";
+import { CreateContestForm } from "../create-contest-form/CreateContestForm";
+import { Modal } from "../modal/Modal";
 
-type Props = {
-  createFunction: (contestData: CreateContestData) => void;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoading: boolean;
-};
-
-export const CreateContest = ({
-  createFunction,
-  setIsLoading,
-  isLoading,
-}: Props) => {
+export const CreateContest = () => {
+  const { createContest, isLoadingCud, errorCud } = useContestList();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   return (
-    <div>
-      <form></form>
-    </div>
+    <>
+      <Icon
+        icon={IconList.plus}
+        toolTip="Create New Contest"
+        onClick={() => setIsModalOpen(true)}
+      />
+      <Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+        <CreateContestForm
+          createFunction={createContest}
+          isLoading={isLoadingCud}
+          queryError={errorCud}
+          set
+        />
+      </Modal>
+    </>
   );
 };

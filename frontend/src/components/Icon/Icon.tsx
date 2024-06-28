@@ -5,18 +5,26 @@ export enum IconList {
   bell = "fa-solid fa-bell",
   gear = "fa-solid fa-gear",
   exit = "fa-solid fa-right-from-bracket",
+  xmark = "fa-solid fa-xmark",
+  error = "fa-solid fa-circle-exclamation",
 }
 
 type Props = {
   icon: IconList;
   toolTip?: string;
   onClick?: (event: React.MouseEvent) => void;
+  variant?: "primary" | "secondary" | "large";
 };
 
-export const Icon = ({ icon, toolTip, onClick }: Props) => {
+export const Icon = ({
+  icon,
+  toolTip,
+  onClick,
+  variant = "primary",
+}: Props) => {
   return (
     <div
-      className="icon-container"
+      className={`icon-container-${variant}`}
       data-tooltip-id="my-tooltip"
       data-tooltip-content={toolTip}
       onClick={onClick}

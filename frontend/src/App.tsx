@@ -7,6 +7,7 @@ import "./App.css";
 import { Icon, IconList } from "./components/Icon/Icon";
 import { Logout } from "./components/logout/Logout";
 import { Notifications } from "./components/notification/Notification";
+import { CreateContest } from "./components/create-contest/CreateContest";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
       <div className="app-options">
         <Logout />
         <Notifications />
-        <Icon icon={IconList.plus} toolTip="Create New Contest" />
+        <CreateContest />
         <Icon icon={IconList.gear} toolTip="User Settings" />
       </div>
     </div>

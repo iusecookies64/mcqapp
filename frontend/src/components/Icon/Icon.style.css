@@ -1,5 +1,13 @@
-.icon-container {
+.icon-container-primary {
   @apply flex justify-center items-center h-12 text-2xl w-12 bg-slate-200 cursor-pointer rounded-full dark:bg-purple;
+}
+
+.icon-container-secondary {
+  @apply text-xl h-8 w-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-white hover:bg-opacity-10;
+}
+
+.icon-container-large {
+  @apply flex justify-center items-center h-32 w-32 text-9xl bg-slate-200 cursor-pointer rounded-full dark:bg-purple;
 }
 
 .icon-style {

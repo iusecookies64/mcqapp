@@ -11,7 +11,6 @@ export const sendRequest = (
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setError: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  console.log("send request for ", url);
   // setting error and loading states
   setIsLoading(true);
   setError(false);

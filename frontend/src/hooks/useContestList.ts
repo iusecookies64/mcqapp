@@ -46,31 +46,45 @@ export const useContestList = () => {
   const [myContests, setMyContests] = useRecoilState(myContestsAtom);
   const [contestsFetched, setContestFetched] =
     useRecoilState(contestsFetchedAtom);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
+  const [isLoadingList, setIsLoadingList] = useState<boolean>(false); // contest list loading
+  const [errorLoadingList, setErrorLoadingList] = useState<boolean>(false);
+  const [isLoadingCud, setIsLoadingCud] = useState<boolean>(false); // loading for create, update, delete (Cud)
+  const [errorCud, setErrorCud] = useState<boolean>(false);
 
-  const createContest = (contestData: CreateContestData) => {
+  const createContest = (
+    contestData: CreateContestData,
+    onSuccess: () => void
+  ) => {
     sendRequest(
       RequestMethods.post,
       ContestURL.createContest,
       contestData,
       (response: AxiosResponse) => {
+        // on success updating contest list
         setMyContests((prevList) => {
           if (prevList) return [...prevList, response.data.data];
           else return [response.data.data];
         });
+
+        // on success calling onSuccess funtion
+        onSuccess();
       },
-      setIsLoading,
-      setError
+      setIsLoadingCud,
+      setErrorCud
     );
   };
 
-  const updateContest = (updatedData: UpdateContestData, index: number) => {
+  const updateContest = (
+    updatedData: UpdateContestData,
+    index: number,
+    onSuccess: () => void
+  ) => {
     sendRequest(
       RequestMethods.post,
       ContestURL.upcomingContests,
       updatedData,
       (response) => {
+        // on success updating contest list
         setMyContests((prevList) => {
           if (prevList) {
             prevList[index] = response.data.data;
@@ -79,13 +93,20 @@ export const useContestList = () => {
             return [];
           }
         });
+
+        // on success calling onSuccess
+        onSuccess();
       },
-      setIsLoading,
-      setError
+      setIsLoadingCud,
+      setErrorCud
     );
   };
 
-  const deleteContest = (contest_id: number, index: number) => {
+  const deleteContest = (
+    contest_id: number,
+    index: number,
+    onSuccess: () => void
+  ) => {
     sendRequest(
       RequestMethods.delete,
       `/contest/delete/${contest_id}`,
@@ -99,9 +120,12 @@ export const useContestList = () => {
             return [];
           }
         });
+
+        // on success calling onSuccess
+        onSuccess();
       },
-      setIsLoading,
-      setError
+      setIsLoadingCud,
+      setErrorCud
     );
   };
 
@@ -116,19 +140,20 @@ export const useContestList = () => {
       (response: AxiosResponse) => {
         setContestList(response.data.data || []);
       },
-      setIsLoading,
-      setError
+      setIsLoadingList,
+      setErrorLoadingList
     );
+  };
+
+  const fetchAllContests = () => {
+    fetchContestList(ContestURL.upcomingContests, setUpcomingContests);
+    fetchContestList(ContestURL.participatedContests, setParticipatedContests);
+    fetchContestList(ContestURL.myContests, setMyContests);
   };
 
   useEffect(() => {
     if (contestsFetched === false) {
-      fetchContestList(ContestURL.upcomingContests, setUpcomingContests);
-      fetchContestList(
-        ContestURL.participatedContests,
-        setParticipatedContests
-      );
-      fetchContestList(ContestURL.myContests, setMyContests);
+      fetchAllContests();
       setContestFetched(true);
     }
   }, []);
@@ -137,8 +162,10 @@ export const useContestList = () => {
     upcomingContests,
     participatedContests,
     myContests,
-    isLoading,
-    error,
+    isLoadingList,
+    errorLoadingList,
+    isLoadingCud,
+    errorCud,
     createContest,
     updateContest,
     deleteContest,
