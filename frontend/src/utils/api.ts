@@ -9,15 +9,4 @@ export const api = axios.create({
   },
 });
 
-// dynamically allocate auth token
-// axios.interceptors.request.use(
-//   (config) => {
-//     config.headers.Authorization = get || "";
-//     return config;
-//   },
-//   (error) => {
-//     console.log(error);
-//   }
-// );
-
 export default api;

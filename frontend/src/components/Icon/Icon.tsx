@@ -6,14 +6,16 @@ export enum IconList {
   gear = "fa-solid fa-gear",
   exit = "fa-solid fa-right-from-bracket",
   xmark = "fa-solid fa-xmark",
-  error = "fa-solid fa-circle-exclamation",
+  error = "fa-solid fa-exclamation",
+  pen = "fa-solid fa-pen",
+  trash = "fa-solid fa-trash",
 }
 
 type Props = {
   icon: IconList;
   toolTip?: string;
   onClick?: (event: React.MouseEvent) => void;
-  variant?: "primary" | "secondary" | "large";
+  variant?: "primary" | "secondary" | "large" | "small";
 };
 
 export const Icon = ({

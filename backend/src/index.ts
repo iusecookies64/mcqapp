@@ -3,6 +3,7 @@ import { config } from "dotenv";
 config();
 import express from "express";
 import { Server } from "socket.io";
+import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import cors from "cors";
 import userRouter from "./routes/user";
@@ -14,10 +15,16 @@ import CustomError from "./utils/CustomError";
 import { SocketHandler } from "./controllers/socketController";
 
 const port = process.env.PORT || 3000;
+// ssl certificates
+const options = {
+  key: readFileSync("server.key"),
+  cert: readFileSync("server.cert"),
+};
+
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
 
+const io = new Server(server);
 io.on("connection", SocketHandler);
 
 app.use(

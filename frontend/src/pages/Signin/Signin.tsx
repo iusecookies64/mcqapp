@@ -7,8 +7,8 @@ import api from "../../utils/api";
 import { setAuthorizationToken } from "../../utils/authToken";
 import { toast } from "react-toastify";
 import { errorHandler } from "../../utils/errorHandler";
-import { useSetRecoilState } from "recoil";
-import { tokenAtom, userDataAtom } from "../../atoms/userAtom";
+import { useRecoilState } from "recoil";
+import { userDataAtom } from "../../atoms/userAtom";
 
 type SigninForm = {
   username: string;
@@ -16,9 +16,12 @@ type SigninForm = {
 };
 
 export const Signin = () => {
-  const setTokenState = useSetRecoilState(tokenAtom);
-  const setUserData = useSetRecoilState(userDataAtom);
   const navigate = useNavigate();
+  const [userData, setUserData] = useRecoilState(userDataAtom);
+  // if user logged in then go to main page
+  if (userData.user_id) {
+    navigate("/");
+  }
   const {
     register,
     formState: { errors },
@@ -30,8 +33,6 @@ export const Signin = () => {
       (response) => {
         // storing token in local storage
         setAuthorizationToken(response.data.token);
-        // updating token atom
-        setTokenState(response.data.token);
         // setting user data
         setUserData({
           user_id: response.data.user_id,

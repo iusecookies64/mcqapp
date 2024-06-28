@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useContestList } from "../../hooks/useContestList";
 import { Icon, IconList } from "../Icon/Icon";
-import { CreateContestForm } from "../create-contest-form/CreateContestForm";
+import { CreateContestForm } from "../create_contest_form/CreateContestForm";
 import { Modal } from "../modal/Modal";
 
 export const CreateContest = () => {
@@ -19,7 +19,7 @@ export const CreateContest = () => {
           createFunction={createContest}
           isLoading={isLoadingCud}
           queryError={errorCud}
-          set
+          setIsModalOpen={setIsModalOpen}
         />
       </Modal>
     </>

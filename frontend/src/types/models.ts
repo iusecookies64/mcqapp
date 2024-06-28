@@ -8,6 +8,7 @@ export type User = {
 export type Contest = {
   contest_id: number;
   created_by: number;
+  username: string;
   title: string;
   max_participants: number;
   start_time: string;

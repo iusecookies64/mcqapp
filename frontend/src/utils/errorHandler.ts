@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 export const errorHandler = (err: AxiosError) => {
   const data = err.response?.data as ApiResponse;
+  console.log("error data", err);
   if (data?.message === "INVALID_TOKEN") {
     // token is invalid so we delete token and redirect to signin
     removeAuthorizationToken();

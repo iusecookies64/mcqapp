@@ -19,7 +19,8 @@ SELECT * FROM users WHERE username=$1 AND user_id=$2
 const authorizeUser = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.replace("Bearer ", "");
-    if (token == undefined) throw new CustomError("Invalid Token", 401);
+    if (!token) throw new CustomError("INVALID_TOKEN", 401);
+    // token exist so we check if it valid
     const payload = await VerifyToken(token);
     const result = await client.query(queryString, [
       payload.username,
@@ -27,8 +28,7 @@ const authorizeUser = asyncErrorHandler(
     ]);
 
     // if no such user exist throw errro
-    if (result.rowCount == 0)
-      throw new CustomError("Unauthorized Request", 401);
+    if (result.rowCount == 0) throw new CustomError("INVALID_TOKEN", 401);
 
     // adding username and user_id to req, as it might be useful later on
     (req as CustomRequest).user_id = payload.user_id;

@@ -40,9 +40,16 @@ export const CreateContest = asyncErrorHandler(async (req, res) => {
     invite_only,
   ]);
 
+  // if contest start in next 10 minutes so we push it into game manager
+  if (endTime.getMinutes() < new Date().getMinutes() + 10) {
+    manager.addContest(queryResult.rows[0].contest_id);
+  }
+
+  const { username } = req as CustomRequest;
+
   res.status(200).json({
     message: "Contest Created Successfully",
-    data: queryResult.rows[0],
+    data: { ...queryResult.rows[0], username },
     status: "success",
   });
 });
@@ -85,9 +92,28 @@ export const UpdateContest = asyncErrorHandler(async (req, res) => {
     contest_id,
   ]);
 
+  // updating contest data if it is in gameState
+  manager.updateContestData(contest_id);
+
   res.status(200).json({
     message: "Contest Updated Successfully",
     data: queryResult.rows[0],
+    status: "success",
+  });
+});
+
+const deleteContest =
+  "DELETE FROM contests WHERE contest_id=$1 AND created_by=$2";
+
+export const DeleteContest = asyncErrorHandler(async (req, res) => {
+  const { contest_id } = req.body;
+  const { user_id } = req as CustomRequest;
+
+  // deleting contest
+  await client.query(deleteContest, [contest_id, user_id]);
+
+  res.status(200).json({
+    message: "Contest Deleted",
     status: "success",
   });
 });
@@ -132,32 +158,10 @@ JOIN
   users ON contests.created_by = users.user_id
 WHERE
   contests.end_time > NOW() AND contests.invite_only = FALSE AND contests.published=TRUE
-
-UNION
-
-SELECT
-  contests.contest_id,
-  contests.created_by,
-  contests.title,
-  contests.max_participants,
-  contests.start_time,
-  contests.duration,
-  contests.invite_only,
-  contests.published,
-  users.username
-FROM
-  contests
-JOIN
-  participants ON participants.contest_id = contests.contest_id
-JOIN
-  users ON contests.created_by = users.user_id
-WHERE
-  participants.user_id = $1 AND contests.end_time > NOW()
 `;
 
 export const GetUpcomingContests = asyncErrorHandler(async (req, res) => {
-  const { user_id } = req as CustomRequest;
-  const queryResult = await client.query(getUpcomingContestsQuery, [user_id]);
+  const queryResult = await client.query(getUpcomingContestsQuery);
   res.status(200).json({
     message: "All Upcoming Contests",
     status: "success",
@@ -165,7 +169,38 @@ export const GetUpcomingContests = asyncErrorHandler(async (req, res) => {
   });
 });
 
-const getPastContestsQuery = `
+const getParticipatedContestsQuery = `
+SELECT
+  contests.contest_id,
+  contests.created_by,
+  contests.title,
+  contests.max_participants,
+  contests.start_time,
+  contests.duration,
+  users.username
+FROM
+  contests
+JOIN
+  participants ON participants.contest_id = contests.contest_id
+JOIN
+  users ON contests.created_by = users.user_id
+WHERE
+  participants.user_id = $1
+`;
+
+export const GetParticipatedContests = asyncErrorHandler(async (req, res) => {
+  const { user_id, username } = req as CustomRequest;
+  const queryResult = await client.query(getParticipatedContestsQuery, [
+    user_id,
+  ]);
+  res.status(200).json({
+    message: "All Participated Contests",
+    status: "success",
+    data: queryResult.rows,
+  });
+});
+
+const getMyContestsQuery = `
 SELECT
   contests.contest_id,
   contests.created_by,
@@ -179,25 +214,9 @@ SELECT
 FROM
   contests
 JOIN
-  participants ON participants.contest_id = contests.contest_id
-JOIN
   users ON contests.created_by = users.user_id
 WHERE
-  participants.user_id = $1 AND contests.end_time < NOW()
-`;
-
-export const GetPastContests = asyncErrorHandler(async (req, res) => {
-  const { user_id, username } = req as CustomRequest;
-  const queryResult = await client.query(getPastContestsQuery, [user_id]);
-  res.status(200).json({
-    message: "All Past Contests",
-    status: "success",
-    data: queryResult.rows,
-  });
-});
-
-const getMyContestsQuery = `
-SELECT * FROM contests WHERE created_by=$1
+  contests.created_by=$1
 `;
 
 export const GetMyContests = asyncErrorHandler(async (req, res) => {

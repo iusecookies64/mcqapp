@@ -17,6 +17,11 @@ const prodErros = (res: Response, err: CustomError) => {
       status: err.status,
       message: err.message,
     });
+  } else if (err.code === "23505") {
+    res.status(403).json({
+      message: "Username already exist",
+      status: "fail",
+    });
   } else {
     res.status(500).json({
       message: "Something Went Wrong! Please Try Again",

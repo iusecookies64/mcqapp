@@ -6,6 +6,7 @@ import { useRecoilValue } from "recoil";
 import { userDataAtom } from "../../atoms/userAtom";
 import { toast } from "react-toastify";
 import { Loader } from "../loader/Loader";
+import { DisplayError } from "../display_error/DisplayError";
 
 type Props = {
   createFunction: (
@@ -67,15 +68,19 @@ export const CreateContestForm = ({
       duration: data.duration,
       invite_only: data.invite_only,
     };
+
+    // passing data and on success which closes modal on success
     createFunction(createContestData, () => {
-      toast.success("Contest Created");
+      toast.success("Contest Created Successfully");
       setIsModalOpen(false);
     });
   };
   return (
     <div className="w-96 relative">
       <form
-        className={`flex flex-col gap-5 w-full ${isLoading && "invisible"}`}
+        className={`flex flex-col gap-5 w-full ${
+          (isLoading || queryError) && "invisible"
+        }`}
         onSubmit={handleSubmit(onSubmit)}
       >
         <Input
@@ -140,6 +145,9 @@ export const CreateContestForm = ({
         </Button>
       </form>
       {isLoading && <Loader />}
+      {queryError && (
+        <DisplayError errorMessage="Error Creating Contest, Please Try Again Later!" />
+      )}
     </div>
   );
 };

@@ -7,6 +7,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
 import { errorHandler } from "../../utils/errorHandler";
+import { useRecoilValue } from "recoil";
+import { userDataAtom } from "../../atoms/userAtom";
 
 type SignupForm = {
   username: string;
@@ -17,6 +19,11 @@ type SignupForm = {
 export const Signup = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
+  // if logged in go to home page
+  const userData = useRecoilValue(userDataAtom);
+  if (userData.user_id) {
+    navigate("/");
+  }
   const {
     register,
     formState: { errors },

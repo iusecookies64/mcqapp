@@ -1,0 +1,16 @@
+.contest-table {
+  @apply rounded-xl bg-slate-100 dark:bg-gray-dark;
+}
+
+th,
+td {
+  @apply py-6 px-10 text-center;
+}
+
+.contest-data-row {
+  @apply relative;
+}
+
+.contest-data-row:nth-of-type(odd) {
+  @apply bg-white dark:bg-primary;
+}

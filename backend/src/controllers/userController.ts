@@ -6,6 +6,7 @@ import zod from "zod";
 import bcrypt from "bcrypt";
 import client from "../models";
 import CustomError from "../utils/CustomError";
+import { CustomRequest } from "../middlewares";
 
 const saltRounds = parseInt(process.env.SALT || "0") || 10;
 const jwtSecret = process.env.SECRET || "123456";
@@ -57,25 +58,19 @@ export const Signin = asyncErrorHandler(async (req, res) => {
     message: "Sign In Successfull",
     status: "success",
     token: `Bearer ${token}`,
+    username,
+    user_id: queryResult.rows[0].user_id,
   });
 });
 
 // function to validate a token for users that are already signed in
-export const ValidateToken = asyncErrorHandler(async (req, res) => {
-  const token = (req.body.token as string).replace("Bearer ", "");
-  // verifying jwt token
-  const decoded = await VerifyToken(token);
-  // checking if that user exist in db
-  const queryResult = await client.query(getUserQuery, [decoded.username]);
-  // if no such user exit then token invalid
-  if (queryResult.rowCount === 0)
-    throw new CustomError("Invalid Token, Please Signin Again", 401);
-
+export const GetUserInfo = asyncErrorHandler(async (req, res) => {
+  const { user_id, username } = req as CustomRequest;
   // user exist so sending user_id and username to client
   res.status(200).json({
     message: "Sign In Successfull",
     status: "success",
-    user_id: queryResult.rows[0].user_id,
-    username: queryResult.rows[0].username,
+    user_id,
+    username,
   });
 });

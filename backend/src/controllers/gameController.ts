@@ -4,20 +4,24 @@ import client from "../models";
 import { scheduleJob } from "node-schedule";
 
 class GameManager {
-  private activeGames: Map<number, GameState>;
+  private activeGames: Map<number, GameState> = new Map<number, GameState>();
   private period1 = 5; // every 5 minutes fetch upcoming contests and put in manager
   private period2 = 7; // every 7 minutes remove finished contests from manager
 
   constructor() {
     this.activeGames = new Map<number, GameState>();
 
-    // scheduleJob("*/10 * * * * *", this.getUpcomingGames);
-    // // scheduleJob(`*/${this.period2} * * * *`, this.removeFinishedGames);
-    // scheduleJob(`*/5 * * * * *`, this.removeFinishedGames);
+    // Bind the methods to ensure 'this' context is correct
+    this.getUpcomingGames = this.getUpcomingGames.bind(this);
+    this.removeFinishedGames = this.removeFinishedGames.bind(this);
+
+    scheduleJob(`*/5 * * * * *`, this.getUpcomingGames);
+    scheduleJob(`*/7 * * * * *`, this.removeFinishedGames);
   }
 
   async removeFinishedGames(): Promise<void> {
     const unfinishedGames = new Map<number, GameState>();
+
     for (const [contest_id, gameState] of this.activeGames.entries()) {
       if (!gameState.isEnded()) {
         unfinishedGames.set(contest_id, gameState);
@@ -44,7 +48,12 @@ class GameManager {
     });
   }
 
-  // to check if contest details are still in manager
+  addContest(contest_id: number): void {
+    const gameState = new GameState(contest_id);
+    this.activeGames.set(contest_id, gameState);
+  }
+
+  // to check if contest details are in manager
   isPresent(contest_id: number): boolean {
     return this.activeGames.has(contest_id);
   }
@@ -81,6 +90,11 @@ class GameManager {
     return (
       this.activeGames.get(contest_id)?.isValidParticipant(user_id) || false
     );
+  }
+
+  updateContestData(contest_id: number): void {
+    // reinitializing if contest was in game state already
+    this.activeGames.get(contest_id)?.init();
   }
 }
 

@@ -116,8 +116,32 @@ export const UpdateQuestion = asyncErrorHandler(
   }
 );
 
-export const GetQuestions = asyncErrorHandler(async (req, res) => {
-  const { contest_id } = req.body;
+const checkContestAndUser = `SELECT 1 FROM contests WHERE contest_id=$1 AND created_by=$2`;
+const deleteQuestionQuery = `DELETE FROM questions WHERE question_id=$1 AND contest_id=$2`;
+export const DeleteQuestion = asyncErrorHandler(async (req, res) => {
+  const { question_id, contest_id } = req.query;
+  const user_id = (req as CustomRequest).user_id;
+
+  // checking if contest.created_by is same as user_id
+  const checkUserQuery = await client.query(checkContestAndUser, [
+    contest_id,
+    user_id,
+  ]);
+
+  if (checkUserQuery.rowCount === 0)
+    throw new CustomError("Unauthorized Request", 401);
+
+  // deleting question
+  await client.query(deleteQuestionQuery, [question_id, contest_id]);
+
+  res.status(200).json({
+    message: "Question Deleted Successfully",
+    status: "success",
+  });
+});
+
+export const GetContestQuestions = asyncErrorHandler(async (req, res) => {
+  const contest_id = parseInt(req.params.contest_id);
   const questions = await getQuestions(contest_id);
   res.status(200).json({
     message: "All questions fetched successfully",
