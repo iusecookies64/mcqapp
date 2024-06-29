@@ -1,5 +1,5 @@
 .contest-table {
-  @apply rounded-xl bg-slate-100 dark:bg-gray-dark;
+  @apply rounded-xl dark:text-gray-light bg-slate-100 dark:bg-gray-dark;
 }
 
 th,

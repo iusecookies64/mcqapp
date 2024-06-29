@@ -76,9 +76,11 @@ export const useContestList = () => {
 
   const updateContest = (
     updatedData: UpdateContestData,
-    index: number,
     onSuccess: () => void
   ) => {
+    const index = myContests.findIndex(
+      (contest) => contest.contest_id === updatedData.contest_id
+    );
     sendRequest(
       RequestMethods.post,
       ContestURL.upcomingContests,

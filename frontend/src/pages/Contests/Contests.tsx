@@ -3,7 +3,7 @@ import "./Contests.style.css";
 import { Tabs } from "../../components/tabs/Tabs";
 import { useContestList } from "../../hooks/useContestList";
 import { Loader } from "../../components/loader/Loader";
-import { ContestTable } from "../../components/contest_table/ContestTable";
+import { ContestTable } from "./components/contest_table/ContestTable";
 
 export const Contests = () => {
   const tabs = ["Upcoming Contests", "Participated Contests", "My Contests"];

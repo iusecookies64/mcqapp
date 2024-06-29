@@ -1,5 +1,5 @@
-import { Contest } from "../../types/models";
-import { getTimeDetails } from "../../utils/getTimeDetails";
+import { Contest } from "../../../../types/models";
+import { getTimeDetails } from "../../../../utils/getTimeDetails";
 import Countdown from "react-countdown";
 import { MyContestOptions } from "../contest_options/ContestOptions";
 import "./ContestTable.style.css";
@@ -42,12 +42,18 @@ export const ContestTable = ({ contestList }: Props) => {
                     <Countdown date={new Date(contest.start_time)} />
                   )}
                 </td>
-                <MyContestOptions />
+                <MyContestOptions contestData={contest} />
               </tr>
             );
           })}
         </tbody>
       </table>
+      {contestList.length === 0 && (
+        <div className="w-full p-4 flex justify-center">
+          {" "}
+          No Upcoming Contests{" "}
+        </div>
+      )}
     </div>
   );
 };

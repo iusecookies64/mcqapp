@@ -1,51 +1,62 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import { CreateContestData } from "../../hooks/useContestList";
-import { Input } from "../input/Input";
-import { Button } from "../button/Button";
-import { useRecoilValue } from "recoil";
-import { userDataAtom } from "../../atoms/userAtom";
+import { UpdateContestData } from "../../../../hooks/useContestList";
+import { Input } from "../../../../components/input/Input";
+import { Button } from "../../../../components/button/Button";
 import { toast } from "react-toastify";
-import { Loader } from "../loader/Loader";
-import { DisplayError } from "../display_error/DisplayError";
-
-type Props = {
-  createFunction: (
-    contestData: CreateContestData,
-    onSuccess: () => void
-  ) => void;
-  isLoading: boolean;
-  queryError: boolean;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+import { Loader } from "../../../../components/loader/Loader";
+import { DisplayError } from "../../../../components/display_error/DisplayError";
+import { Contest } from "../../../../types/models";
+import { getTimeDetails } from "../../../../utils/getTimeDetails";
 
 type FormData = {
-  created_by: number;
+  contest_id: number;
   title: string;
   max_participants: number;
-  start_date: Date;
+  start_date: string;
   start_time: string;
   duration: number;
   invite_only: boolean;
 };
 
-export const CreateContestForm = ({
-  createFunction,
+type Props = {
+  updateFunction: (
+    contestData: UpdateContestData,
+    onSuccess: () => void
+  ) => void;
+  isLoading: boolean;
+  queryError: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  contestDetails: Contest;
+};
+
+export const UpdateContestForm = ({
+  updateFunction,
   queryError,
   isLoading,
   setIsModalOpen,
+  contestDetails,
 }: Props) => {
-  const userData = useRecoilValue(userDataAtom);
-
+  const timeDetails = getTimeDetails(contestDetails.start_time);
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<FormData>({ defaultValues: { created_by: userData.user_id } });
+  } = useForm<FormData>({
+    defaultValues: {
+      title: contestDetails.title,
+      max_participants: contestDetails.max_participants,
+      start_date: timeDetails.start_date,
+      start_time: timeDetails.start_time,
+      duration: contestDetails.duration,
+      invite_only: contestDetails.invite_only,
+    },
+  });
 
   // function to handle submit
   const onSubmit: SubmitHandler<FormData> = (data) => {
+    return;
     // combining contest start date and time
-    const startDate = data.start_date;
+    const startDate = new Date(data.start_date);
     const time = data.start_time.split(":").map((item) => parseInt(item));
     startDate.setHours(time[0]);
     startDate.setMinutes(time[1]);
@@ -61,8 +72,8 @@ export const CreateContestForm = ({
       return;
     }
 
-    const createContestData: CreateContestData = {
-      created_by: data.created_by,
+    const createContestData: UpdateContestData = {
+      contest_id: data.contest_id,
       title: data.title,
       max_participants: data.max_participants,
       start_time: startDate.toISOString(),
@@ -71,13 +82,14 @@ export const CreateContestForm = ({
     };
 
     // passing data and on success which closes modal on success
-    createFunction(createContestData, () => {
+    updateFunction(createContestData, () => {
       toast.success("Contest Created Successfully");
       setIsModalOpen(false);
     });
   };
   return (
     <div className="w-96 relative">
+      <div className="text-lg font-medium">Update Contest Data</div>
       <form
         className={`flex flex-col gap-5 w-full ${
           (isLoading || queryError) && "invisible"
@@ -112,7 +124,6 @@ export const CreateContestForm = ({
             className="none"
             register={register("start_date", {
               required: true,
-              valueAsDate: true,
             })}
           />
           <Input

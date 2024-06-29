@@ -9,6 +9,7 @@ interface Props {
   error?: FieldError;
   errorMessage?: string;
   className?: string;
+  defaultValue?: string;
 }
 
 export const Input = ({
@@ -19,11 +20,13 @@ export const Input = ({
   inputType,
   className = "",
   placeholder = "",
+  defaultValue,
 }: Props) => {
   return (
     <div className="custom-input">
       <label>{inputLabel}</label>
       <input
+        defaultValue={defaultValue || ""}
         className={className}
         {...register}
         type={inputType}
