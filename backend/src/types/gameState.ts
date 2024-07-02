@@ -25,7 +25,7 @@ export interface GameStateType {
   ): boolean; // returns true if response was correct
   getReductionFactor(): number; // reduction factor to reduce score of a question based on time elapsed
   getScores(): { username: string; score: number }[];
-  getQuestions(): { question: QuestionTable; options: OptionsTable[] }[];
+  getQuestions(): QuestionWithOptions[];
   getAllResponse(): ResponseTable[];
   isEnded(): boolean;
   pushInDB(): Promise<void>;

@@ -9,7 +9,7 @@ export const Notifications = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoading, error, notifications } = useNotification();
   const notificationString = (notification: Notification): string => {
-    return `${notification.username} is inviting you to participate in his contest ${notification.title}`;
+    return `${notification.username} is inviting you to participate in contest ${notification.title}`;
   };
   return (
     <>

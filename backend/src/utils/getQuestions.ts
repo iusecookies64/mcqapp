@@ -22,7 +22,7 @@ export const getQuestions = async (
       question.question_id,
     ]);
     questions.push({
-      question,
+      ...question,
       options: optionQueryResult.rows,
     });
   });

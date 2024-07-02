@@ -37,7 +37,7 @@ export const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
         <motion.div
           animate={animationState}
           transition={{ ease: "easeOut", duration: 0.2 }}
-          className="bg-black dark:bg-purple rounded-t z-[0]"
+          className="bg-primary dark:bg-purple rounded-t z-[0]"
         />
       </div>
       <div className="tabs">

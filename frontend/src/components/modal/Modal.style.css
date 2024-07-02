@@ -3,5 +3,5 @@
 }
 
 .modal-container {
-  @apply rounded-xl bg-white dark:bg-gray-dark shadow-md px-6 pb-6 relative flex flex-col;
+  @apply rounded-xl bg-white dark:bg-gray-dark shadow-md p-6 relative flex flex-col opacity-0;
 }

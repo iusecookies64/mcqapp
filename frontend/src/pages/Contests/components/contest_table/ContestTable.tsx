@@ -49,7 +49,7 @@ export const ContestTable = ({ contestList }: Props) => {
         </tbody>
       </table>
       {contestList.length === 0 && (
-        <div className="w-full p-4 flex justify-center">
+        <div className="w-full p-4 flex justify-center bg-white dark:bg-primary">
           {" "}
           No Upcoming Contests{" "}
         </div>

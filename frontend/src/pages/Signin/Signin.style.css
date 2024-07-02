@@ -3,5 +3,5 @@
 }
 
 .signin-form {
-  @apply dark:bg-gray-dark p-8 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-96;
+  @apply dark:bg-gray-dark p-8 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-96 relative;
 }

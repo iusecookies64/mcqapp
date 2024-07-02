@@ -18,7 +18,7 @@ export const UpdateContestModal = ({
   isOpen,
   setIsOpen,
 }: UpdateContestModalProps) => {
-  const { updateContest, isLoadingCud, errorCud } = useContestList();
+  const { updateContest, isLoadingCud, errorCud } = useContestList(false);
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <UpdateContestForm
@@ -47,7 +47,11 @@ export const MyContestOptions = ({ contestData }: { contestData: Contest }) => {
           <i className="fa-solid fa-ellipsis-vertical"></i>
         </div>
         <motion.div
-          animate={showOptions ? { x: 10, opacity: 1 } : { x: -10, opacity: 0 }}
+          animate={
+            showOptions
+              ? { x: 10, opacity: 1, visibility: "visible" }
+              : { x: -10, opacity: 0, visibility: "hidden" }
+          }
           transition={{ duration: 0.1 }}
         >
           <Icon
@@ -58,7 +62,11 @@ export const MyContestOptions = ({ contestData }: { contestData: Contest }) => {
           />
         </motion.div>
         <motion.div
-          animate={showOptions ? { x: 20, opacity: 1 } : { x: -20, opacity: 0 }}
+          animate={
+            showOptions
+              ? { x: 20, opacity: 1, visibility: "visible" }
+              : { x: -20, opacity: 0, visibility: "hidden" }
+          }
           transition={{ duration: 0.2 }}
         >
           <Icon
@@ -68,7 +76,11 @@ export const MyContestOptions = ({ contestData }: { contestData: Contest }) => {
           />
         </motion.div>
         <motion.div
-          animate={showOptions ? { x: 30, opacity: 1 } : { x: -30, opacity: 0 }}
+          animate={
+            showOptions
+              ? { x: 30, opacity: 1, visibility: "visible" }
+              : { x: -30, opacity: 0, visibility: "hidden" }
+          }
           transition={{ duration: 0.3 }}
         >
           <Icon

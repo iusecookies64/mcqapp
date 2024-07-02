@@ -1,5 +1,5 @@
 .signup-container {
-  @apply h-full w-full flex justify-center items-center;
+  @apply h-full w-full flex justify-center items-center relative;
 }
 
 .signup-form {

@@ -5,5 +5,6 @@ export const removeAuthorizationToken = () => {
 };
 
 export const setAuthorizationToken = (token: string) => {
+  console.log("setting token ", token);
   localStorage.setItem("authToken", token);
 };

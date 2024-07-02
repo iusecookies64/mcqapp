@@ -1,6 +1,11 @@
 import client from "../models";
 import { GameStateType } from "../types/gameState";
-import { QuestionTable, ResponseTable, OptionsTable } from "../types/models";
+import {
+  QuestionTable,
+  ResponseTable,
+  OptionsTable,
+  QuestionWithOptions,
+} from "../types/models";
 import { getQuestions } from "./getQuestions";
 
 export class GameState implements GameStateType {
@@ -11,7 +16,7 @@ export class GameState implements GameStateType {
   duration: number;
   answers: Map<number, string>; // to quickly check for response
   participants: Map<number, string>; // to quickly check if a user is participant or not
-  questions: { question: QuestionTable; options: OptionsTable[] }[]; // to send to users that join the contest
+  questions: QuestionWithOptions[]; // to send to users that join the contest
   scores: Map<string, number>; // live scores
   response: ResponseTable[]; // all responses made by users during contest
   constructor(contest_id: number) {
@@ -45,7 +50,7 @@ export class GameState implements GameStateType {
       this.questions = await getQuestions(this.contest_id);
 
       // for each question adding its answer to answers
-      this.questions.forEach(({ question }) => {
+      this.questions.forEach((question) => {
         this.answers.set(question.question_id, question.answer);
       });
 
@@ -115,7 +120,7 @@ export class GameState implements GameStateType {
     return result;
   }
 
-  getQuestions(): { question: QuestionTable; options: OptionsTable[] }[] {
+  getQuestions(): QuestionWithOptions[] {
     return this.questions;
   }
 

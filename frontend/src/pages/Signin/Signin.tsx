@@ -3,12 +3,10 @@ import { Input } from "../../components/input/Input";
 import "./Signin.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import api from "../../utils/api";
-import { setAuthorizationToken } from "../../utils/authToken";
-import { toast } from "react-toastify";
-import { errorHandler } from "../../utils/errorHandler";
-import { useRecoilState } from "recoil";
-import { userDataAtom } from "../../atoms/userAtom";
+import { useUser } from "../../hooks/useUser";
+import { Loader } from "../../components/loader/Loader";
+import { DisplayError } from "../../components/display_error/DisplayError";
+import { useEffect } from "react";
 
 type SigninForm = {
   username: string;
@@ -17,11 +15,9 @@ type SigninForm = {
 
 export const Signin = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useRecoilState(userDataAtom);
-  // if user logged in then go to main page
-  if (userData.user_id) {
-    navigate("/");
-  }
+  // const [userData, setUserData] = useRecoilState(userDataAtom);
+  const { userData, isLoading, error, signin } = useUser();
+
   const {
     register,
     formState: { errors },
@@ -29,27 +25,20 @@ export const Signin = () => {
   } = useForm<SigninForm>();
 
   const onSubmit: SubmitHandler<SigninForm> = (data) => {
-    api.post("/users/signin", data).then(
-      (response) => {
-        // storing token in local storage
-        setAuthorizationToken(response.data.token);
-        // setting user data
-        setUserData({
-          user_id: response.data.user_id,
-          username: response.data.username,
-        });
-        toast.success(response.data.message);
-        navigate("/");
-      },
-      (err) => {
-        errorHandler(err);
-      }
-    );
+    signin(data.username, data.password);
   };
+
+  // if already signed in, redirect to "/"
+  useEffect(() => {
+    if (userData.user_id) {
+      // navigate back to where you came here
+      navigate(-1);
+    }
+  }, [userData, navigate]);
 
   return (
     <div className="signin-container">
-      <div className="signin-form">
+      <div className={`signin-form ${(isLoading || error) && "invisible"}`}>
         <div className="text-2xl font-medium flex justify-center">Sign In</div>
         <form
           className="flex flex-col gap-4"
@@ -91,6 +80,10 @@ export const Signin = () => {
           </span>
         </div>
       </div>
+      {isLoading && <Loader />}
+      {error && (
+        <DisplayError errorMessage="Error Signing In, Try Again Later" />
+      )}
     </div>
   );
 };

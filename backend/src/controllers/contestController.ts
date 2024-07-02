@@ -220,7 +220,7 @@ WHERE
 `;
 
 export const GetMyContests = asyncErrorHandler(async (req, res) => {
-  const { user_id } = req as CustomRequest;
+  const { user_id, username } = req as CustomRequest;
   const queryResult = await client.query(getMyContestsQuery, [user_id]);
   res.status(200).json({
     message: "All User Created Contests",

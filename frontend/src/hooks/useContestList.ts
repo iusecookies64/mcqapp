@@ -37,7 +37,8 @@ export type UpdateContestData = {
   contest_id: number;
 };
 
-export const useContestList = () => {
+// taking fetch as argument for components that doesn't use contest list, only use create, update, delete functions
+export const useContestList = (fetch = true) => {
   const [upcomingContests, setUpcomingContests] =
     useRecoilState(upcomingContestsAtom);
   const [participatedContests, setParticipatedContests] = useRecoilState(
@@ -154,11 +155,11 @@ export const useContestList = () => {
   };
 
   useEffect(() => {
-    if (contestsFetched === false) {
+    if (contestsFetched === false && fetch !== false) {
       fetchAllContests();
       setContestFetched(true);
     }
-  }, []);
+  }, [contestsFetched]);
 
   return {
     upcomingContests,

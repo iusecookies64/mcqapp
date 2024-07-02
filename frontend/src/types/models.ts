@@ -33,7 +33,11 @@ export type Options = {
 };
 
 export type QuestionWithOptions = {
-  question: Question;
+  contest_id: number;
+  question_id: number;
+  title: string;
+  answer: string;
+  difficulty: 1 | 2 | 3;
   options: Options[];
 };
 

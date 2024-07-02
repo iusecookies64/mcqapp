@@ -1,14 +1,14 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "../../components/button/Button";
 import { Input } from "../../components/input/Input";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import api from "../../utils/api";
-import { toast } from "react-toastify";
-import { errorHandler } from "../../utils/errorHandler";
 import { useRecoilValue } from "recoil";
 import { userDataAtom } from "../../atoms/userAtom";
+import { useUser } from "../../hooks/useUser";
+import { Loader } from "../../components/loader/Loader";
+import { DisplayError } from "../../components/display_error/DisplayError";
 
 type SignupForm = {
   username: string;
@@ -18,12 +18,10 @@ type SignupForm = {
 
 export const Signup = () => {
   const formRef = useRef<HTMLFormElement>(null);
+  const { isLoading, error, signup } = useUser();
   const navigate = useNavigate();
   // if logged in go to home page
   const userData = useRecoilValue(userDataAtom);
-  if (userData.user_id) {
-    navigate("/");
-  }
   const {
     register,
     formState: { errors },
@@ -31,21 +29,19 @@ export const Signup = () => {
   } = useForm<SignupForm>();
 
   const onSubmit: SubmitHandler<SignupForm> = (data) => {
-    api.post("/users/signup", data).then(
-      (response) => {
-        console.log(response);
-        toast.success(response.data.message);
-        navigate("/signin");
-      },
-      (err) => {
-        errorHandler(err);
-      }
-    );
+    signup(data.username, data.email, data.password);
   };
+
+  useEffect(() => {
+    if (userData.user_id) {
+      // navigate back to where you came here
+      navigate(-1);
+    }
+  }, [userData, navigate]);
 
   return (
     <div className="signup-container">
-      <div className="signup-form">
+      <div className={`signup-form ${(isLoading || error) && "invisible"}`}>
         <div className="text-2xl font-medium flex justify-center">Sign Up</div>
         <form
           ref={formRef}
@@ -99,6 +95,10 @@ export const Signup = () => {
           </span>
         </div>
       </div>
+      {isLoading && <Loader />}
+      {error && (
+        <DisplayError errorMessage="Error Signing Up, Try Again Later" />
+      )}
     </div>
   );
 };

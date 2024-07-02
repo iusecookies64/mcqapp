@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { CreateContestData } from "../../hooks/useContestList";
 import { Input } from "../input/Input";
 import { Button } from "../button/Button";
@@ -7,6 +7,7 @@ import { userDataAtom } from "../../atoms/userAtom";
 import { toast } from "react-toastify";
 import { Loader } from "../loader/Loader";
 import { DisplayError } from "../display_error/DisplayError";
+import Switch from "react-switch";
 
 type Props = {
   createFunction: (
@@ -40,6 +41,7 @@ export const CreateContestForm = ({
     register,
     formState: { errors },
     handleSubmit,
+    control,
   } = useForm<FormData>({ defaultValues: { created_by: userData.user_id } });
 
   // function to handle submit
@@ -78,6 +80,9 @@ export const CreateContestForm = ({
   };
   return (
     <div className="w-96 relative">
+      <div className="text-2xl font-semibold text-center mb-3">
+        Create Contest
+      </div>
       <form
         className={`flex flex-col gap-5 w-full ${
           (isLoading || queryError) && "invisible"
@@ -134,12 +139,15 @@ export const CreateContestForm = ({
           error={errors.duration}
           errorMessage="Minimum duration is 10 minutes and Maximum is 60 minutes"
         />
-        <Input
-          inputLabel="Invite Only"
-          placeholder="Yes or No"
-          inputType="text"
-          register={register("invite_only", { required: true })}
-          error={errors.invite_only}
+        <Controller
+          name="invite_only"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <div className="flex flex-col gap-2">
+              <div className="text-sm font-medium">Invite Only</div>
+              <Switch onChange={onChange} checked={value} />
+            </div>
+          )}
         />
         <Button className="mt-4" type="submit">
           Create

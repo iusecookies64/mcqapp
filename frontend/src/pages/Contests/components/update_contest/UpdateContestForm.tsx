@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { UpdateContestData } from "../../../../hooks/useContestList";
 import { Input } from "../../../../components/input/Input";
 import { Button } from "../../../../components/button/Button";
@@ -7,6 +7,7 @@ import { Loader } from "../../../../components/loader/Loader";
 import { DisplayError } from "../../../../components/display_error/DisplayError";
 import { Contest } from "../../../../types/models";
 import { getTimeDetails } from "../../../../utils/getTimeDetails";
+import Switch from "react-switch";
 
 type FormData = {
   contest_id: number;
@@ -41,6 +42,7 @@ export const UpdateContestForm = ({
     register,
     formState: { errors },
     handleSubmit,
+    control,
   } = useForm<FormData>({
     defaultValues: {
       title: contestDetails.title,
@@ -54,39 +56,43 @@ export const UpdateContestForm = ({
 
   // function to handle submit
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    return;
-    // combining contest start date and time
-    const startDate = new Date(data.start_date);
-    const time = data.start_time.split(":").map((item) => parseInt(item));
-    startDate.setHours(time[0]);
-    startDate.setMinutes(time[1]);
+    try {
+      // combining contest start date and time
+      const startDate = new Date(data.start_date);
+      const time = data.start_time.split(":").map((item) => parseInt(item));
+      startDate.setHours(time[0]);
+      startDate.setMinutes(time[1]);
 
-    // checking if current date and time is atleast after 1 minutes in future
-    const currentDate = new Date();
-    currentDate.setMinutes(currentDate.getMinutes() + 1);
+      // checking if current date and time is atleast after 1 minutes in future
+      const currentDate = new Date();
+      currentDate.setMinutes(currentDate.getMinutes() + 1);
 
-    if (startDate < currentDate) {
-      toast.error(
-        "Start Date And Time must be atleast 1 minute after current time"
-      );
-      return;
+      if (startDate < currentDate) {
+        toast.error(
+          "Start Date And Time must be atleast 1 minute after current time"
+        );
+        return;
+      }
+
+      const createContestData: UpdateContestData = {
+        contest_id: data.contest_id,
+        title: data.title,
+        max_participants: data.max_participants,
+        start_time: startDate.toISOString(),
+        duration: data.duration,
+        invite_only: data.invite_only,
+      };
+
+      // passing data and on success which closes modal on success
+      updateFunction(createContestData, () => {
+        toast.success("Contest Created Successfully");
+        setIsModalOpen(false);
+      });
+    } catch (err) {
+      toast.error("Something Went Wrong, Please Try Again!");
     }
-
-    const createContestData: UpdateContestData = {
-      contest_id: data.contest_id,
-      title: data.title,
-      max_participants: data.max_participants,
-      start_time: startDate.toISOString(),
-      duration: data.duration,
-      invite_only: data.invite_only,
-    };
-
-    // passing data and on success which closes modal on success
-    updateFunction(createContestData, () => {
-      toast.success("Contest Created Successfully");
-      setIsModalOpen(false);
-    });
   };
+
   return (
     <div className="w-96 relative">
       <div className="text-lg font-medium">Update Contest Data</div>
@@ -145,15 +151,25 @@ export const UpdateContestForm = ({
           error={errors.duration}
           errorMessage="Minimum duration is 10 minutes and Maximum is 60 minutes"
         />
-        <Input
+        <Controller
+          name="invite_only"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <div className="flex flex-col gap-2">
+              <div className="text-sm font-medium">Invite Only</div>
+              <Switch onChange={onChange} checked={value} />
+            </div>
+          )}
+        />
+        {/* <Input
           inputLabel="Invite Only"
           placeholder="Yes or No"
           inputType="text"
           register={register("invite_only", { required: true })}
           error={errors.invite_only}
-        />
+        /> */}
         <Button className="mt-4" type="submit">
-          Create
+          Update
         </Button>
       </form>
       {isLoading && <Loader />}

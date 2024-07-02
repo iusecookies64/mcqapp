@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import "./Modal.style.css";
 import { Icon, IconList } from "../Icon/Icon";
+import { motion } from "framer-motion";
 
 type Props = {
   children: ReactNode;
@@ -9,20 +10,36 @@ type Props = {
 };
 
 export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
+  const [opacity, setOpacity] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.1);
+  const onClose = () => {
+    setOpacity(0);
+    setScale(1);
+    setTimeout(() => {
+      setIsOpen(false);
+      setOpacity(1);
+      setScale(1.1);
+    }, 150);
+  };
   return (
     <>
       {isOpen && (
-        <div className="custom-modal" onClick={() => setIsOpen(false)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-end pt-4">
+        <div className="custom-modal" onClick={onClose}>
+          <motion.div
+            animate={{ opacity, scale }}
+            transition={{ ease: "easeOut", duration: 0.2 }}
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="absolute top-0 right-0 flex justify-end p-2">
               <Icon
                 icon={IconList.xmark}
                 variant="secondary"
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
               />
             </div>
             {children}
-          </div>
+          </motion.div>
         </div>
       )}
     </>

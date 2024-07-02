@@ -5,7 +5,7 @@ import { CreateContestForm } from "../create_contest_form/CreateContestForm";
 import { Modal } from "../modal/Modal";
 
 export const CreateContest = () => {
-  const { createContest, isLoadingCud, errorCud } = useContestList();
+  const { createContest, isLoadingCud, errorCud } = useContestList(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   return (
     <>

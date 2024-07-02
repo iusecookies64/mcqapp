@@ -6,13 +6,13 @@ import { useState } from "react";
 import moon from "./dark-mode.png";
 import sun from "./light-mode.png";
 import { getTheme, initializeTheme, toggleTheme } from "../../utils/theme";
-import { useUserData } from "../../hooks/useUserData";
+import { useUser } from "../../hooks/useUser";
 
 export const NavBar = () => {
   // initializing theme
   initializeTheme();
   const [theme, setTheme] = useState<"dark" | "light">(getTheme());
-  const { userData } = useUserData();
+  const { userData } = useUser();
   const toggleThemeWithState = () => {
     toggleTheme();
     setTheme((prevTheme) => {
