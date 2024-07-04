@@ -1,5 +1,10 @@
 import { GameState } from "../utils/GameState";
-import { QuestionTable, OptionsTable, ResponseTable } from "../types/models";
+import {
+  QuestionTable,
+  OptionsTable,
+  ResponseTable,
+  QuestionWithOptions,
+} from "../types/models";
 import client from "../models";
 import { scheduleJob } from "node-schedule";
 
@@ -76,9 +81,7 @@ class GameManager {
     return this.activeGames.get(contest_id)?.getScores() || [];
   }
 
-  getAllQuestions(
-    contest_id: number
-  ): { question: QuestionTable; options: OptionsTable[] }[] {
+  getAllQuestions(contest_id: number): QuestionWithOptions[] {
     return this.activeGames.get(contest_id)?.getQuestions() || [];
   }
 

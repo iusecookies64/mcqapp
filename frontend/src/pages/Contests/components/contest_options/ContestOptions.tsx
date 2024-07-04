@@ -6,6 +6,7 @@ import { Modal } from "../../../../components/modal/Modal";
 import { UpdateContestForm } from "../update_contest/UpdateContestForm";
 import { Contest } from "../../../../types/models";
 import { useContestList } from "../../../../hooks/useContestList";
+import { useNavigate } from "react-router-dom";
 
 type UpdateContestModalProps = {
   contestData: Contest;
@@ -35,6 +36,7 @@ export const UpdateContestModal = ({
 export const MyContestOptions = ({ contestData }: { contestData: Contest }) => {
   const [showOptions, setShowOptions] = useState<boolean>(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const navigate = useNavigate();
   return (
     <>
       <div className="contest-options-container">
@@ -73,6 +75,9 @@ export const MyContestOptions = ({ contestData }: { contestData: Contest }) => {
             icon={IconList.plus}
             variant="small"
             toolTip="Add/Edit Questions or Publish"
+            onClick={() =>
+              navigate(`/compile-contest?contest-id=${contestData.contest_id}`)
+            }
           />
         </motion.div>
         <motion.div

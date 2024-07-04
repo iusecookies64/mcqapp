@@ -74,3 +74,15 @@ export const GetUserInfo = asyncErrorHandler(async (req, res) => {
     username,
   });
 });
+
+// function to get all matching users for a given search input
+const getAllMatchingUsers = `SELECT username FROM users WHERE username LIKE $1`;
+export const GetMatchingUsers = asyncErrorHandler(async (req, res) => {
+  const matching = req.query.matching;
+  const result = await client.query(getAllMatchingUsers, [`%${matching}%`]);
+  res.status(200).json({
+    message: "All matching users",
+    status: "success",
+    data: result.rows.map((row) => row.username),
+  });
+});

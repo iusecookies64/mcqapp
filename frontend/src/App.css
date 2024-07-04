@@ -1,7 +1,23 @@
 .app {
-  @apply h-[100dvh] dark:bg-primary bg-white dark:text-white flex flex-col justify-start items-center font-sans select-none relative overflow-hidden;
+  @apply h-[100dvh] dark:bg-primary bg-white dark:text-gray-light flex flex-col justify-start items-center font-sans select-none relative overflow-hidden;
 }
 
 .app-options {
   @apply flex flex-col justify-center gap-8 absolute top-0 right-0 h-full px-8;
+}
+
+::-webkit-scrollbar {
+  /* Customize the scrollbar width */
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  /* Customize the scrollbar track */
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* Customize the scrollbar thumb */
+  background: #121212;
+  border-radius: 5px;
 }

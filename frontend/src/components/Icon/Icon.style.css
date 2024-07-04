@@ -6,6 +6,14 @@
   @apply flex justify-center items-center h-10 text-[16px] w-10 bg-slate-200 cursor-pointer rounded-full dark:bg-purple;
 }
 
+.icon-container-xsmall {
+  @apply flex justify-center items-center h-8 text-xs w-8 bg-primary cursor-pointer rounded-full dark:bg-sky-600;
+}
+
+.icon-container-xsmall i {
+  @apply text-white;
+}
+
 .icon-container-secondary {
   @apply text-xl h-8 w-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-white hover:bg-opacity-10;
 }

@@ -1,3 +1,27 @@
 .compile-contest-container {
-  @apply h-full w-full p-6 flex flex-col justify-start items-center;
+  @apply h-full w-full max-w-[1000px] p-6 overflow-hidden flex flex-col gap-4;
+}
+
+.display-questions {
+  @apply h-full flex flex-col gap-4 overflow-y-scroll overflow-x-hidden p-4;
+}
+
+.question-container {
+  @apply px-5 py-3 bg-gray-light dark:bg-gray-dark rounded-lg flex flex-col gap-2 w-full relative;
+}
+
+.question-title {
+  @apply text-lg;
+}
+
+.question-labels {
+  @apply font-semibold mr-2;
+}
+
+.question-options {
+  @apply flex gap-3 flex-wrap;
+}
+
+.question-options div {
+  @apply min-w-[40%];
 }

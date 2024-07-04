@@ -15,17 +15,18 @@ export const getQuestions = async (
   ]);
 
   const questions: QuestionWithOptions[] = [];
-  // for each question fetching its options
   const getOptionsQuery = `SELECT * FROM options WHERE question_id=$1`;
-  questionQueryResult.rows.forEach(async (question) => {
-    const optionQueryResult = await client.query(getOptionsQuery, [
-      question.question_id,
-    ]);
-    questions.push({
-      ...question,
-      options: optionQueryResult.rows,
-    });
-  });
-
+  // asynchronously getting all the options for each question
+  await Promise.all(
+    questionQueryResult.rows.map(async (question) => {
+      const optionQueryResult = await client.query(getOptionsQuery, [
+        question.question_id,
+      ]);
+      questions.push({
+        ...question,
+        options: optionQueryResult.rows,
+      });
+    })
+  );
   return questions;
 };

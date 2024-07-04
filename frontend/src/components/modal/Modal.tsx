@@ -27,7 +27,7 @@ export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
         <div className="custom-modal" onClick={onClose}>
           <motion.div
             animate={{ opacity, scale }}
-            transition={{ ease: "easeOut", duration: 0.2 }}
+            transition={{ duration: 0.2 }}
             className="modal-container"
             onClick={(e) => e.stopPropagation()}
           >

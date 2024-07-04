@@ -12,7 +12,7 @@ export default {
         green: "#13ce66",
         yellow: "#ffc82c",
         primary: "#121212",
-        "gray-dark": "#1F1F1F",
+        "gray-dark": "#292929",
         gray: "#989898",
         "gray-light": "#E2E2E2",
       },

@@ -15,7 +15,8 @@ type Props = {
   icon: IconList;
   toolTip?: string;
   onClick?: (event: React.MouseEvent) => void;
-  variant?: "primary" | "secondary" | "large" | "small";
+  variant?: "primary" | "secondary" | "large" | "small" | "xsmall";
+  className?: string;
 };
 
 export const Icon = ({
@@ -23,10 +24,11 @@ export const Icon = ({
   toolTip,
   onClick,
   variant = "primary",
+  className = "",
 }: Props) => {
   return (
     <div
-      className={`icon-container-${variant}`}
+      className={`icon-container-${variant} ${className}`}
       data-tooltip-id="my-tooltip"
       data-tooltip-content={toolTip}
       onClick={onClick}

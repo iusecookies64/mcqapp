@@ -14,7 +14,7 @@ router.post("/create", authorizeUser, CreateQuestion);
 
 router.post("/update", authorizeUser, UpdateQuestion);
 
-router.post("/delete", authorizeUser, DeleteQuestion);
+router.delete("/delete", authorizeUser, DeleteQuestion);
 
 router.get("/:contest_id", authorizeUser, GetContestQuestions); // get all questions of a contest
 

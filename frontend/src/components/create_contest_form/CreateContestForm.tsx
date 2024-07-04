@@ -8,11 +8,13 @@ import { toast } from "react-toastify";
 import { Loader } from "../loader/Loader";
 import { DisplayError } from "../display_error/DisplayError";
 import Switch from "react-switch";
+import { useNavigate } from "react-router-dom";
+import { AxiosResponse } from "axios";
 
 type Props = {
   createFunction: (
     contestData: CreateContestData,
-    onSuccess: () => void
+    onSuccess: (res: AxiosResponse) => void
   ) => void;
   isLoading: boolean;
   queryError: boolean;
@@ -36,7 +38,7 @@ export const CreateContestForm = ({
   setIsModalOpen,
 }: Props) => {
   const userData = useRecoilValue(userDataAtom);
-
+  const navigate = useNavigate();
   const {
     register,
     formState: { errors },
@@ -73,9 +75,11 @@ export const CreateContestForm = ({
     };
 
     // passing data and on success which closes modal on success
-    createFunction(createContestData, () => {
+    createFunction(createContestData, (res: AxiosResponse) => {
       toast.success("Contest Created Successfully");
       setIsModalOpen(false);
+      // navigate to contest compile
+      navigate(`/compile-contest?contest-id=${res.data.contest_id}`);
     });
   };
   return (

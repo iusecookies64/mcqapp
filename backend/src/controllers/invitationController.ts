@@ -14,7 +14,7 @@ INSERT INTO invitations (contest_id, username) VALUES ($1, $2)
 `;
 
 export const SendInvite = asyncErrorHandler(async (req, res) => {
-  const { contest_id, to_username } = req.body as SendInviteBody; // request to user_id
+  const { contest_id, users } = req.body as SendInviteBody; // request to user_id
   const owner_id = (req as CustomRequest).user_id; // user sending the invite, property added by middleware
 
   // checking if contest.created_by is same as owner_id
@@ -26,7 +26,9 @@ export const SendInvite = asyncErrorHandler(async (req, res) => {
   if (queryResult.rowCount === 0) throw new CustomError("Invalid Request", 401);
 
   // request coming from right user, so we add this db
-  await client.query(createInviteQuery, [contest_id, to_username]);
+  await Promise.all(
+    users.map((user) => client.query(createInviteQuery, [contest_id, user]))
+  );
 
   res.status(200).json({
     message: "Invite Sent Successfully",

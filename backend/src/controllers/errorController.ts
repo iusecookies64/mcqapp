@@ -3,7 +3,7 @@ import CustomError from "../utils/CustomError";
 import client from "../models";
 
 const devErrors = (res: Response, err: CustomError) => {
-  res.status(err.statusCode).json({
+  res.status(err.statusCode || 500).json({
     status: err.status,
     message: err.message,
     stacktrace: err.stack,

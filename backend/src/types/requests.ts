@@ -43,16 +43,25 @@ export type GetParticipantsBody = {
   contest_id: number;
 };
 
-export interface CreateQuestionRequest extends Request {
-  body: {
-    question: QuestionTable;
-    options: OptionsTable[];
-  };
-}
+export type CreateQuestionData = {
+  contest_id: number;
+  title: string;
+  difficulty: 1 | 2 | 3;
+  options: string[];
+  answer: string;
+};
+
+export type UpdateQuestionData = {
+  question_id: number;
+  title: string;
+  difficulty: 1 | 2 | 3;
+  options: OptionsTable[];
+  answer: string;
+};
 
 export type SendInviteBody = {
   contest_id: number;
-  to_username: string;
+  users: string[];
 };
 
 export type AcceptInviteBody = {

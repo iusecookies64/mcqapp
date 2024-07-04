@@ -54,7 +54,7 @@ export const useContestList = (fetch = true) => {
 
   const createContest = (
     contestData: CreateContestData,
-    onSuccess: () => void
+    onSuccess: (resonse: AxiosResponse) => void
   ) => {
     sendRequest(
       RequestMethods.post,
@@ -68,7 +68,7 @@ export const useContestList = (fetch = true) => {
         });
 
         // on success calling onSuccess funtion
-        onSuccess();
+        onSuccess(response);
       },
       setIsLoadingCud,
       setErrorCud

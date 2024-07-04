@@ -2,10 +2,12 @@ import "./input.style.css";
 import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 interface Props {
-  inputLabel: string;
+  inputLabel?: string;
   inputType: string;
   placeholder?: string;
-  register: UseFormRegisterReturn;
+  register?: UseFormRegisterReturn;
+  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined;
+  value?: string;
   error?: FieldError;
   errorMessage?: string;
   className?: string;
@@ -17,22 +19,41 @@ export const Input = ({
   register,
   error,
   errorMessage,
+  onChange,
   inputType,
   className = "",
   placeholder = "",
   defaultValue,
+  value = "",
 }: Props) => {
-  return (
-    <div className="custom-input">
-      <label>{inputLabel}</label>
-      <input
-        defaultValue={defaultValue || ""}
-        className={className}
-        {...register}
-        type={inputType}
-        placeholder={placeholder}
-      />
-      {error && <span className="text-sm text-red-500">{errorMessage}</span>}
-    </div>
-  );
+  if (register) {
+    return (
+      <div className="custom-input">
+        {inputLabel && <label>{inputLabel}</label>}
+        <input
+          aria-label={inputLabel}
+          defaultValue={defaultValue || ""}
+          className={className}
+          {...register}
+          type={inputType}
+          placeholder={placeholder}
+        />
+        {error && <span className="text-sm text-red-500">{errorMessage}</span>}
+      </div>
+    );
+  } else {
+    return (
+      <div className="custom-input">
+        {inputLabel && <label>{inputLabel}</label>}
+        <input
+          value={value}
+          className={className}
+          type={inputType}
+          placeholder={placeholder}
+          onChange={onChange}
+        />
+        {error && <span className="text-sm text-red-500">{errorMessage}</span>}
+      </div>
+    );
+  }
 };
