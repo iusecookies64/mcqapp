@@ -10,6 +10,8 @@ import {
   contestsFetchedAtom,
 } from "../atoms/contestAtom";
 import { Contest } from "../types/models";
+import { toast } from "react-toastify";
+import { sortByTime } from "../utils/sortByTime";
 
 export enum ContestURL {
   upcomingContests = "/contest/upcoming-contests",
@@ -132,6 +134,61 @@ export const useContestList = (fetch = true) => {
     );
   };
 
+  const publishContest = (contest_id: number, publish: boolean) => {
+    sendRequest(
+      RequestMethods.post,
+      `/contest/publish`,
+      { contest_id, publish },
+      () => {
+        toast.success(
+          `Contest ${publish ? "Published" : "Unpublished"} Successfully`
+        );
+        // updating my contest list on success
+        const indx = myContests.findIndex(
+          (contest) => contest.contest_id === contest_id
+        );
+        if (indx !== -1) {
+          setMyContests((prevList) => {
+            const updatedList = [...prevList];
+            updatedList.splice(indx, 1, {
+              ...prevList[indx],
+              published: publish,
+            });
+            return updatedList;
+          });
+        }
+      },
+      setIsLoadingCud,
+      setErrorCud
+    );
+  };
+
+  const joinContest = (contest_id: number) => {
+    sendRequest(
+      RequestMethods.get,
+      `/contest/join?contest_id=${contest_id}`,
+      {},
+      () => {
+        toast.success("Contest Joined Successfully");
+        // updating the upcoming and participated contest list
+        const indx = upcomingContests.findIndex(
+          (contest) => contest.contest_id === contest_id
+        );
+        if (indx !== -1) {
+          const contestData = upcomingContests[indx];
+          const newParticipatedContest = [...participatedContests];
+          newParticipatedContest.push(contestData);
+          newParticipatedContest.sort((a, b) =>
+            sortByTime(a.start_time, b.start_time)
+          );
+          setParticipatedContests(newParticipatedContest);
+        }
+      },
+      setIsLoadingCud,
+      setErrorCud
+    );
+  };
+
   const fetchContestList = (
     url: string,
     setContestList: SetterOrUpdater<Contest[]>
@@ -141,6 +198,9 @@ export const useContestList = (fetch = true) => {
       url,
       {},
       (response: AxiosResponse) => {
+        // sorting the list
+        const list = response.data.data as Contest[];
+        list.sort((a, b) => sortByTime(a.start_time, b.start_time));
         setContestList(response.data.data || []);
       },
       setIsLoadingList,
@@ -150,8 +210,8 @@ export const useContestList = (fetch = true) => {
 
   const fetchAllContests = () => {
     fetchContestList(ContestURL.upcomingContests, setUpcomingContests);
-    fetchContestList(ContestURL.participatedContests, setParticipatedContests);
     fetchContestList(ContestURL.myContests, setMyContests);
+    fetchContestList(ContestURL.participatedContests, setParticipatedContests);
   };
 
   useEffect(() => {
@@ -172,5 +232,7 @@ export const useContestList = (fetch = true) => {
     createContest,
     updateContest,
     deleteContest,
+    publishContest,
+    joinContest,
   };
 };

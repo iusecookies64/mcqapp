@@ -7,6 +7,7 @@ import {
   GetParticipants,
   GetParticipatedContests,
   GetUpcomingContests,
+  JoinContest,
   PublishContest,
   UpdateContest,
 } from "../controllers/contestController";
@@ -20,6 +21,8 @@ router.post("/update", authorizeUser, UpdateContest);
 router.post("/delete/:contest_id", authorizeUser, DeleteContest);
 
 router.post("/publish", authorizeUser, PublishContest);
+
+router.get("/join", authorizeUser, JoinContest);
 
 router.get("/upcoming-contests", authorizeUser, GetUpcomingContests);
 

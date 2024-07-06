@@ -7,16 +7,22 @@ import {
   GetResponse,
   UpdateQuestion,
 } from "../controllers/questionController";
+import { isUserCreatedContest } from "../middlewares/isUserCreatedContest";
 
 const router = Router();
 
-router.post("/create", authorizeUser, CreateQuestion);
+router.post("/create", authorizeUser, isUserCreatedContest, CreateQuestion);
 
-router.post("/update", authorizeUser, UpdateQuestion);
+router.post("/update", authorizeUser, isUserCreatedContest, UpdateQuestion);
 
-router.delete("/delete", authorizeUser, DeleteQuestion);
+router.delete("/delete", authorizeUser, isUserCreatedContest, DeleteQuestion);
 
-router.get("/:contest_id", authorizeUser, GetContestQuestions); // get all questions of a contest
+router.get(
+  "/getAllQuestions",
+  authorizeUser,
+  isUserCreatedContest,
+  GetContestQuestions
+);
 
 router.get("/response", authorizeUser, GetResponse);
 

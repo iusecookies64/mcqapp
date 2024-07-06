@@ -8,7 +8,7 @@ import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 const jwtPassword = process.env.SECRET || "123456";
 
 export interface CustomRequest extends Request {
-  user_id: Number;
+  user_id: number;
   username: string;
 }
 

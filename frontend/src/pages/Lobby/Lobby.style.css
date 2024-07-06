@@ -1,0 +1,23 @@
+.lobby-container {
+  @apply w-full h-full flex justify-between items-center p-12 overflow-hidden relative;
+}
+
+.live-leaderboard {
+  @apply w-1/5 h-[700px] rounded-xl shadow flex flex-col overflow-hidden;
+}
+
+.scores-container {
+  @apply h-full overflow-y-scroll;
+}
+
+.scores-container > div {
+  @apply p-4;
+}
+
+.scores-container > div:nth-of-type(odd) {
+  @apply bg-slate-100 dark:bg-gray-dark;
+}
+
+.questions-container {
+  @apply h-full w-full flex flex-col justify-start gap-6 items-start p-6;
+}

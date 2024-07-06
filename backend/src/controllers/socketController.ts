@@ -9,6 +9,11 @@ export const SocketHandler = (
   socket.on(
     "Enter Contest",
     async ({ contest_id, user_id }: EnterContestRequest) => {
+      // checking if contest present in manager
+      if (!manager.isPresent(contest_id)) {
+        socket.emit("Not Started");
+        return;
+      }
       // checking if user is a valid participant
       if (manager.isValidParticipant(contest_id, user_id)) {
         socket.join(contest_id.toString());
@@ -27,7 +32,11 @@ export const SocketHandler = (
       req.question_id,
       req.response
     );
-    socket.emit("Submission Result", result);
+    socket.emit("Submission Result", {
+      isCorrect: result,
+      question_id: req.question_id,
+      response: req.response,
+    });
     if (result === true) {
       // result is correct so emitting updated scores in room
       socket

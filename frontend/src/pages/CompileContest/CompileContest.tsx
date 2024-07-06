@@ -11,6 +11,7 @@ import { SendInvitesModal } from "./components/SendInvitesModal";
 export const CompileContest = () => {
   const [searchParams] = useSearchParams();
   const contest_id = parseInt(searchParams.get("contest-id") || "0");
+  console.log(contest_id);
   const {
     contestQuestions,
     isLoading,
@@ -28,15 +29,12 @@ export const CompileContest = () => {
         <div className="text-2xl font-medium">Contest Questions</div>
         <div className="flex gap-2">
           <Button
-            className="dark:bg-sky-600 scale-90"
+            variant="secondary"
             onClick={() => setIsSendInvitesModelOpen(true)}
           >
             Send Invites
           </Button>
-          <Button
-            className="dark:bg-sky-600 scale-90"
-            onClick={() => setIsModalOpen(true)}
-          >
+          <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
             Add Question
           </Button>
         </div>
@@ -105,6 +103,7 @@ const DisplayQuestion = ({
           </div>
         </div>
       ))}
+      {questions.length === 0 ? "No Questions Added Yet" : null}
     </div>
   );
 };

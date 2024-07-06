@@ -18,6 +18,8 @@ export const CreateQuestion = asyncErrorHandler(async (req, res) => {
   const { contest_id, title, answer, difficulty, options } =
     req.body as CreateQuestionData;
 
+  const { user_id } = req as CustomRequest;
+
   // checking if answer exist as one of the option
   const answerIndex = options.findIndex((option) => option == answer);
   if (answerIndex == -1)
@@ -62,7 +64,7 @@ UPDATE questions
 SET title=$1,
     answer=$2,
     difficulty=$3
-WHERE question_id=$4
+WHERE question_id=$4 AND contest_id=$5
 RETURNING *
 `;
 
@@ -71,8 +73,9 @@ UPDATE options SET title=$1 WHERE option_id=$2 RETURNING *
 `;
 
 export const UpdateQuestion = asyncErrorHandler(async (req, res) => {
-  const { question_id, title, answer, difficulty, options } =
+  const { contest_id, question_id, title, answer, difficulty, options } =
     req.body as UpdateQuestionData;
+  const { user_id } = req as CustomRequest;
 
   // checking if answer exist as one of the option
   const answerIndex = options.findIndex((option) => option.title === answer);
@@ -88,6 +91,7 @@ export const UpdateQuestion = asyncErrorHandler(async (req, res) => {
     answer,
     difficulty,
     question_id,
+    contest_id,
   ]);
 
   // inserting all of the options for this question
@@ -112,20 +116,11 @@ export const UpdateQuestion = asyncErrorHandler(async (req, res) => {
   });
 });
 
-const checkContestAndUser = `SELECT 1 FROM contests WHERE contest_id=$1 AND created_by=$2`;
 const deleteQuestionQuery = `DELETE FROM questions WHERE question_id=$1 AND contest_id=$2`;
 export const DeleteQuestion = asyncErrorHandler(async (req, res) => {
-  const { question_id, contest_id } = req.query;
+  const question_id = parseInt(req.query.question_id as string);
+  const contest_id = parseInt(req.query.contest_id as string);
   const user_id = (req as CustomRequest).user_id;
-
-  // checking if contest.created_by is same as user_id
-  const checkUserQuery = await client.query(checkContestAndUser, [
-    contest_id,
-    user_id,
-  ]);
-
-  if (checkUserQuery.rowCount === 0)
-    throw new CustomError("Unauthorized Request", 401);
 
   // deleting question
   await client.query(deleteQuestionQuery, [question_id, contest_id]);
@@ -136,8 +131,10 @@ export const DeleteQuestion = asyncErrorHandler(async (req, res) => {
   });
 });
 
+// sending questions to user for who created contest
 export const GetContestQuestions = asyncErrorHandler(async (req, res) => {
-  const contest_id = parseInt(req.params.contest_id);
+  const contest_id = parseInt(req.query.contest_id as string);
+
   const questions = await getQuestions(contest_id);
   res.status(200).json({
     message: "All questions fetched successfully",
@@ -147,7 +144,6 @@ export const GetContestQuestions = asyncErrorHandler(async (req, res) => {
 });
 
 const getResponseQuery = `SELECT * FROM response WHERE question_id=$1 AND user_id=$2`;
-
 export const GetResponse = asyncErrorHandler(async (req, res) => {
   // checking if contest response are still in manager
   const { question_id, contest_id } = req.body;

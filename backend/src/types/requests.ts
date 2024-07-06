@@ -52,6 +52,7 @@ export type CreateQuestionData = {
 };
 
 export type UpdateQuestionData = {
+  contest_id: number;
   question_id: number;
   title: string;
   difficulty: 1 | 2 | 3;

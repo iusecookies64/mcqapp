@@ -3,7 +3,7 @@
 }
 
 .title {
-  @apply text-2xl font-medium;
+  @apply text-2xl font-medium cursor-pointer;
 }
 
 .theme-button {

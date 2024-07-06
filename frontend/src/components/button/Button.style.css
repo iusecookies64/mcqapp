@@ -1,5 +1,5 @@
 .custom-button {
-  @apply px-4 py-2 rounded-sm font-medium text-lg;
+  @apply rounded font-medium;
 }
 
 .button-primary {
@@ -7,9 +7,25 @@
 }
 
 .button-secondary {
-  @apply bg-gray text-gray-light;
+  @apply bg-primary text-white dark:bg-sky-600;
+}
+
+.button-alert {
+  @apply bg-red-300 dark:bg-red-700;
 }
 
 .button-tertiary {
-  @apply bg-gray-light text-black border border-black;
+  @apply bg-transparent;
+}
+
+.button-lg {
+  @apply px-4 py-2 text-lg;
+}
+
+.button-md {
+  @apply px-4 py-2;
+}
+
+.button-sm {
+  @apply px-3 py-1 text-sm;
 }

@@ -9,6 +9,7 @@ export type ContestTable = {
   contest_id: number;
   created_by: number;
   title: string;
+  curr_participants: number;
   max_participants: number;
   start_time: Date;
   end_time: Date;

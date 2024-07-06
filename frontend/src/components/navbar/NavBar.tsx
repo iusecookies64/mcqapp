@@ -7,8 +7,10 @@ import moon from "./dark-mode.png";
 import sun from "./light-mode.png";
 import { getTheme, initializeTheme, toggleTheme } from "../../utils/theme";
 import { useUser } from "../../hooks/useUser";
+import { useNavigate } from "react-router-dom";
 
 export const NavBar = () => {
+  const navigate = useNavigate();
   // initializing theme
   initializeTheme();
   const [theme, setTheme] = useState<"dark" | "light">(getTheme());
@@ -23,7 +25,9 @@ export const NavBar = () => {
 
   return (
     <div className="navbar">
-      <div className="title">MCQ Battle</div>
+      <div className="title" onClick={() => navigate("/")}>
+        MCQ Battle
+      </div>
       <div className="flex gap-6 items-center">
         {theme === "dark" && (
           <div

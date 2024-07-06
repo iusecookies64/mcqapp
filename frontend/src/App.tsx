@@ -41,7 +41,7 @@ const App = () => {
           }
         />
         <Route
-          path="/lobby/:contest-id"
+          path="/lobby"
           element={
             <PrivateRoute>
               <Lobby />
@@ -64,19 +64,21 @@ function Layout() {
       {!isLoading && !error && (
         <>
           <NavBar />
-          <Outlet />
-          {userData.user_id && (
-            <div className="app-options">
-              <Logout />
-              <Notifications />
-              <CreateContest />
-              <Icon icon={IconList.gear} toolTip="User Settings" />
-            </div>
-          )}
+          <div className="w-full h-full flex justify-between">
+            <Outlet />
+            {userData.user_id && (
+              <div className="app-options">
+                <Logout />
+                <Notifications />
+                <CreateContest />
+                <Icon icon={IconList.gear} toolTip="User Settings" />
+              </div>
+            )}
+          </div>
           <ToastContainer
             position="top-center"
             pauseOnHover
-            autoClose={5000}
+            autoClose={3000}
             hideProgressBar
             newestOnTop={true}
             closeOnClick

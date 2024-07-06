@@ -37,6 +37,7 @@ export const sendRequest = (
       (err) => {
         setIsLoading(false);
         setError(true);
+        setTimeout(() => setError(false), 5000);
         errorHandler(err);
       }
     );

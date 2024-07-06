@@ -6,7 +6,7 @@ const jwtSecret = process.env.SECRET || "123456";
 
 export interface CustomPayload extends JwtPayload {
   username: string;
-  user_id: Number;
+  user_id: number;
 }
 
 export const VerifyToken = async (token: string): Promise<CustomPayload> => {

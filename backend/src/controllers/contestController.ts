@@ -40,8 +40,8 @@ export const CreateContest = asyncErrorHandler(async (req, res) => {
     invite_only,
   ]);
 
-  // if contest start in next 10 minutes so we push it into game manager
-  if (endTime.getMinutes() < new Date().getMinutes() + 10) {
+  // if contest start in next 20 minutes so we push it into game manager
+  if (endTime.getMinutes() < new Date().getMinutes() + 20) {
     manager.addContest(queryResult.rows[0].contest_id);
   }
 
@@ -141,27 +141,43 @@ export const PublishContest = asyncErrorHandler(async (req, res) => {
   }
 });
 
+const getContestDetails = `SELECT * FROM contests WHERE contest_id=$1`;
+const updateParticipantCount = `UPDATE contests SET curr_participants=$1 WHERE contest_id=$2`;
+const joinContestQuery = `INSERT INTO participants (contest_id, user_id) VALUES ($1, $2)`;
+export const JoinContest = asyncErrorHandler(async (req, res) => {
+  const contest_id = req.query.contest_id;
+  const { user_id } = req as CustomRequest;
+
+  const contestDetails = await client.query(getContestDetails, [contest_id]);
+  const { curr_participants, max_participants } = contestDetails.rows[0];
+  if (curr_participants >= max_participants) {
+    res.status(400).json({ message: "Room Full", status: "fail" });
+  } else {
+    await client.query("BEGIN");
+    await client.query(updateParticipantCount, [
+      curr_participants + 1,
+      contest_id,
+    ]);
+    await client.query(joinContestQuery, [contest_id, user_id]);
+    await client.query("COMMIT");
+  }
+});
+
 const getUpcomingContestsQuery = `
 SELECT 
-  contests.contest_id,
-  contests.created_by,
-  contests.title,
-  contests.max_participants,
-  contests.start_time,
-  contests.duration,
-  contests.invite_only,
-  contests.published,
+  contests.*,
   users.username
 FROM
   contests
 JOIN
   users ON contests.created_by = users.user_id
 WHERE
-  contests.end_time > NOW() AND contests.invite_only = FALSE AND contests.published=TRUE
+  contests.end_time > NOW() AND contests.invite_only = FALSE AND contests.published=TRUE AND contests.created_by != $1
 `;
 
 export const GetUpcomingContests = asyncErrorHandler(async (req, res) => {
-  const queryResult = await client.query(getUpcomingContestsQuery);
+  const { user_id } = req as CustomRequest;
+  const queryResult = await client.query(getUpcomingContestsQuery, [user_id]);
   res.status(200).json({
     message: "All Upcoming Contests",
     status: "success",

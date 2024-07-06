@@ -10,6 +10,7 @@ export type Contest = {
   created_by: number;
   username: string;
   title: string;
+  curr_participants: number;
   max_participants: number;
   start_time: string;
   end_time: string;

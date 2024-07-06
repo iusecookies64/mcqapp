@@ -44,7 +44,9 @@ export const CreateContestForm = ({
     formState: { errors },
     handleSubmit,
     control,
-  } = useForm<FormData>({ defaultValues: { created_by: userData.user_id } });
+  } = useForm<FormData>({
+    defaultValues: { created_by: userData.user_id, invite_only: false },
+  });
 
   // function to handle submit
   const onSubmit: SubmitHandler<FormData> = (data) => {
@@ -79,7 +81,7 @@ export const CreateContestForm = ({
       toast.success("Contest Created Successfully");
       setIsModalOpen(false);
       // navigate to contest compile
-      navigate(`/compile-contest?contest-id=${res.data.contest_id}`);
+      navigate(`/compile-contest?contest-id=${res.data.data.contest_id}`);
     });
   };
   return (
@@ -108,11 +110,11 @@ export const CreateContestForm = ({
           register={register("max_participants", {
             required: true,
             min: 5,
-            max: 20,
+            max: 100,
             valueAsNumber: true,
           })}
           error={errors.max_participants}
-          errorMessage="Number of Participants must >= 5 and <= 20"
+          errorMessage="Number of Participants must >= 5 and <= 100"
         />
         <div className="flex gap-2 justify-between">
           <Input

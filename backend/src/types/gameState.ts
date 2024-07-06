@@ -28,6 +28,7 @@ export interface GameStateType {
   getQuestions(): QuestionWithOptions[];
   getAllResponse(): ResponseTable[];
   isEnded(): boolean;
+  isStarted(): boolean;
   pushInDB(): Promise<void>;
   isValidParticipant(user_id: number): boolean;
 }

@@ -20,8 +20,8 @@ class GameManager {
     this.getUpcomingGames = this.getUpcomingGames.bind(this);
     this.removeFinishedGames = this.removeFinishedGames.bind(this);
 
-    scheduleJob(`*/5 * * * * *`, this.getUpcomingGames);
-    scheduleJob(`*/7 * * * * *`, this.removeFinishedGames);
+    scheduleJob(`*/10 * * * * *`, this.getUpcomingGames);
+    scheduleJob(`*/14 * * * * *`, this.removeFinishedGames);
   }
 
   async removeFinishedGames(): Promise<void> {
@@ -40,7 +40,7 @@ class GameManager {
 
   async getUpcomingGames(): Promise<void> {
     const queryUpcomingContests = `
-      SELECT contest_id FROM contests WHERE start_time < NOW() + INTERVAL '10 minutes'
+      SELECT contest_id FROM contests WHERE start_time < NOW() + INTERVAL '20 minutes'
     `;
     const queryResult = await client.query(queryUpcomingContests);
     // pushing all upcoming games to active
@@ -61,6 +61,17 @@ class GameManager {
   // to check if contest details are in manager
   isPresent(contest_id: number): boolean {
     return this.activeGames.has(contest_id);
+  }
+
+  isStarted(contest_id: number): boolean {
+    if (
+      this.isPresent(contest_id) &&
+      this.activeGames.get(contest_id)?.isStarted()
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   submitResponse(

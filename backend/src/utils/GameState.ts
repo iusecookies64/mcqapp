@@ -130,7 +130,12 @@ export class GameState implements GameStateType {
 
   isEnded(): boolean {
     const currentTime = Date.now();
-    return currentTime > this.end_time.getMilliseconds();
+    return currentTime >= this.end_time.getMilliseconds();
+  }
+
+  isStarted(): boolean {
+    const currentTime = Date.now();
+    return currentTime >= this.start_time.getMilliseconds();
   }
 
   async pushInDB(): Promise<void> {

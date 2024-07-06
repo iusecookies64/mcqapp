@@ -24,7 +24,7 @@ const options = {
 const app = express();
 const server = createServer(app);
 
-const io = new Server(server);
+const io = new Server(server, { cors: { origin: "*" } });
 io.on("connection", SocketHandler);
 
 app.use(

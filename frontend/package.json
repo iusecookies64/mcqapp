@@ -21,7 +21,8 @@
     "react-switch": "^7.0.0",
     "react-toastify": "^10.0.5",
     "react-tooltip": "^5.27.0",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",

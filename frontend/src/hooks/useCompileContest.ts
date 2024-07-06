@@ -24,7 +24,7 @@ export const useCompileContest = (contest_id: number) => {
   const updateQuestion = (updatedQuestionData: QuestionWithOptions) => {
     sendRequest(
       RequestMethods.post,
-      "/question/update",
+      `/question/update?contest_id=${contest_id}`,
       updatedQuestionData,
       () => {
         setContestQuestions((prevQuestions) => {
@@ -47,7 +47,7 @@ export const useCompileContest = (contest_id: number) => {
   ) => {
     sendRequest(
       RequestMethods.post,
-      "/question/create",
+      `/question/create?contest_id=${contest_id}`,
       questionData,
       (response) => {
         setContestQuestions((prevQuestions) => {
@@ -82,7 +82,7 @@ export const useCompileContest = (contest_id: number) => {
   const fetchContestQuestions = (contest_id: number) => {
     sendRequest(
       RequestMethods.get,
-      `/question/${contest_id}`,
+      `/question/getAllQuestions?contest_id=${contest_id}`,
       {},
       (response) => {
         setContestQuestions(response.data.data);
