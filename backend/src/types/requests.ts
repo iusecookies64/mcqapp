@@ -20,17 +20,17 @@ export type CreateContestBody = {
   created_by: number;
   title: string;
   max_participants: number;
-  start_time: string;
   duration: number;
-  invite_only: boolean;
+  is_locked: boolean;
+  password: string;
 };
 
 export type UpdateContestBody = {
   title: string;
   max_participants: number;
-  start_time: string;
+  is_locked: boolean;
+  password: string;
   duration: number;
-  invite_only: boolean;
   contest_id: number;
 };
 
@@ -70,6 +70,13 @@ export type AcceptInviteBody = {
 };
 
 export type EnterContestRequest = {
+  contest_id: number;
+  user_id: number;
+  username: string;
+  password: string;
+};
+
+export type StartContestRequest = {
   contest_id: number;
   user_id: number;
 };

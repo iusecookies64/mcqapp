@@ -1,11 +1,16 @@
 .navbar {
-  @apply bg-gray-dark text-gray-light w-full px-12 py-3 flex flex-row justify-between items-center;
+  @apply w-full px-12 py-6 flex flex-row justify-between items-center;
 }
 
 .title {
   @apply text-2xl font-medium cursor-pointer;
 }
 
-.theme-button {
-  @apply h-10 w-10 p-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-25;
+.navbar a {
+  @apply p-2 rounded;
+}
+
+.navbar a:hover,
+.navbar a.active-link {
+  @apply text-white dark:text-yellow bg-primary;
 }

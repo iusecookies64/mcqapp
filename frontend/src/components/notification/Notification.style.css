@@ -1,7 +1,0 @@
-.notifications-container {
-  @apply flex flex-col w-72;
-}
-
-.notifications-list {
-  @apply flex flex-col gap-3;
-}

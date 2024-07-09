@@ -1,3 +1,7 @@
+.contest-list-container {
+  @apply h-full w-full flex flex-col justify-start items-center p-4 relative;
+}
+
 .contest-table {
   @apply rounded-xl dark:text-gray-light bg-slate-100 dark:bg-gray-dark;
 }

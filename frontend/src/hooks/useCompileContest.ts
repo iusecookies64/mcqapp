@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { QuestionWithOptions } from "../types/models";
+import { Options } from "../types/models";
 import { useRecoilState } from "recoil";
 import { questionsAtom } from "../atoms/questionAtom";
 import { sendRequest } from "../utils/sendRequest";
@@ -15,26 +15,40 @@ export type CreateQuestionData = {
   answer: string;
 };
 
+export type UpdateQuestionData = {
+  contest_id: number;
+  question_id: number;
+  title: string;
+  answer: string;
+  difficulty: 1 | 2 | 3;
+  options: Options[];
+};
+
 export const useCompileContest = (contest_id: number) => {
   const [contestQuestions, setContestQuestions] = useRecoilState(questionsAtom);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const updateQuestion = (updatedQuestionData: QuestionWithOptions) => {
+  const updateQuestion = (
+    updatedQuestionData: UpdateQuestionData,
+    onSuccess: () => void
+  ) => {
     sendRequest(
       RequestMethods.post,
       `/question/update?contest_id=${contest_id}`,
       updatedQuestionData,
       () => {
         setContestQuestions((prevQuestions) => {
-          const indx = prevQuestions.findIndex(
+          const newList = [...prevQuestions];
+          const indx = newList.findIndex(
             (q) => q.question_id === updatedQuestionData.question_id
           );
-          if (indx === -1) return [...prevQuestions];
-          prevQuestions[indx] = updatedQuestionData;
-          return [...prevQuestions];
+          if (indx === -1) return [...newList];
+          newList[indx] = updatedQuestionData;
+          return [...newList];
         });
+        onSuccess();
       },
       setIsLoading,
       setError

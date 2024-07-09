@@ -1,5 +1,5 @@
 .tabs-container {
-  @apply border-b-2 dark:border-purple relative dark:text-purple;
+  @apply relative dark:text-purple;
 }
 
 .tabs {

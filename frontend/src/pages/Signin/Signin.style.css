@@ -1,5 +1,5 @@
 .signin-container {
-  @apply h-full w-full flex justify-center items-center;
+  @apply h-[100dvh] dark:bg-primary dark:text-gray-light flex flex-col;
 }
 
 .signin-form {

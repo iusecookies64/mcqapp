@@ -1,20 +1,27 @@
 import client from "../models";
-import { GameStateType } from "../types/gameState";
+import { ContestDataForLobby, GameStateType } from "../types/gameState";
 import {
   QuestionTable,
   ResponseTable,
   OptionsTable,
   QuestionWithOptions,
+  ContestTable,
 } from "../types/models";
 import { getQuestions } from "./getQuestions";
 
 export class GameState implements GameStateType {
   contest_id: number;
   created_by: number;
-  start_time: Date;
-  end_time: Date;
+  created_by_username: string;
+  title: string;
+  is_locked: boolean;
+  password: string;
+  max_participants: number;
+  is_started: boolean;
+  start_time: number;
   duration: number;
   answers: Map<number, string>; // to quickly check for response
+  difficulty: Map<number, number>;
   participants: Map<number, string>; // to quickly check if a user is participant or not
   questions: QuestionWithOptions[]; // to send to users that join the contest
   scores: Map<string, number>; // live scores
@@ -23,10 +30,16 @@ export class GameState implements GameStateType {
     // importing
     this.contest_id = contest_id;
     this.created_by = 1; // default values
-    this.start_time = new Date();
-    this.end_time = new Date();
+    this.created_by_username = "";
+    this.title = "My Contest";
+    this.max_participants = 100;
+    this.is_locked = false;
+    this.password = "";
+    this.start_time = Date.now();
+    this.is_started = false;
     this.duration = 10;
     this.answers = new Map<number, string>();
+    this.difficulty = new Map<number, number>();
     this.participants = new Map<number, string>();
     this.questions = [];
     this.scores = new Map<string, number>();
@@ -37,14 +50,17 @@ export class GameState implements GameStateType {
   async init(): Promise<boolean> {
     try {
       // fetching contest details
-      const getContestDetailsQuery = `SELECT * FROM contests WHERE contest_id=$1`;
+      const getContestDetailsQuery = `SELECT c.*, u.username FROM contests c JOIN users u ON u.user_id = c.created_by WHERE contest_id=$1`;
       const contestQueryResult = await client.query(getContestDetailsQuery, [
         this.contest_id,
       ]);
       this.created_by = contestQueryResult.rows[0].created_by;
-      this.start_time = new Date(contestQueryResult.rows[0].start_time);
-      this.end_time = new Date(contestQueryResult.rows[0].end_time);
+      this.created_by_username = contestQueryResult.rows[0].username;
       this.duration = contestQueryResult.rows[0].duration;
+      this.is_locked = contestQueryResult.rows[0].is_locked;
+      this.password = contestQueryResult.rows[0].password;
+      this.title = contestQueryResult.rows[0].title;
+      this.max_participants = contestQueryResult.rows[0].max_participants;
 
       // getting all questions
       this.questions = await getQuestions(this.contest_id);
@@ -52,26 +68,9 @@ export class GameState implements GameStateType {
       // for each question adding its answer to answers
       this.questions.forEach((question) => {
         this.answers.set(question.question_id, question.answer);
-      });
-
-      // getting all participants
-      const getParticipantsQuery = `
-        SELECT 
-            participants.user_id, 
-            users.username 
-        FROM 
-            participants
-        JOIN
-            users ON participants.user_id=users.user_id
-        WHERE 
-            participants.contest_id=$1
-      `;
-      const participantsQueryResult = await client.query(getParticipantsQuery, [
-        this.contest_id,
-      ]);
-      participantsQueryResult.rows.forEach((participant) => {
-        this.participants.set(participant.user_id, participant.username);
-        this.scores.set(participant.username, 0);
+        this.difficulty.set(question.question_id, question.difficulty);
+        // removing the answer from the questions list so it doesn't reach client
+        question.answer = "";
       });
       return true;
     } catch (err) {
@@ -81,9 +80,8 @@ export class GameState implements GameStateType {
   }
 
   getReductionFactor(): number {
-    const startTime = new Date(this.start_time).getMilliseconds();
     const currentTime = Date.now();
-    const timeElapsed = currentTime - startTime;
+    const timeElapsed = currentTime - this.start_time;
     const durationInMs = this.duration * 60 * 1000;
     // percentage of total duration finished
     const factor = timeElapsed / durationInMs;
@@ -99,15 +97,15 @@ export class GameState implements GameStateType {
   ): boolean {
     // if contest ended return false
     if (this.isEnded()) return false;
-    // checking if user_id is a participant or not
-    if (
-      this.participants.has(user_id) &&
-      this.answers.get(question_id) === response
-    ) {
-      let score = 50 + 50 * this.getReductionFactor();
+
+    if (this.answers.get(question_id) === response) {
+      this.response.push({ question_id, user_id, response, is_correct: true });
+      const difficulty = this.difficulty.get(question_id) || 1;
+      const score = (50 + 50 * this.getReductionFactor()) * difficulty;
       this.scores.set(username, (this.scores.get(username) || 0) + score);
       return true;
     } else {
+      this.response.push({ question_id, user_id, response, is_correct: true });
       return false;
     }
   }
@@ -129,23 +127,82 @@ export class GameState implements GameStateType {
   }
 
   isEnded(): boolean {
+    if (!this.is_started) return false;
     const currentTime = Date.now();
-    return currentTime >= this.end_time.getMilliseconds();
+    return currentTime >= this.start_time + this.duration * 60 * 1000;
   }
 
-  isStarted(): boolean {
-    const currentTime = Date.now();
-    return currentTime >= this.start_time.getMilliseconds();
+  isContestStarted(): boolean {
+    return this.is_started;
+  }
+
+  setStarted(): void {
+    this.is_started = true;
+    this.start_time = Date.now();
+  }
+
+  // called when a participant joins the room
+  addParticipant(username: string, user_id: number): void {
+    // if owner joining, then we don't add as participant
+    if (user_id === this.created_by) {
+      return;
+    }
+    this.participants.set(user_id, username);
+    this.scores.set(username, 0);
+  }
+
+  // called when a participant leaves the room
+  removeParticipant(user_id: number, username: string): void {
+    this.participants.delete(user_id);
+    this.scores.delete(username);
+  }
+
+  checkPassword(password: string): boolean {
+    return this.password === password;
+  }
+
+  isFull(): boolean {
+    return this.participants.size >= this.max_participants;
+  }
+
+  isParticipantPresent(user_id: number): boolean {
+    return this.participants.has(user_id);
+  }
+
+  isOwner(user_id: number): boolean {
+    return this.created_by === user_id;
+  }
+
+  getDuration(): number {
+    return this.duration;
+  }
+
+  getContestData(): ContestDataForLobby {
+    return {
+      contest_id: this.contest_id,
+      created_by: this.created_by,
+      created_by_username: this.created_by_username,
+      title: this.title,
+      duration: this.duration,
+      max_participants: this.max_participants,
+    };
   }
 
   async pushInDB(): Promise<void> {
-    const updateParticipants = `UPDATE participants SET score=$1 WHERE contest_id=$2 AND user_id=$3`;
+    // updating contest
+    const updateContestQuery = `UPDATE contests SET isEnded=TRUE, number_of_participants=$1 WHERE contest_id=$2`;
+    await client.query(updateContestQuery, [
+      this.participants.size,
+      this.contest_id,
+    ]);
+
     // updating participants score
+    const updateParticipants = `INSERT INTO participants (contest_id, user_id, score) VALUES ($1, $2, $3)`;
     for (const [user_id, username] of this.participants) {
       await client.query(updateParticipants, [
-        this.scores.get(username),
         this.contest_id,
         user_id,
+        this.scores.get(username),
       ]);
     }
 
@@ -159,9 +216,5 @@ export class GameState implements GameStateType {
         response.is_correct,
       ]);
     });
-  }
-
-  isValidParticipant(user_id: number): boolean {
-    return this.participants.has(user_id);
   }
 }

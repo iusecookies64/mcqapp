@@ -9,12 +9,11 @@ export type ContestTable = {
   contest_id: number;
   created_by: number;
   title: string;
-  curr_participants: number;
+  is_locked: boolean;
+  is_ended: boolean;
+  password: string;
   max_participants: number;
-  start_time: Date;
-  end_time: Date;
   duration: number;
-  invite_only: boolean;
   published: boolean;
 };
 
@@ -48,7 +47,6 @@ export type ParticipantsTable = {
 };
 
 export type ResponseTable = {
-  response_id: number;
   question_id: number;
   user_id: number;
   response: string;

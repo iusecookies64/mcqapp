@@ -1,5 +1,5 @@
 .difficulty-selector {
-  @apply flex flex-col gap-3;
+  @apply flex flex-col gap-3 text-sm;
 }
 
 .difficulty-selector .difficulty-tab {
@@ -15,7 +15,7 @@
 }
 
 .difficulty-selector .difficulty-tab-3 {
-  @apply hover:bg-red-700;
+  @apply hover:bg-red;
 }
 
 .difficulty-selector .selected-1 {
@@ -27,5 +27,5 @@
 }
 
 .difficulty-selector .selected-3 {
-  @apply bg-red-700;
+  @apply bg-red;
 }

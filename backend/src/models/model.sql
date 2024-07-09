@@ -1,5 +1,3 @@
-
-DROP TABLE IF EXISTS invitations;
 DROP TABLE IF EXISTS responses;
 DROP TABLE IF EXISTS participants;
 DROP TABLE IF EXISTS options;
@@ -19,12 +17,12 @@ CREATE TABLE contests (
   contest_id SERIAL PRIMARY KEY,
   created_by INTEGER NOT NULL,
   title VARCHAR(100) NOT NULL,
-  curr_participants INTEGER DEFAULT 0 CHECK (curr_participants <= max_participants),
+  number_of_participants INTEGER DEFAULT 0,
   max_participants INTEGER NOT NULL CHECK (max_participants <= 100),
-  start_time TIMESTAMPTZ NOT NULL,
-  end_time TIMESTAMPTZ NOT NULL,
   duration INTEGER NOT NULL,
-  invite_only BOOLEAN NOT NULL,
+  is_locked BOOLEAN NOT NULL,
+  is_ended BOOLEAN DEFAULT FALSE,
+  password VARCHAR(100),
   published BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE CASCADE
@@ -33,8 +31,8 @@ CREATE TABLE contests (
 CREATE TABLE questions (
   question_id SERIAL PRIMARY KEY,
   contest_id INTEGER NOT NULL,
-  title VARCHAR(400) NOT NULL,
-  answer VARCHAR(100) NOT NULL,
+  title VARCHAR(500) NOT NULL,
+  answer VARCHAR(500) NOT NULL,
   difficulty INTEGER NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (contest_id) REFERENCES contests(contest_id) ON DELETE CASCADE,
@@ -44,7 +42,7 @@ CREATE TABLE questions (
 CREATE TABLE options (
   option_id SERIAL PRIMARY KEY,
   question_id INTEGER NOT NULL,
-  title VARCHAR(100) NOT NULL,
+  title VARCHAR(500) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
 );
@@ -68,30 +66,4 @@ CREATE TABLE responses (
   FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
-
-CREATE TABLE invitations (
-  invitation_id SERIAL PRIMARY KEY,
-  contest_id INTEGER NOT NULL,
-  username VARCHAR(100) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (contest_id) REFERENCES contests(contest_id) ON DELETE CASCADE,
-  FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

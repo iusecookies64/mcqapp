@@ -3,9 +3,9 @@ import "./Tabs.style.css";
 import { useEffect, useState } from "react";
 
 type Props = {
-  tabs: string[];
+  tabs: { title: string; value: string }[];
   activeTab: string;
-  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  setActiveTab: (value: string) => void;
 };
 
 export const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
@@ -37,18 +37,18 @@ export const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
         <motion.div
           animate={animationState}
           transition={{ ease: "easeOut", duration: 0.2 }}
-          className="bg-primary dark:bg-purple rounded-t z-[0]"
+          className="bg-primary dark:bg-purple rounded z-[0]"
         />
       </div>
       <div className="tabs">
         {tabs.map((tab, indx) => (
           <div
-            className={activeTab === tab ? "active-tab" : ""}
-            id={tab}
+            className={activeTab === tab.value ? "active-tab" : ""}
+            id={tab.value}
             key={indx}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(tab.value)}
           >
-            {tab}
+            {tab.title}
           </div>
         ))}
       </div>

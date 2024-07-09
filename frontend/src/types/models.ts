@@ -10,12 +10,11 @@ export type Contest = {
   created_by: number;
   username: string;
   title: string;
-  curr_participants: number;
+  is_locked: boolean;
+  is_ended: boolean;
+  password: string;
   max_participants: number;
-  start_time: string;
-  end_time: string;
   duration: number;
-  invite_only: boolean;
   published: boolean;
 };
 

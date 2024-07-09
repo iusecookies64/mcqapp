@@ -1,5 +1,5 @@
 .app {
-  @apply h-[100dvh] dark:bg-primary bg-white dark:text-gray-light flex flex-col justify-start items-center font-sans select-none relative overflow-hidden;
+  @apply h-[100dvh] w-[100dvw] dark:bg-primary bg-white dark:text-gray-light relative overflow-hidden;
 }
 
 .app-options {
@@ -19,5 +19,11 @@
 ::-webkit-scrollbar-thumb {
   /* Customize the scrollbar thumb */
   background: #121212;
+  border-radius: 5px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  /* Customize the scrollbar thumb */
+  background: #adadad;
   border-radius: 5px;
 }

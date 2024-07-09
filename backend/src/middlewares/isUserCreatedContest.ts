@@ -7,7 +7,6 @@ export const isUserCreatedContest = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { contest_id } = req.query;
     const { user_id } = req as CustomRequest;
-    console.log(contest_id, user_id);
     const checkContestAndUser = `SELECT 1 FROM contests WHERE contest_id=$1 AND created_by=$2`;
     if (
       (await client.query(checkContestAndUser, [contest_id, user_id])).rowCount

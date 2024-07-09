@@ -53,36 +53,23 @@ export const Signin = asyncErrorHandler(async (req, res) => {
     throw new CustomError("Incorrect Password", 401);
 
   // valid password so we return an auth token to user
-  const token = JWT.sign({ username, user_id: userObject.user_id }, jwtSecret);
+  const token = JWT.sign({ username, user_id: userObject.user_id }, jwtSecret, {
+    expiresIn: 24 * 60 * 60,
+  });
   res.status(200).json({
     message: "Sign In Successfull",
     status: "success",
-    token: `Bearer ${token}`,
-    username,
-    user_id: queryResult.rows[0].user_id,
+    token: token,
+    expiresIn: 24,
   });
 });
 
-// function to validate a token for users that are already signed in
-export const GetUserInfo = asyncErrorHandler(async (req, res) => {
-  const { user_id, username } = req as CustomRequest;
-  // user exist so sending user_id and username to client
+export const verifyToken = asyncErrorHandler(async (req, res) => {
+  const { token } = req.body;
+  const decoded = JWT.verify(token, jwtSecret);
   res.status(200).json({
-    message: "Sign In Successfull",
+    message: "Valid Token",
     status: "success",
-    user_id,
-    username,
-  });
-});
-
-// function to get all matching users for a given search input
-const getAllMatchingUsers = `SELECT username FROM users WHERE username LIKE $1`;
-export const GetMatchingUsers = asyncErrorHandler(async (req, res) => {
-  const matching = req.query.matching;
-  const result = await client.query(getAllMatchingUsers, [`%${matching}%`]);
-  res.status(200).json({
-    message: "All matching users",
-    status: "success",
-    data: result.rows.map((row) => row.username),
+    data: decoded,
   });
 });

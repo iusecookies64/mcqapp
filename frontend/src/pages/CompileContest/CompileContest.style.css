@@ -1,13 +1,13 @@
 .compile-contest-container {
-  @apply h-full w-full max-w-[1000px] p-6 overflow-hidden flex flex-col gap-4;
+  @apply h-full w-full flex flex-col overflow-hidden p-6;
 }
 
-.display-questions {
-  @apply h-full flex flex-col gap-4 overflow-y-scroll overflow-x-hidden p-4;
+.display-questions-container {
+  @apply h-full w-full p-4 flex-1;
 }
 
 .question-container {
-  @apply px-5 py-3 bg-gray-light dark:bg-gray-dark rounded-lg flex flex-col gap-2 w-full relative;
+  @apply px-5 py-3 min-w-[25%] bg-gray-light dark:bg-gray-dark rounded-lg flex flex-col gap-2 relative;
 }
 
 .question-title {

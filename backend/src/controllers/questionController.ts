@@ -97,10 +97,19 @@ export const UpdateQuestion = asyncErrorHandler(async (req, res) => {
   // inserting all of the options for this question
   const updatedOptions: OptionsTable[] = [];
   options.forEach(async (option) => {
-    const queryResult = await client.query(updateOptionQuery, [
-      option.title,
-      option.option_id,
-    ]);
+    // if option already existed
+    let queryResult;
+    if (option.option_id) {
+      queryResult = await client.query(updateOptionQuery, [
+        option.title,
+        option.option_id,
+      ]);
+    } else {
+      queryResult = await client.query(createOptionsQuery, [
+        question_id,
+        option.title,
+      ]);
+    }
     updatedOptions.push(queryResult.rows[0]);
   });
   // commit transaction

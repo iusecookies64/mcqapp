@@ -7,6 +7,7 @@ type Props = {
   children: ReactNode;
   className?: string;
   type?: "submit" | "reset" | "button";
+  tooltip?: string;
 };
 
 export const Button = ({
@@ -15,6 +16,7 @@ export const Button = ({
   onClick,
   children,
   className,
+  tooltip = "",
   type,
 }: Props) => {
   return (
@@ -22,6 +24,8 @@ export const Button = ({
       className={`custom-button button-${variant} button-${size} ${className}`}
       onClick={onClick}
       type={type}
+      data-tooltip-id="my-tooltip"
+      data-tooltip-content={tooltip}
     >
       {children}
     </button>

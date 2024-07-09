@@ -17,15 +17,6 @@ export type SigninRequest = {
   password: string;
 };
 
-export type CreateContestBody = {
-  created_by: number;
-  title: string;
-  max_participants: number;
-  start_time: string;
-  duration: number;
-  invite_only: boolean;
-};
-
 export type UpdateContestBody = {
   title: string;
   max_participants: number;

@@ -14,7 +14,6 @@ const cors_1 = __importDefault(require("cors"));
 const user_1 = __importDefault(require("./routes/user"));
 const contest_1 = __importDefault(require("./routes/contest"));
 const question_1 = __importDefault(require("./routes/question"));
-const invitation_1 = __importDefault(require("./routes/invitation"));
 const errorController_1 = require("./controllers/errorController");
 const CustomError_1 = __importDefault(require("./utils/CustomError"));
 const socketController_1 = require("./controllers/socketController");
@@ -37,7 +36,6 @@ app.use(express_1.default.static("./public"));
 app.use("/users", user_1.default);
 app.use("/contest", contest_1.default);
 app.use("/question", question_1.default);
-app.use("/invitation", invitation_1.default);
 app.all("*", (req, res, next) => {
     throw new CustomError_1.default("Oops! Error 404 Not Found", 404);
 });

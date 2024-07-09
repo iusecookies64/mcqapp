@@ -1,5 +1,3 @@
-import "./Icon.style.css";
-
 export enum IconList {
   plus = "fa-solid fa-plus",
   bell = "fa-solid fa-bell",
@@ -13,27 +11,9 @@ export enum IconList {
 
 type Props = {
   icon: IconList;
-  toolTip?: string;
-  onClick?: (event: React.MouseEvent) => void;
-  variant?: "primary" | "secondary" | "large" | "small" | "xsmall";
   className?: string;
 };
 
-export const Icon = ({
-  icon,
-  toolTip,
-  onClick,
-  variant = "primary",
-  className = "",
-}: Props) => {
-  return (
-    <div
-      className={`icon-container-${variant} ${className}`}
-      data-tooltip-id="my-tooltip"
-      data-tooltip-content={toolTip}
-      onClick={onClick}
-    >
-      <i className={`${icon} icon-style`}></i>
-    </div>
-  );
+export const Icon = ({ icon, className }: Props) => {
+  return <i className={`${icon} ${className}`}></i>;
 };

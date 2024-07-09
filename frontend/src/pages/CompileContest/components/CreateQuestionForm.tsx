@@ -1,14 +1,14 @@
-import { Controller, useForm } from "react-hook-form";
-import { Input } from "../../../components/input/Input";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { Modal } from "../../../components/modal/Modal";
 import { CreateQuestionData } from "../../../hooks/useCompileContest";
 import { Loader } from "../../../components/loader/Loader";
 import { DisplayError } from "../../../components/display_error/DisplayError";
 import { Button } from "../../../components/button/Button";
-import { useState } from "react";
 import "./styles.css";
 import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
+import { Textarea } from "../../../components/textarea/Textarea";
+import { Icon, IconList } from "../../../components/Icon/Icon";
 
 type CreateQuestionFormProps = {
   contest_id: number;
@@ -32,27 +32,35 @@ export const CreateQuestionForm = ({
 }: CreateQuestionFormProps) => {
   const {
     register,
-    setValue,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<CreateQuestionData>({
     defaultValues: {
       contest_id: contest_id,
       title: "",
       difficulty: 1,
-      options: [],
+      options: ["Option 1", "Option 2"],
       answer: "",
     },
   });
-  const [options, setOptions] = useState<string[]>([]);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "options",
+  });
   const onSubmit = (data: CreateQuestionData) => {
+    if (data.options.length < 2) {
+      return;
+    }
     // answer must be one of the options
     const indx = data.options.findIndex((option) => option === data.answer);
     if (indx == -1) {
-      toast.error("Answer one of the option");
+      toast.error("Answer must be one of the option");
     } else {
       createQuestionHandler(data, () => {
+        // on success we reset the form fields
+        reset();
         toast.success("Question Created");
         setIsOpen(false);
       });
@@ -60,7 +68,7 @@ export const CreateQuestionForm = ({
   };
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div className="">
+      <div className="min-w-[400px]">
         <div className="text-center text-xl font-medium mb-3">Add Question</div>
         <form
           className={`flex flex-col gap-3 max-h-[500px] overflow-y-scroll px-4 ${
@@ -68,45 +76,52 @@ export const CreateQuestionForm = ({
           }`}
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Input
+          <Textarea
             inputLabel="Question Title"
-            inputType="text"
             placeholder="eg. What is 2+2?"
-            register={register("title", { required: true })}
+            register={register("title", { required: true, maxLength: 500 })}
             error={errors.title}
             errorMessage="Question Title is Required"
           />
-          <div className="text-sm font-medium">Options</div>
-          {options.map((option, indx) => (
-            <Input
-              key={indx}
-              inputLabel={`Option ${indx + 1}`}
-              inputType="text"
-              value={option}
-              onChange={(e) => {
-                const newOptionValue = e.target.value;
-                setOptions((prevOptions) => {
-                  prevOptions[indx] = newOptionValue;
-                  setValue("options", prevOptions);
-                  return [...prevOptions];
-                });
-              }}
-            />
+          {fields.map((field, indx) => (
+            <div
+              className="w-full flex gap-4 justify-between items-end"
+              key={field.id}
+            >
+              <Textarea
+                inputLabel={`Option ${indx + 1}`}
+                placeholder="eg. 4"
+                defaultValue=""
+                register={register(`options.${indx}`, {
+                  required: true,
+                  maxLength: 500,
+                })}
+                error={errors.options?.[indx]}
+                errorMessage="Option Cannot Be Empty"
+              />
+              <Icon
+                onClick={() => remove(indx)}
+                icon={IconList.trash}
+                variant="xsmall"
+                className="flex-shrink-0"
+                toolTip="Delete Option"
+              />
+            </div>
           ))}
-          {options.length === 0 && (
-            <div className="text-center text-sm">No Options Added</div>
-          )}
+          {fields.length < 2 ? (
+            <div className="text-sm text-red-600 font-medium text-center">
+              Minimum 2 Options Required
+            </div>
+          ) : null}
           <Button
-            onClick={() => {
-              setOptions((prevOptions) => [...prevOptions, ""]);
-            }}
+            type="button"
+            onClick={() => append(`Option ${fields.length + 1}`)}
             className="bg-transparent bg-slate-400 px-2 py-1 w-24 text-sm"
           >
             Add Option
           </Button>
-          <Input
+          <Textarea
             inputLabel="Answer"
-            inputType="text"
             placeholder="eg. 4"
             register={register("answer", { required: true })}
             error={errors.title}
@@ -119,7 +134,9 @@ export const CreateQuestionForm = ({
               <DifficultySelector onChange={onChange} value={value} />
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button variant="secondary" type="submit">
+            Submit
+          </Button>
         </form>
         {isLoading && <Loader />}
         {error && <DisplayError errorMessage="Error Creating Question" />}
@@ -128,7 +145,7 @@ export const CreateQuestionForm = ({
   );
 };
 
-const DifficultySelector = ({
+export const DifficultySelector = ({
   onChange,
   value,
 }: {

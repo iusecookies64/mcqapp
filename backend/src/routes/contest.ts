@@ -3,11 +3,9 @@ import authorizeUser from "../middlewares";
 import {
   CreateContest,
   DeleteContest,
+  GetActiveContests,
   GetMyContests,
   GetParticipants,
-  GetParticipatedContests,
-  GetUpcomingContests,
-  JoinContest,
   PublishContest,
   UpdateContest,
 } from "../controllers/contestController";
@@ -22,11 +20,7 @@ router.post("/delete/:contest_id", authorizeUser, DeleteContest);
 
 router.post("/publish", authorizeUser, PublishContest);
 
-router.get("/join", authorizeUser, JoinContest);
-
-router.get("/upcoming-contests", authorizeUser, GetUpcomingContests);
-
-router.get("/participated-contests", authorizeUser, GetParticipatedContests);
+router.get("/active-contests", authorizeUser, GetActiveContests);
 
 router.get("/my-contests", authorizeUser, GetMyContests);
 

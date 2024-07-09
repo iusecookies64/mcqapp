@@ -1,57 +1,36 @@
-// import { getTheme, toggleTheme } from "../../utils/initializeTheme";
-// import { Icon, IconList } from "../Icon/Icon";
-// import { Button } from "../button/Button";
 import "./NavBar.style.css";
-import { useState } from "react";
-import moon from "./dark-mode.png";
-import sun from "./light-mode.png";
-import { getTheme, initializeTheme, toggleTheme } from "../../utils/theme";
-import { useUser } from "../../hooks/useUser";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import ThemeToggle from "../theme/ThemeToggle";
+import { Logout } from "../logout/Logout";
 
 export const NavBar = () => {
   const navigate = useNavigate();
-  // initializing theme
-  initializeTheme();
-  const [theme, setTheme] = useState<"dark" | "light">(getTheme());
-  const { userData } = useUser();
-  const toggleThemeWithState = () => {
-    toggleTheme();
-    setTheme((prevTheme) => {
-      if (prevTheme === "dark") return "light";
-      else return "dark";
-    });
-  };
-
   return (
     <div className="navbar">
       <div className="title" onClick={() => navigate("/")}>
         MCQ Battle
       </div>
+      <ul className="flex gap-6">
+        <li>
+          <NavLink
+            to="/active-contests"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            Active Contests
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/my-contests"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            My Contests
+          </NavLink>
+        </li>
+      </ul>
       <div className="flex gap-6 items-center">
-        {theme === "dark" && (
-          <div
-            id="light-theme"
-            className="theme-button"
-            onClick={toggleThemeWithState}
-            data-tooltip-id="my-tooltip"
-            data-tooltip-content="Switch To Light Mode"
-          >
-            <img src={sun} />
-          </div>
-        )}
-        {theme === "light" && (
-          <div
-            id="dark-theme"
-            className="theme-button"
-            onClick={toggleThemeWithState}
-            data-tooltip-id="my-tooltip"
-            data-tooltip-content="Switch To Dark Mode"
-          >
-            <img src={moon} />
-          </div>
-        )}
-        <div>Hello, {userData.username || "Please Login"}</div>
+        <ThemeToggle />
+        <Logout />
       </div>
     </div>
   );
