@@ -101,11 +101,13 @@ export class GameState implements GameStateType {
     if (this.answers.get(question_id) === response) {
       this.response.push({ question_id, user_id, response, is_correct: true });
       const difficulty = this.difficulty.get(question_id) || 1;
-      const score = (50 + 50 * this.getReductionFactor()) * difficulty;
+      const score = Math.floor(
+        50 * (1 - this.getReductionFactor()) * difficulty
+      );
       this.scores.set(username, (this.scores.get(username) || 0) + score);
       return true;
     } else {
-      this.response.push({ question_id, user_id, response, is_correct: true });
+      this.response.push({ question_id, user_id, response, is_correct: false });
       return false;
     }
   }

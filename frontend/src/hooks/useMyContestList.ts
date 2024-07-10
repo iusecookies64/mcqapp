@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
-import { sendRequest } from "../utils/sendRequest";
+import { sendRequest } from "../services/api";
 import { RequestMethods } from "../types/requests";
 import { SetterOrUpdater, useRecoilState } from "recoil";
 import { myContestsAtom } from "../atoms/contestAtom";

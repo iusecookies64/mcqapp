@@ -26,7 +26,7 @@ const AnimatedCountdown = ({
   }, []);
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="w-full h-full flex-grow flex justify-center items-center">
       {!isFinished && (
         <motion.div
           className="text-[150px] font-bold opacity-0"

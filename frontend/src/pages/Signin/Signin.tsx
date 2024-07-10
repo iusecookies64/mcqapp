@@ -2,7 +2,7 @@ import { Button } from "../../components/button/Button";
 import { Input } from "../../components/input/Input";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useUser } from "../../hooks/useUser";
+import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/loader/Loader";
 import { DisplayError } from "../../components/display_error/DisplayError";
 import ThemeToggle from "../../components/theme/ThemeToggle";
@@ -15,7 +15,7 @@ type SigninForm = {
 
 export const Signin = () => {
   const navigate = useNavigate();
-  const { isLoading, error, signin } = useUser();
+  const { isLoading, error, signin } = useAuth();
 
   const {
     register,

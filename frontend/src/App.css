@@ -1,9 +1,5 @@
 .app {
-  @apply h-[100dvh] w-[100dvw] dark:bg-primary bg-white dark:text-gray-light relative overflow-hidden;
-}
-
-.app-options {
-  @apply flex flex-col justify-center gap-8 pl-2 pr-4;
+  @apply h-[100dvh] w-[100dvw] dark:bg-primary bg-white dark:text-gray-light relative flex flex-col;
 }
 
 ::-webkit-scrollbar {

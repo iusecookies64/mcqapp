@@ -1,6 +1,10 @@
 import { Router } from "express";
-import { Signin, Signup, verifyToken } from "../controllers/userController";
-import authorizeUser from "../middlewares";
+import {
+  Protected,
+  Signin,
+  Signup,
+  refreshToken,
+} from "../controllers/userController";
 
 const router = Router();
 
@@ -8,8 +12,8 @@ router.post("/signup", Signup);
 
 router.post("/signin", Signin);
 
-router.get("/user-info", authorizeUser);
+router.get("/protected", Protected);
 
-router.post("/verify-token", verifyToken);
+router.get("/token", refreshToken);
 
 export default router;

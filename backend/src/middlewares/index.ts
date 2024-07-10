@@ -22,13 +22,6 @@ const authorizeUser = asyncErrorHandler(
     if (!token) throw new CustomError("INVALID_TOKEN", 401);
     // token exist so we check if it valid
     const payload = await VerifyToken(token);
-    const result = await client.query(queryString, [
-      payload.username,
-      payload.user_id,
-    ]);
-
-    // if no such user exist throw errro
-    if (result.rowCount == 0) throw new CustomError("INVALID_TOKEN", 401);
 
     // adding username and user_id to req, as it might be useful later on
     (req as CustomRequest).user_id = payload.user_id;

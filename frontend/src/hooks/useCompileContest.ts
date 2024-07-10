@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Options } from "../types/models";
 import { useRecoilState } from "recoil";
 import { questionsAtom } from "../atoms/questionAtom";
-import { sendRequest } from "../utils/sendRequest";
+import { sendRequest } from "../services/api";
 import { RequestMethods } from "../types/requests";
 import { AxiosResponse } from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export type CreateQuestionData = {
   contest_id: number;
@@ -48,6 +49,7 @@ export const useCompileContest = (contest_id: number) => {
           newList[indx] = updatedQuestionData;
           return [...newList];
         });
+        toast.success("Question Updated");
         onSuccess();
       },
       setIsLoading,
@@ -67,6 +69,7 @@ export const useCompileContest = (contest_id: number) => {
         setContestQuestions((prevQuestions) => {
           return [...prevQuestions, response.data.data];
         });
+        toast.success("Question Created");
         // calling onSuccess
         onSuccess(response);
       },
@@ -87,6 +90,7 @@ export const useCompileContest = (contest_id: number) => {
           if (indx !== -1) newArray.splice(indx, 1);
           return newArray;
         });
+        toast.success("Question Deleted");
       },
       setIsLoading,
       setError

@@ -30,14 +30,11 @@ const CreateContest = ({
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   return (
     <div>
-      {/* <div
-        className="h-8 w-20 flex justify-center items-center bg-light-green dark:bg-green rounded gap-2 cursor-pointer"
+      <Button
+        variant="secondary"
+        className="flex gap-2 items-center"
         onClick={() => setIsModalOpen(true)}
       >
-        <div>New</div>
-        <Icon icon={IconList.plus} />
-      </div> */}
-      <Button variant="secondary" className="flex gap-2 items-center">
         <div>New</div>
         <Icon icon={IconList.plus} />
       </Button>

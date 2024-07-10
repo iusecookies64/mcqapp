@@ -89,7 +89,7 @@ export const CompileContest = () => {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  publishContest(contest_id, () => navigate("/?tab=my-games"));
+                  publishContest(contest_id, () => navigate("/my-contests"));
                 }}
               >
                 Publish

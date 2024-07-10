@@ -1,14 +1,15 @@
 import { useState } from "react";
-import api from "../utils/api";
-import { errorHandler } from "../utils/errorHandler";
-import {
-  removeAuthorizationToken,
-  setAuthorizationToken,
-} from "../utils/authToken";
+import api from "../services/api";
+import { errorHandler } from "../services/api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import {
+  ClearAll,
+  SetRefreshToken,
+  setAccessToken,
+} from "../services/authToken.cookie";
 
-export const useUser = () => {
+export const useAuth = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -37,10 +38,11 @@ export const useUser = () => {
     api.post("/users/signin", { username, password }).then(
       (response) => {
         // storing token in local storage
-        setAuthorizationToken(response.data.token, response.data.expiresIn);
+        setAccessToken(response.data.access_token, response.data.expiresIn);
+        SetRefreshToken(response.data.refresh_token);
         setIsLoading(false);
         toast.success(response.data.message);
-        navigate("/");
+        navigate("/active-contests");
       },
       (err) => {
         errorHandler(err);
@@ -52,8 +54,8 @@ export const useUser = () => {
   };
 
   const logout = () => {
-    removeAuthorizationToken();
-    navigate("/");
+    ClearAll();
+    navigate("/signin");
   };
 
   return {

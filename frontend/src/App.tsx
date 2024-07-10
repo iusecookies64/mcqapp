@@ -10,14 +10,14 @@ import { Contests } from "./pages/MyContests/MyContests.tsx";
 import { CompileContest } from "./pages/CompileContest/CompileContest.tsx";
 import { Lobby } from "./pages/Lobby/Lobby.tsx";
 import { createBrowserRouter } from "react-router-dom";
-import { verifyAuthToken } from "./utils/authToken.ts";
 import ActiveContests from "./pages/ActiveContests/ActiveContests.tsx";
+import { Protected } from "./services/auth.ts";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    loader: verifyAuthToken,
+    loader: Protected,
     id: "root",
     children: [
       {
@@ -54,14 +54,9 @@ const router = createBrowserRouter([
 
 const App = () => {
   // defining all the paths
-  return <RouterProvider router={router} />;
-};
-
-function Layout() {
   return (
-    <div className="app">
-      <NavBar />
-      <Outlet />
+    <>
+      <RouterProvider router={router} />
       <ToastContainer
         position="top-center"
         pauseOnHover
@@ -73,6 +68,15 @@ function Layout() {
         theme="dark"
       />
       <Tooltip id="my-tooltip" />
+    </>
+  );
+};
+
+function Layout() {
+  return (
+    <div className="app">
+      <NavBar />
+      <Outlet />
     </div>
   );
 }

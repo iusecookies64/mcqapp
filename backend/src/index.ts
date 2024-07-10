@@ -12,6 +12,7 @@ import questionRouter from "./routes/question";
 import { GlobalErrorHandler } from "./controllers/errorController";
 import CustomError from "./utils/CustomError";
 import { SocketHandler } from "./controllers/socketController";
+import cookieParser from "cookie-parser";
 
 const port = process.env.PORT || 3000;
 // ssl certificates
@@ -33,6 +34,7 @@ app.use(
 );
 
 app.use(express.json()); // req.body parser
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("./public"));
 

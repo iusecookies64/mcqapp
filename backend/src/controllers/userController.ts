@@ -1,12 +1,11 @@
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 import { UserTable } from "../types/models";
 import { CustomPayload, VerifyToken } from "../utils/verifyToken";
-import JWT from "jsonwebtoken";
+import JWT, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import zod from "zod";
 import bcrypt from "bcrypt";
 import client from "../models";
 import CustomError from "../utils/CustomError";
-import { CustomRequest } from "../middlewares";
 
 const saltRounds = parseInt(process.env.SALT || "0") || 10;
 const jwtSecret = process.env.SECRET || "123456";
@@ -43,33 +42,67 @@ export const Signin = asyncErrorHandler(async (req, res) => {
   const queryResult = await client.query(getUserQuery, [username]);
   // if user not found
   if (queryResult.rowCount === 0)
-    throw new CustomError("Username Not Found", 401);
+    throw new CustomError("Username Not Found", 404);
 
   const userObject = queryResult.rows[0] as UserTable;
 
   // if user found compare password with hashed password
   const comparisionResult = await bcrypt.compare(password, userObject.password);
   if (comparisionResult === false)
-    throw new CustomError("Incorrect Password", 401);
+    throw new CustomError("Incorrect Password", 403);
 
   // valid password so we return an auth token to user
-  const token = JWT.sign({ username, user_id: userObject.user_id }, jwtSecret, {
-    expiresIn: 24 * 60 * 60,
-  });
+  const access_token = JWT.sign(
+    { username, user_id: userObject.user_id },
+    jwtSecret,
+    {
+      expiresIn: 28 * 60,
+    }
+  );
+
+  const refresh_token = JWT.sign(
+    { username, user_id: userObject.user_id },
+    jwtSecret
+  );
+
   res.status(200).json({
     message: "Sign In Successfull",
     status: "success",
-    token: token,
-    expiresIn: 24,
+    access_token,
+    refresh_token,
+    expiresIn: 28,
   });
 });
 
-export const verifyToken = asyncErrorHandler(async (req, res) => {
-  const { token } = req.body;
-  const decoded = JWT.verify(token, jwtSecret);
+export const Protected = asyncErrorHandler(async (req, res) => {
+  const access_token = req.headers.authorization?.replace("Bearer ", "");
+  if (!access_token) throw new CustomError("INVALID_TOKEN", 401);
+
+  const decoded = await VerifyToken(access_token);
+
   res.status(200).json({
     message: "Valid Token",
     status: "success",
     data: decoded,
+  });
+});
+
+export const refreshToken = asyncErrorHandler(async (req, res) => {
+  const { refresh_token } = req.cookies;
+  if (!refresh_token) throw new CustomError("INVALID_TOKEN", 401);
+
+  const decoded = await VerifyToken(refresh_token);
+
+  const access_token = JWT.sign(
+    { username: decoded.username, user_id: decoded.user_id },
+    jwtSecret,
+    { expiresIn: 28 * 60 }
+  );
+
+  res.status(200).json({
+    message: "New Access Token",
+    status: "success",
+    access_token,
+    expiresIn: 28,
   });
 });

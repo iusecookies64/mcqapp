@@ -33,12 +33,11 @@ export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
               className="modal-container"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="absolute top-0 right-0 flex justify-end p-2">
-                <Icon
-                  icon={IconList.xmark}
-                  variant="secondary"
-                  onClick={onClose}
-                />
+              <div
+                className="absolute top-0 right-0 flex justify-end p-2 cursor-pointer"
+                onClick={onClose}
+              >
+                <Icon icon={IconList.xmark} />
               </div>
               {children(onClose)}
             </motion.div>
@@ -57,12 +56,11 @@ export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
               className="modal-container"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="absolute top-0 right-0 flex justify-end p-2">
-                <Icon
-                  icon={IconList.xmark}
-                  variant="secondary"
-                  onClick={onClose}
-                />
+              <div
+                className="absolute top-0 right-0 flex justify-end p-3 cursor-pointer"
+                onClick={onClose}
+              >
+                <Icon icon={IconList.xmark} />
               </div>
               {children}
             </motion.div>

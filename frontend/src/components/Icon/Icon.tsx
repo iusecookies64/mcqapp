@@ -7,6 +7,7 @@ export enum IconList {
   error = "fa-solid fa-exclamation",
   pen = "fa-solid fa-pen",
   trash = "fa-solid fa-trash",
+  check = "fa-solid fa-check",
 }
 
 type Props = {

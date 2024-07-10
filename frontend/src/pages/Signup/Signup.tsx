@@ -4,7 +4,7 @@ import { Input } from "../../components/input/Input";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useUser } from "../../hooks/useUser";
+import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/loader/Loader";
 import { DisplayError } from "../../components/display_error/DisplayError";
 import ThemeToggle from "../../components/theme/ThemeToggle";
@@ -17,7 +17,7 @@ type SignupForm = {
 
 export const Signup = () => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { isLoading, error, signup } = useUser();
+  const { isLoading, error, signup } = useAuth();
   const navigate = useNavigate();
   // if logged in go to home page
   const {

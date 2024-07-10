@@ -3,6 +3,7 @@ import client from "../models";
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 import { CustomRequest } from ".";
 
+// middleware to verify if request for CRUD operations on questions for a contest is valid
 export const isUserCreatedContest = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { contest_id } = req.query;
@@ -13,7 +14,7 @@ export const isUserCreatedContest = asyncErrorHandler(
     ) {
       next();
     } else {
-      res.status(401).json({
+      res.status(403).json({
         message: "Unauthorized Request",
         status: "fail",
       });

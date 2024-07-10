@@ -1,5 +1,5 @@
 .contest-list-container {
-  @apply h-full w-full flex flex-col justify-start items-center p-4 relative;
+  @apply w-full flex flex-col flex-grow justify-start items-center p-4 relative;
 }
 
 .contest-table {

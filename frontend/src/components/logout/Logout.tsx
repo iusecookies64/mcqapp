@@ -1,7 +1,7 @@
-import { useUser } from "../../hooks/useUser";
+import { useAuth } from "../../hooks/useAuth";
 
 export const Logout = () => {
-  const { logout } = useUser();
+  const { logout } = useAuth();
   return (
     <div
       className="h-10 w-10 p-2 flex justify-center items-center rounded-full cursor-pointer hover:bg-opacity-25 dark:hover:bg-opacity-25 hover:bg-gray dark:hover:bg-white"

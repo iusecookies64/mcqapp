@@ -17,6 +17,7 @@ const question_1 = __importDefault(require("./routes/question"));
 const errorController_1 = require("./controllers/errorController");
 const CustomError_1 = __importDefault(require("./utils/CustomError"));
 const socketController_1 = require("./controllers/socketController");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const port = process.env.PORT || 3000;
 // ssl certificates
 const options = {
@@ -31,6 +32,7 @@ app.use((0, cors_1.default)({
     origin: "*",
 }));
 app.use(express_1.default.json()); // req.body parser
+app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.static("./public"));
 app.use("/users", user_1.default);

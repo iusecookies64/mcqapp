@@ -25,7 +25,9 @@ export type ContestDataForLobby = {
   max_participants: number;
 };
 
-const socket = io("http://localhost:3000");
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+
+const socket = io(BASE_API_URL);
 
 export const useLobby = (contest_id: number) => {
   const userData = useRouteLoaderData("root") as User;
@@ -105,7 +107,10 @@ export const useLobby = (contest_id: number) => {
       setQuestions(questions);
     });
 
-    socket.on("Scores", (scores) => setLeaderboard(scores));
+    socket.on("Scores", (scores: { username: string; score: number }[]) => {
+      scores.sort((a, b) => b.score - a.score);
+      setLeaderboard(scores);
+    });
 
     socket.on("Submission Result", ({ isCorrect, question_id, response }) => {
       if (isCorrect) {

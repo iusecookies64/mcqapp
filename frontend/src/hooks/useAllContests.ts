@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
-import { sendRequest } from "../utils/sendRequest";
+import { sendRequest } from "../services/api";
 import { RequestMethods } from "../types/requests";
 import { SetterOrUpdater } from "recoil";
 import { Contest } from "../types/models";
-import api from "../utils/api";
+import api from "../services/api";
 
 export enum ContestURL {
   activeContests = "/contest/active-contests",
