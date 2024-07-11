@@ -38,7 +38,9 @@ export const Input = ({
           type={inputType}
           placeholder={placeholder}
         />
-        {error && <span className="text-sm text-red-500">{errorMessage}</span>}
+        {error && (
+          <span className="text-sm text-light-red">{errorMessage}</span>
+        )}
       </div>
     );
   } else {
@@ -52,7 +54,9 @@ export const Input = ({
           placeholder={placeholder}
           onChange={onChange}
         />
-        {error && <span className="text-sm text-red-500">{errorMessage}</span>}
+        {error && (
+          <span className="text-sm text-light-red">{errorMessage}</span>
+        )}
       </div>
     );
   }

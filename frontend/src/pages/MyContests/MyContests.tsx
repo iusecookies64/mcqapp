@@ -19,19 +19,21 @@ export const Contests = () => {
   } = useMyContestList(true);
   return (
     <div className="contest-list-container">
-      <MyContestTable
-        contestList={myContests}
-        label={
-          <div className="flex w-full justify-between items-center py-4">
-            <div className="text-2xl font-medium">Your Contests</div>
-            <CreateContest
-              createContest={createContest}
-              isLoading={isLoadingCud}
-              error={errorCud}
-            />
-          </div>
-        }
-      />
+      <div className={isLoadingCud || errorCud ? "invisible" : undefined}>
+        <MyContestTable
+          contestList={myContests}
+          label={
+            <div className="flex w-full justify-between items-center py-4">
+              <div className="text-2xl font-medium">Your Contests</div>
+              <CreateContest
+                createContest={createContest}
+                isLoading={isLoadingCud}
+                error={errorCud}
+              />
+            </div>
+          }
+        />
+      </div>
       {isLoadingList && <Loader />}
       {errorLoadingList && (
         <DisplayError errorMessage="Error Loading Contests" />

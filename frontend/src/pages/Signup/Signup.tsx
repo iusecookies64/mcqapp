@@ -12,6 +12,7 @@ import ThemeToggle from "../../components/theme/ThemeToggle";
 type SignupForm = {
   username: string;
   password: string;
+  confirmPassword: string;
   email: string;
 };
 
@@ -22,6 +23,7 @@ export const Signup = () => {
   // if logged in go to home page
   const {
     register,
+    watch,
     formState: { errors },
     handleSubmit,
   } = useForm<SignupForm>();
@@ -78,6 +80,17 @@ export const Signup = () => {
               })}
               error={errors.password}
               errorMessage="Password must be at least 6 characters long and include at least one uppercase letter, one digit, and one special character."
+            />
+            <Input
+              inputLabel="Confirm Password"
+              inputType="text"
+              placeholder="*******"
+              register={register("confirmPassword", {
+                required: true,
+                validate: (value) => value === watch("password"),
+              })}
+              error={errors.confirmPassword}
+              errorMessage="Confirm Password Does Not Match Password"
             />
             <Button className="mt-2" type="submit">
               Submit

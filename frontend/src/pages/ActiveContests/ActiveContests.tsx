@@ -12,14 +12,16 @@ const ActiveContests = () => {
   const { activeContests, isLoading, error } = useAllContests();
   return (
     <div className="contest-list-container">
-      <ActiveContestTable
-        contestList={activeContests}
-        label={
-          <div className="flex w-full justify-between items-center py-6">
-            <div className="text-2xl font-medium">All Active Contests</div>
-          </div>
-        }
-      />
+      <div className={isLoading || error ? "invisible" : undefined}>
+        <ActiveContestTable
+          contestList={activeContests}
+          label={
+            <div className="flex w-full justify-between items-center py-6">
+              <div className="text-2xl font-medium">All Active Contests</div>
+            </div>
+          }
+        />
+      </div>
       {isLoading && <Loader />}
       {error && <DisplayError errorMessage="Error Loading Contests" />}
     </div>
