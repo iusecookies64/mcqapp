@@ -28,6 +28,7 @@ export type QuestionTable = {
 export type OptionsTable = {
   option_id: number;
   question_id: number;
+  option_number: number;
   title: string;
 };
 
@@ -35,6 +36,7 @@ export type QuestionWithOptions = {
   contest_id: number;
   question_id: number;
   title: string;
+  question_number: number;
   answer: string;
   difficulty: 1 | 2 | 3;
   options: OptionsTable[];
@@ -51,10 +53,4 @@ export type ResponseTable = {
   user_id: number;
   response: string;
   is_correct: boolean;
-};
-
-export type InvitationsTable = {
-  invitation_id: number;
-  contest_id: number;
-  user_id: number;
 };

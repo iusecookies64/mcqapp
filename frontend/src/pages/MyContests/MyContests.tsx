@@ -1,9 +1,9 @@
 import { useMyContestList } from "../../hooks/useMyContestList";
-import { Loader } from "../../components/loader/Loader";
-import { DisplayError } from "../../components/display_error/DisplayError";
+import { Loader } from "../../components/Loader/Loader";
+import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
 import { Contest } from "../../types/models";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/button/Button";
+import { Button } from "../../components/Button/Button";
 import CreateContest from "./CreateContest";
 import { ReactNode } from "react";
 import "./Contests.style.css";

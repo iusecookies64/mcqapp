@@ -1,13 +1,13 @@
 import { useRef } from "react";
-import { Button } from "../../components/button/Button";
-import { Input } from "../../components/input/Input";
+import { Button } from "../../components/Button/Button";
+import { Input } from "../../components/Input/Input";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
-import { Loader } from "../../components/loader/Loader";
-import { DisplayError } from "../../components/display_error/DisplayError";
-import ThemeToggle from "../../components/theme/ThemeToggle";
+import { Loader } from "../../components/Loader/Loader";
+import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
+import ThemeToggle from "../../components/Theme/ThemeToggle";
 
 type SignupForm = {
   username: string;

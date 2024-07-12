@@ -2,13 +2,13 @@ import {
   UpdateContestBody,
   useMyContestList,
 } from "../../../hooks/useMyContestList";
-import { Modal } from "../../../components/modal/Modal";
+import { Modal } from "../../../components/Modal/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Input } from "../../../components/input/Input";
-import { Button } from "../../../components/button/Button";
+import { Input } from "../../../components/Input/Input";
+import { Button } from "../../../components/Button/Button";
 import { toast } from "react-toastify";
-import { Loader } from "../../../components/loader/Loader";
-import { DisplayError } from "../../../components/display_error/DisplayError";
+import { Loader } from "../../../components/Loader/Loader";
+import { DisplayError } from "../../../components/DisplayInfo/DisplayInfo";
 import Switch from "react-switch";
 
 type UpdateContestModalProps = {

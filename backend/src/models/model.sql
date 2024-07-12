@@ -31,6 +31,7 @@ CREATE TABLE contests (
 CREATE TABLE questions (
   question_id SERIAL PRIMARY KEY,
   contest_id INTEGER NOT NULL,
+  question_number INTEGER NOT NULL,
   title VARCHAR(500) NOT NULL,
   answer VARCHAR(500) NOT NULL,
   difficulty INTEGER NOT NULL,
@@ -42,6 +43,7 @@ CREATE TABLE questions (
 CREATE TABLE options (
   option_id SERIAL PRIMARY KEY,
   question_id INTEGER NOT NULL,
+  option_number INTEGER NOT NULL,
   title VARCHAR(500) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE

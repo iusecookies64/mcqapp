@@ -46,8 +46,9 @@ export type GetParticipantsBody = {
 export type CreateQuestionData = {
   contest_id: number;
   title: string;
+  question_number: number;
   difficulty: 1 | 2 | 3;
-  options: string[];
+  options: { title: string; option_number: number }[];
   answer: string;
 };
 
@@ -56,9 +57,17 @@ export type UpdateQuestionData = {
   question_id: number;
   title: string;
   difficulty: 1 | 2 | 3;
+  question_number: number;
   options: OptionsTable[];
   answer: string;
 };
+
+export type ReorderQuestionsData = {
+  question_id: number;
+  question_number: number;
+}[];
+
+export type ReorderOptionsData = { option_id: number; option_number: number }[];
 
 export type SendInviteBody = {
   contest_id: number;

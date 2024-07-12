@@ -4,15 +4,14 @@ import {
   useCompileContest,
 } from "../../hooks/useCompileContest";
 import { QuestionWithOptions } from "../../types/models";
-import { Button } from "../../components/button/Button";
+import { Button } from "../../components/Button/Button";
 import { useState } from "react";
 import { CreateQuestionForm } from "./components/CreateQuestionForm";
 import "./CompileContest.style.css";
-import { Icon, IconList } from "../../components/Icon/Icon";
 import { useMyContestList } from "../../hooks/useMyContestList";
 import { UpdateContestModal } from "./components/UpdateContestForm";
-import { UpdateQuestionForm } from "./components/UpdateQuestionForm";
-import { Modal } from "../../components/modal/Modal";
+import { Modal } from "../../components/Modal/Modal";
+import QuestionCard from "../../components/questionCard/QuestionCard";
 
 export const CompileContest = () => {
   const [searchParams] = useSearchParams();
@@ -36,23 +35,14 @@ export const CompileContest = () => {
   return (
     <div className="compile-contest-container">
       <div className="flex gap-4">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => setIsContestModalOpen(true)}
-        >
+        <Button variant="secondary" onClick={() => setIsContestModalOpen(true)}>
           Update Metadata
         </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => setIsPublishModalOpen(true)}
-        >
+        <Button variant="secondary" onClick={() => setIsPublishModalOpen(true)}>
           Publish
         </Button>
         <Button
           variant="secondary"
-          size="sm"
           onClick={() => setIsQuestionModalOpen(true)}
         >
           Add Question
@@ -118,64 +108,21 @@ const DisplayQuestion = ({
   isLoading: boolean;
   error: boolean;
 }) => {
-  const [isModalOpen, setIsModelOpen] = useState(false);
-  const [questionData, setQuestionData] = useState<QuestionWithOptions>();
   return (
     <div className="display-questions-container">
       <div className="text-2xl font-semibold mb-4">Contest Questions</div>
       <div className="flex flex-row flex-wrap gap-4">
         {questions.map((question) => (
-          <div key={question.question_id} className="question-container">
-            <div className="question-title">
-              <span className="question-labels">Question:</span>{" "}
-              {question.title}
-            </div>
-            <span className="question-labels">Options:</span>
-            <div className="question-options">
-              {question.options.map((option, indx) => (
-                <div key={indx}>
-                  {indx + 1}) {option.title}
-                </div>
-              ))}
-            </div>
-            <div className="question-answer">
-              <span className="question-labels">Answer:</span> {question.answer}
-            </div>
-            <div className="w-full pr-8 pb-3 flex justify-end gap-3 absolute bottom-0">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => deleteQuestion(question.question_id)}
-                tooltip="Delete"
-              >
-                <Icon icon={IconList.trash} />
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setQuestionData(question);
-                  setIsModelOpen(true);
-                }}
-                tooltip="Edit"
-              >
-                <Icon icon={IconList.pen} />
-              </Button>
-            </div>
-          </div>
+          <QuestionCard
+            question={question}
+            updateQuestion={updateQuestion}
+            deleteQuestion={deleteQuestion}
+            isLoading={isLoading}
+            error={error}
+          />
         ))}
-        {questions.length === 0 ? "No Questions Added Yet" : null}
       </div>
-      {questionData && (
-        <UpdateQuestionForm
-          setIsOpen={setIsModelOpen}
-          isOpen={isModalOpen}
-          updateQuestionHandler={updateQuestion}
-          isLoading={isLoading}
-          error={error}
-          questionData={questionData}
-        />
-      )}
+      {questions.length === 0 ? "No Questions Added Yet" : null}
     </div>
   );
 };

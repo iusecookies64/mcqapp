@@ -1,7 +1,7 @@
 import "./NavBar.style.css";
 import { NavLink, useNavigate } from "react-router-dom";
-import ThemeToggle from "../theme/ThemeToggle";
-import { Logout } from "../logout/Logout";
+import ThemeToggle from "../Theme/ThemeToggle";
+import { Logout } from "../Logout/Logout";
 
 export const NavBar = () => {
   const navigate = useNavigate();

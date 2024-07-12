@@ -1,12 +1,12 @@
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { Modal } from "../../../components/modal/Modal";
+import { Modal } from "../../../components/Modal/Modal";
 import { UpdateQuestionData } from "../../../hooks/useCompileContest";
-import { Loader } from "../../../components/loader/Loader";
-import { DisplayError } from "../../../components/display_error/DisplayError";
-import { Button } from "../../../components/button/Button";
+import { Loader } from "../../../components/Loader/Loader";
+import { DisplayError } from "../../../components/DisplayInfo/DisplayInfo";
+import { Button } from "../../../components/Button/Button";
 import "./styles.css";
 import { toast } from "react-toastify";
-import { Textarea } from "../../../components/textarea/Textarea";
+import { Textarea } from "../../../components/TextArea/Textarea";
 import { Icon, IconList } from "../../../components/Icon/Icon";
 import { DifficultySelector } from "./CreateQuestionForm";
 
