@@ -42,7 +42,7 @@ SET title=$1,
     is_locked=$3,
     password=$4,
     duration=$5
-WHERE contest_id=$6
+WHERE contest_id=$6 AND published=FALSE
 RETURNING *
 `;
 

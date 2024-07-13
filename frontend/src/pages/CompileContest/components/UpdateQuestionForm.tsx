@@ -1,13 +1,13 @@
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { Modal } from "../../../components/Modal/Modal";
+import { Modal } from "../../../components/Modal";
 import { UpdateQuestionData } from "../../../hooks/useCompileContest";
-import { Loader } from "../../../components/Loader/Loader";
-import { DisplayError } from "../../../components/DisplayInfo/DisplayInfo";
-import { Button } from "../../../components/Button/Button";
+import { Loader } from "../../../components/Loader";
+import { DisplayInfo } from "../../../components/DisplayInfo";
+import { Button } from "../../../components/Button";
 import "./styles.css";
 import { toast } from "react-toastify";
-import { Textarea } from "../../../components/TextArea/Textarea";
-import { Icon, IconList } from "../../../components/Icon/Icon";
+import { Textarea } from "../../../components/TextArea";
+import { Icon, IconList } from "../../../components/Icon";
 import { DifficultySelector } from "./CreateQuestionForm";
 
 type UpdateQuestionFormProps = {
@@ -67,7 +67,9 @@ export const UpdateQuestionForm = ({
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="min-w-[400px]">
-        <div className="text-center text-xl font-medium mb-3">Add Question</div>
+        <div className="text-center text-xl font-medium mb-3">
+          Update Question
+        </div>
         <form
           className={`flex flex-col gap-3 max-h-[500px] overflow-y-scroll px-4 ${
             (isLoading || error) && "invisible"
@@ -97,30 +99,34 @@ export const UpdateQuestionForm = ({
                 error={errors.options?.[indx]?.title}
                 errorMessage="Option Cannot Be Empty"
               />
-              <Icon
+              <Button
+                variant="alert"
+                size="sm"
                 onClick={() => remove(indx)}
-                icon={IconList.trash}
-                variant="xsmall"
-                className="flex-shrink-0"
-                toolTip="Delete Option"
-              />
+                tooltip="Delete Option"
+              >
+                <Icon icon={IconList.trash} />
+              </Button>
             </div>
           ))}
           {fields.length < 2 ? (
-            <div className="text-sm text-red-600 font-medium text-center">
+            <div className="text-sm text-red font-medium text-center">
               Minimum 2 Options Required
             </div>
           ) : null}
           <Button
             type="button"
+            variant="secondary"
+            size="sm"
             onClick={() =>
               append({
                 option_id: 0,
                 question_id: questionData.question_id,
+                option_number: fields.length + 1,
                 title: `Option ${fields.length + 1}`,
               })
             }
-            className="bg-transparent bg-slate-400 px-2 py-1 w-24 text-sm"
+            className="w-min text-nowrap"
           >
             Add Option
           </Button>
@@ -141,7 +147,9 @@ export const UpdateQuestionForm = ({
           <Button type="submit">Submit</Button>
         </form>
         {isLoading && <Loader />}
-        {error && <DisplayError errorMessage="Error Creating Question" />}
+        {error && (
+          <DisplayInfo type="error" message="Error Updating Question" />
+        )}
       </div>
     </Modal>
   );

@@ -2,13 +2,13 @@ import {
   UpdateContestBody,
   useMyContestList,
 } from "../../../hooks/useMyContestList";
-import { Modal } from "../../../components/Modal/Modal";
+import { Modal } from "../../../components/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Input } from "../../../components/Input/Input";
-import { Button } from "../../../components/Button/Button";
+import { Input } from "../../../components/Input";
+import { Button } from "../../../components/Button";
 import { toast } from "react-toastify";
-import { Loader } from "../../../components/Loader/Loader";
-import { DisplayError } from "../../../components/DisplayInfo/DisplayInfo";
+import { Loader } from "../../../components/Loader";
+import { DisplayInfo } from "../../../components/DisplayInfo";
 import Switch from "react-switch";
 
 type UpdateContestModalProps = {
@@ -124,7 +124,10 @@ const UpdateContestForm = ({ contest_id, setIsModalOpen }: Props) => {
       </form>
       {isLoadingCud && <Loader />}
       {errorCud && (
-        <DisplayError errorMessage="Error Creating Contest, Please Try Again Later!" />
+        <DisplayInfo
+          type="error"
+          message="Error Creating Contest, Please Try Again Later!"
+        />
       )}
     </div>
   );

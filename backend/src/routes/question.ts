@@ -5,7 +5,6 @@ import {
   DeleteQuestion,
   GetContestQuestions,
   GetResponse,
-  ReorderOptions,
   ReorderQuestions,
   UpdateQuestion,
 } from "../controllers/questionController";
@@ -22,13 +21,6 @@ router.post(
   authorizeUser,
   isUserCreatedContest,
   ReorderQuestions
-);
-
-router.post(
-  "/reorder-options",
-  authorizeUser,
-  isUserCreatedContest,
-  ReorderOptions
 );
 
 router.delete("/delete", authorizeUser, isUserCreatedContest, DeleteQuestion);

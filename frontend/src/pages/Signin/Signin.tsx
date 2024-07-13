@@ -1,11 +1,11 @@
-import { Button } from "../../components/Button/Button";
-import { Input } from "../../components/Input/Input";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
-import { Loader } from "../../components/Loader/Loader";
-import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
-import ThemeToggle from "../../components/Theme/ThemeToggle";
+import { Loader } from "../../components/Loader";
+import { DisplayInfo } from "../../components/DisplayInfo";
+import ThemeToggle from "../../components/Theme";
 import "./Signin.style.css";
 
 type SigninForm = {
@@ -81,7 +81,7 @@ export const Signin = () => {
       </div>
       {isLoading && <Loader />}
       {error && (
-        <DisplayError errorMessage="Error Signing In, Try Again Later" />
+        <DisplayInfo type="error" message="Error Signing In, Try Again Later" />
       )}
     </div>
   );

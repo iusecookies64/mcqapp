@@ -1,4 +1,4 @@
-import { Icon, IconList } from "../Icon/Icon";
+import { Icon, IconList } from "../Icon";
 
 type Props = {
   message: string;

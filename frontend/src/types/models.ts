@@ -24,11 +24,13 @@ export type Question = {
   title: string;
   answer: string;
   difficulty: 1 | 2 | 3;
+  question_number: number;
 };
 
 export type Options = {
   option_id: number;
   question_id: number;
+  option_number: number;
   title: string;
 };
 
@@ -38,6 +40,7 @@ export type QuestionWithOptions = {
   title: string;
   answer: string;
   difficulty: 1 | 2 | 3;
+  question_number: number;
   options: Options[];
 };
 

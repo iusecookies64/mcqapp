@@ -3,10 +3,10 @@ import { useAllContests } from "../../hooks/useAllContests";
 import "./ActiveContests.style.css";
 import { ReactNode, useState } from "react";
 import { Contest } from "../../types/models";
-import { Button } from "../../components/Button/Button";
-import { Modal } from "../../components/Modal/Modal";
-import { Loader } from "../../components/Loader/Loader";
-import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
+import { Button } from "../../components/Button";
+import { Modal } from "../../components/Modal";
+import { Loader } from "../../components/Loader";
+import { DisplayInfo } from "../../components/DisplayInfo";
 
 const ActiveContests = () => {
   const { activeContests, isLoading, error } = useAllContests();
@@ -23,7 +23,7 @@ const ActiveContests = () => {
         />
       </div>
       {isLoading && <Loader />}
-      {error && <DisplayError errorMessage="Error Loading Contests" />}
+      {error && <DisplayInfo type="error" message="Error Loading Contests" />}
     </div>
   );
 };

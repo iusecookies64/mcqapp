@@ -1,9 +1,9 @@
 import { useMyContestList } from "../../hooks/useMyContestList";
-import { Loader } from "../../components/Loader/Loader";
-import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
+import { Loader } from "../../components/Loader";
+import { DisplayInfo } from "../../components/DisplayInfo";
 import { Contest } from "../../types/models";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/Button/Button";
+import { Button } from "../../components/Button";
 import CreateContest from "./CreateContest";
 import { ReactNode } from "react";
 import "./Contests.style.css";
@@ -36,7 +36,7 @@ export const Contests = () => {
       </div>
       {isLoadingList && <Loader />}
       {errorLoadingList && (
-        <DisplayError errorMessage="Error Loading Contests" />
+        <DisplayInfo type="error" message="Error Loading Contests" />
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Options } from "../types/models";
+import { Options, QuestionWithOptions } from "../types/models";
 import { useRecoilState } from "recoil";
 import { questionsAtom } from "../atoms/questionAtom";
 import { sendRequest } from "../services/api";
@@ -12,7 +12,8 @@ export type CreateQuestionData = {
   contest_id: number;
   title: string;
   difficulty: 1 | 2 | 3;
-  options: string[];
+  question_number: number;
+  options: { title: string; option_number: number }[];
   answer: string;
 };
 
@@ -41,13 +42,17 @@ export const useCompileContest = (contest_id: number) => {
       updatedQuestionData,
       () => {
         setContestQuestions((prevQuestions) => {
-          const newList = [...prevQuestions];
-          const indx = newList.findIndex(
-            (q) => q.question_id === updatedQuestionData.question_id
-          );
-          if (indx === -1) return [...newList];
-          newList[indx] = updatedQuestionData;
-          return [...newList];
+          const newList = prevQuestions.map((question) => {
+            if (question.question_id === updatedQuestionData.question_id) {
+              return {
+                ...updatedQuestionData,
+                question_number: question.question_number,
+              };
+            } else {
+              return question;
+            }
+          });
+          return newList;
         });
         toast.success("Question Updated");
         onSuccess();
@@ -69,7 +74,6 @@ export const useCompileContest = (contest_id: number) => {
         setContestQuestions((prevQuestions) => {
           return [...prevQuestions, response.data.data];
         });
-        toast.success("Question Created");
         // calling onSuccess
         onSuccess(response);
       },
@@ -97,13 +101,42 @@ export const useCompileContest = (contest_id: number) => {
     );
   };
 
+  const reorderQuestions = () => {
+    const data = contestQuestions.map((question, indx) => {
+      return { question_id: question.question_id, question_number: indx + 1 };
+    });
+    console.log(data);
+    sendRequest(
+      RequestMethods.post,
+      `/question/reorder-questions?contest_id=${contest_id}`,
+      data,
+      () => {
+        // on success we update the number locally
+        setContestQuestions((questions) => {
+          const newList = questions.map((question, indx) => ({
+            ...question,
+            question_number: indx + 1,
+          }));
+          return newList;
+        });
+
+        toast.success("Questions Reordered");
+      },
+      setIsLoading,
+      setError
+    );
+  };
+
   const fetchContestQuestions = (contest_id: number) => {
     sendRequest(
       RequestMethods.get,
       `/question/getAllQuestions?contest_id=${contest_id}`,
       {},
       (response) => {
-        setContestQuestions(response.data.data);
+        const questions = response.data.data as QuestionWithOptions[];
+        questions.sort((a, b) => a.question_number - b.question_number);
+        console.log(questions);
+        setContestQuestions(questions);
       },
       setIsLoading,
       setError
@@ -125,11 +158,13 @@ export const useCompileContest = (contest_id: number) => {
 
   return {
     contestQuestions,
+    setContestQuestions,
     isLoading,
     error,
     fetchContestQuestions,
     updateQuestion,
     createQuestion,
     deleteQuestion,
+    reorderQuestions,
   };
 };

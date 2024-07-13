@@ -1,5 +1,6 @@
 import { initializeTheme, getTheme, toggleTheme } from "../../utils/theme";
 import { useState } from "react";
+import { Icon, IconList } from "../Icon";
 
 const ThemeToggle = () => {
   // initializing theme
@@ -24,9 +25,9 @@ const ThemeToggle = () => {
       } Mode`}
     >
       {theme === "dark" ? (
-        <i className="fa-solid fa-sun text-yellow"></i>
+        <Icon icon={IconList.sun} className="h-6 w-6" />
       ) : (
-        <i className="fa-solid fa-moon"></i>
+        <Icon icon={IconList.moon} className="h-6 w-6" />
       )}
     </div>
   );

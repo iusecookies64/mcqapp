@@ -1,7 +1,7 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 import { Tooltip } from "react-tooltip";
-import { NavBar } from "./components/navbar/NavBar";
+import { NavBar } from "./components/Navbar/index.tsx";
 import { Navigate, Outlet, RouterProvider } from "react-router-dom";
 import "./App.css";
 import { Signin } from "./pages/Signin/Signin.tsx";
@@ -53,12 +53,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  // defining all the paths
   return (
     <>
       <RouterProvider router={router} />
       <ToastContainer
-        position="top-center"
+        position="top-right"
         pauseOnHover
         autoClose={3000}
         hideProgressBar

@@ -1,9 +1,17 @@
-.question-container {
-  @apply px-5 py-3 min-w-[25%] bg-gray-light dark:bg-gray-dark rounded-lg flex flex-col gap-2 relative;
+.question-card-container {
+  @apply w-full h-min bg-gray-light dark:bg-gray-dark rounded-lg flex items-center;
 }
 
-.question-title {
-  @apply text-lg;
+.question-card-draggable-container {
+  @apply w-full h-min p-4 bg-gray-light dark:bg-gray-dark rounded-lg flex items-center;
+}
+
+.question-container {
+  @apply px-5 pt-3 flex flex-col gap-4 relative w-full;
+}
+
+.question-container-draggable {
+  @apply flex flex-col gap-4 relative w-full;
 }
 
 .question-labels {
@@ -11,7 +19,7 @@
 }
 
 .question-options {
-  @apply flex gap-3 flex-wrap;
+  @apply flex gap-3 flex-wrap pl-2;
 }
 
 .question-options div {

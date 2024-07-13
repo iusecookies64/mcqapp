@@ -2,15 +2,15 @@ import { useSearchParams } from "react-router-dom";
 import "./Lobby.style.css";
 import { CountdownState, useLobby } from "../../hooks/useLobby";
 import { useEffect, useState } from "react";
-import { Button } from "../../components/Button/Button";
+import { Button } from "../../components/Button";
 import { toast } from "react-toastify";
-import { Loader } from "../../components/Loader/Loader";
-import { Modal } from "../../components/Modal/Modal";
-import { Input } from "../../components/Input/Input";
-import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
-import AnimatedCountdown from "../../components/AnimatedCountdown/AnimatedCountdown";
+import { Loader } from "../../components/Loader";
+import { Modal } from "../../components/Modal";
+import { Input } from "../../components/Input";
+import { DisplayInfo } from "../../components/DisplayInfo";
+import AnimatedCountdown from "../../components/AnimatedCountdown";
 import Countdown from "react-countdown";
-import { Icon, IconList } from "../../components/Icon/Icon";
+import { Icon, IconList } from "../../components/Icon";
 
 export const Lobby = () => {
   const [searchParams] = useSearchParams();
@@ -184,7 +184,7 @@ export const Lobby = () => {
           />
         )}
         {isLoading && <Loader />}
-        {error && <DisplayError errorMessage={error} />}
+        {error && <DisplayInfo type="error" message={error} />}
       </div>
       {joined && (
         <div className="live-leaderboard">

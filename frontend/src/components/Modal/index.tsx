@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useState } from "react";
 import "./Modal.style.css";
-import { Icon, IconList } from "../Icon/Icon";
+import { Icon, IconList } from "../Icon";
 import { motion } from "framer-motion";
 
 type Props = {

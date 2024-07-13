@@ -139,36 +139,13 @@ const updateQuestionNumber = `UPDATE questions SET question_number=$1 WHERE ques
 export const ReorderQuestions = asyncErrorHandler(async (req, res) => {
   const order = req.body as ReorderQuestionsData;
   await Promise.all(
-    order.map(async (question) => {
-      await client.query(updateOptionQuery, [
-        question.question_number,
-        question.question_id,
-      ]);
+    order.map(async ({ question_id, question_number }) => {
+      await client.query(updateQuestionNumber, [question_number, question_id]);
     })
   );
 
   res.json({
     message: "Order Updated Successfully",
-    status: "success",
-  });
-});
-
-// handler for when options of a question are reordered
-const updateOptionNumber = `UPDATE options SET option_number=$1 WHERE option_id=$2`;
-export const ReorderOptions = asyncErrorHandler(async (req, res) => {
-  const order = req.body as ReorderOptionsData;
-
-  await Promise.all(
-    order.map(async (option) => {
-      await client.query(updateOptionNumber, [
-        option.option_number,
-        option.option_id,
-      ]);
-    })
-  );
-
-  res.json({
-    message: "Options Reordered Successfully",
     status: "success",
   });
 });

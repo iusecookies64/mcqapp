@@ -1,13 +1,13 @@
 import { useRef } from "react";
-import { Button } from "../../components/Button/Button";
-import { Input } from "../../components/Input/Input";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
-import { Loader } from "../../components/Loader/Loader";
-import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
-import ThemeToggle from "../../components/Theme/ThemeToggle";
+import { Loader } from "../../components/Loader";
+import { DisplayInfo } from "../../components/DisplayInfo";
+import ThemeToggle from "../../components/Theme";
 
 type SignupForm = {
   username: string;
@@ -109,7 +109,7 @@ export const Signup = () => {
       </div>
       {isLoading && <Loader />}
       {error && (
-        <DisplayError errorMessage="Error Signing Up, Try Again Later" />
+        <DisplayInfo type="error" message="Error Signing Up, Try Again Later" />
       )}
     </div>
   );

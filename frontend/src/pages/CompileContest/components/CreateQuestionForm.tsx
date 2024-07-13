@@ -1,17 +1,18 @@
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { Modal } from "../../../components/Modal/Modal";
+import { Modal } from "../../../components/Modal";
 import { CreateQuestionData } from "../../../hooks/useCompileContest";
-import { Loader } from "../../../components/Loader/Loader";
-import { DisplayError } from "../../../components/DisplayInfo/DisplayInfo";
-import { Button } from "../../../components/Button/Button";
+import { Loader } from "../../../components/Loader";
+import { DisplayInfo } from "../../../components/DisplayInfo";
+import { Button } from "../../../components/Button";
 import "./styles.css";
 import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
-import { Textarea } from "../../../components/TextArea/Textarea";
-import { Icon, IconList } from "../../../components/Icon/Icon";
+import { Textarea } from "../../../components/TextArea";
+import { Icon, IconList } from "../../../components/Icon";
 
 type CreateQuestionFormProps = {
   contest_id: number;
+  question_number: number;
   createQuestionHandler: (
     question: CreateQuestionData,
     onSuccess: (response: AxiosResponse) => void
@@ -25,6 +26,7 @@ type CreateQuestionFormProps = {
 export const CreateQuestionForm = ({
   contest_id,
   createQuestionHandler,
+  question_number,
   isOpen,
   setIsOpen,
   isLoading,
@@ -41,7 +43,11 @@ export const CreateQuestionForm = ({
       contest_id: contest_id,
       title: "",
       difficulty: 1,
-      options: ["Option 1", "Option 2"],
+      question_number,
+      options: [
+        { title: "Option 1", option_number: 1 },
+        { title: "Option 2", option_number: 2 },
+      ],
       answer: "",
     },
   });
@@ -54,7 +60,9 @@ export const CreateQuestionForm = ({
       return;
     }
     // answer must be one of the options
-    const indx = data.options.findIndex((option) => option === data.answer);
+    const indx = data.options.findIndex(
+      (option) => option.title === data.answer
+    );
     if (indx == -1) {
       toast.error("Answer must be one of the option");
     } else {
@@ -66,6 +74,7 @@ export const CreateQuestionForm = ({
       });
     }
   };
+
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="min-w-[400px]">
@@ -91,31 +100,36 @@ export const CreateQuestionForm = ({
               <Textarea
                 inputLabel={`Option ${indx + 1}`}
                 placeholder="eg. 4"
-                defaultValue=""
-                register={register(`options.${indx}`, {
+                register={register(`options.${indx}.title`, {
                   required: true,
                   maxLength: 500,
                 })}
-                error={errors.options?.[indx]}
+                error={errors.options?.[indx]?.title}
                 errorMessage="Option Cannot Be Empty"
               />
-              <Icon
+              <Button
+                variant="alert"
+                size="sm"
                 onClick={() => remove(indx)}
-                icon={IconList.trash}
-                variant="xsmall"
-                className="flex-shrink-0"
-                toolTip="Delete Option"
-              />
+                tooltip="Delete Option"
+              >
+                <Icon icon={IconList.trash} />
+              </Button>
             </div>
           ))}
           {fields.length < 2 ? (
-            <div className="text-sm text-red-600 font-medium text-center">
+            <div className="text-sm text-light-red font-medium text-center">
               Minimum 2 Options Required
             </div>
           ) : null}
           <Button
             type="button"
-            onClick={() => append(`Option ${fields.length + 1}`)}
+            onClick={() =>
+              append({
+                title: `Option ${fields.length + 1}`,
+                option_number: fields.length + 1,
+              })
+            }
             className="bg-transparent bg-slate-400 px-2 py-1 w-24 text-sm"
           >
             Add Option
@@ -139,7 +153,9 @@ export const CreateQuestionForm = ({
           </Button>
         </form>
         {isLoading && <Loader />}
-        {error && <DisplayError errorMessage="Error Creating Question" />}
+        {error && (
+          <DisplayInfo type="error" message="Error Creating Question" />
+        )}
       </div>
     </Modal>
   );

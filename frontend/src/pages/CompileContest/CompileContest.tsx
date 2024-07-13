@@ -4,14 +4,19 @@ import {
   useCompileContest,
 } from "../../hooks/useCompileContest";
 import { QuestionWithOptions } from "../../types/models";
-import { Button } from "../../components/Button/Button";
+import { Button } from "../../components/Button";
 import { useState } from "react";
 import { CreateQuestionForm } from "./components/CreateQuestionForm";
 import "./CompileContest.style.css";
 import { useMyContestList } from "../../hooks/useMyContestList";
 import { UpdateContestModal } from "./components/UpdateContestForm";
-import { Modal } from "../../components/Modal/Modal";
-import QuestionCard from "../../components/questionCard/QuestionCard";
+import { Modal } from "../../components/Modal";
+import {
+  QuestionCard,
+  QuestionCardDraggable,
+} from "../../components/QuestionCard";
+import { Reorder } from "framer-motion";
+import { DisplayInfo } from "../../components/DisplayInfo";
 
 export const CompileContest = () => {
   const [searchParams] = useSearchParams();
@@ -23,6 +28,8 @@ export const CompileContest = () => {
     updateQuestion,
     createQuestion,
     deleteQuestion,
+    setContestQuestions,
+    reorderQuestions,
   } = useCompileContest(contest_id);
   const { publishContest } = useMyContestList(false);
 
@@ -30,6 +37,7 @@ export const CompileContest = () => {
     useState<boolean>(false);
   const [isContestModalOpen, setIsContestModalOpen] = useState<boolean>(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState<boolean>(false);
+  const [isReorder, setIsReorder] = useState<boolean>(false);
   const navigate = useNavigate();
 
   return (
@@ -48,15 +56,54 @@ export const CompileContest = () => {
           Add Question
         </Button>
       </div>
-      <DisplayQuestion
-        updateQuestion={updateQuestion}
-        questions={contestQuestions}
-        deleteQuestion={deleteQuestion}
-        isLoading={isLoading}
-        error={error}
-      />
+      <div className="flex justify-between my-4">
+        <div className="text-2xl font-semibold">Contest Questions</div>
+        {isReorder ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            type="button"
+            onClick={() => {
+              reorderQuestions();
+              if (contestQuestions.length) setIsReorder(false);
+            }}
+          >
+            Save
+          </Button>
+        ) : (
+          <Button
+            variant="tertiary"
+            size="sm"
+            type="button"
+            onClick={() => {
+              if (contestQuestions.length) setIsReorder(true);
+            }}
+          >
+            Reorder
+          </Button>
+        )}
+      </div>
+      {isReorder ? (
+        <DisplayQuestionDraggable
+          updateQuestion={updateQuestion}
+          questions={contestQuestions}
+          setQuestions={setContestQuestions}
+          deleteQuestion={deleteQuestion}
+          isLoading={isLoading}
+          error={error}
+        />
+      ) : (
+        <DisplayQuestion
+          updateQuestion={updateQuestion}
+          questions={contestQuestions}
+          deleteQuestion={deleteQuestion}
+          isLoading={isLoading}
+          error={error}
+        />
+      )}
       <CreateQuestionForm
         contest_id={contest_id}
+        question_number={contestQuestions.length + 1}
         createQuestionHandler={createQuestion}
         isOpen={isQuestionModalOpen}
         setIsOpen={setIsQuestionModalOpen}
@@ -92,6 +139,51 @@ export const CompileContest = () => {
   );
 };
 
+const DisplayQuestionDraggable = ({
+  questions,
+  setQuestions,
+  updateQuestion,
+  isLoading,
+  error,
+  deleteQuestion,
+}: {
+  questions: QuestionWithOptions[];
+  setQuestions: React.Dispatch<React.SetStateAction<QuestionWithOptions[]>>;
+  updateQuestion: (
+    updatedQuestionData: UpdateQuestionData,
+    onSuccess: () => void
+  ) => void;
+  deleteQuestion: (question_id: number) => void;
+  isLoading: boolean;
+  error: boolean;
+}) => {
+  return (
+    <Reorder.Group
+      axis="y"
+      values={questions}
+      onReorder={setQuestions}
+      className="flex flex-row flex-wrap gap-6 select-none overflow-y-scroll h-full px-3 relative"
+    >
+      {questions.map((question) => (
+        <QuestionCardDraggable
+          key={question.question_id}
+          question={question}
+          updateQuestion={updateQuestion}
+          deleteQuestion={deleteQuestion}
+          isLoading={isLoading}
+          error={error}
+        />
+      ))}
+      {questions.length === 0 && (
+        <DisplayInfo
+          type="info"
+          message="No Questions Added Yet, Click Add Question"
+        />
+      )}
+    </Reorder.Group>
+  );
+};
+
 const DisplayQuestion = ({
   questions,
   updateQuestion,
@@ -109,20 +201,23 @@ const DisplayQuestion = ({
   error: boolean;
 }) => {
   return (
-    <div className="display-questions-container">
-      <div className="text-2xl font-semibold mb-4">Contest Questions</div>
-      <div className="flex flex-row flex-wrap gap-4">
-        {questions.map((question) => (
-          <QuestionCard
-            question={question}
-            updateQuestion={updateQuestion}
-            deleteQuestion={deleteQuestion}
-            isLoading={isLoading}
-            error={error}
-          />
-        ))}
-      </div>
-      {questions.length === 0 ? "No Questions Added Yet" : null}
+    <div className="flex flex-row flex-wrap gap-6 select-none overflow-x-hidden overflow-y-scroll h-full px-3 relative">
+      {questions.map((question) => (
+        <QuestionCard
+          key={question.question_id}
+          question={question}
+          updateQuestion={updateQuestion}
+          deleteQuestion={deleteQuestion}
+          isLoading={isLoading}
+          error={error}
+        />
+      ))}
+      {questions.length === 0 && (
+        <DisplayInfo
+          type="info"
+          message="No Questions Added Yet, Click Add Question"
+        />
+      )}
     </div>
   );
 };

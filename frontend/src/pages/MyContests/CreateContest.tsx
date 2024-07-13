@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { Modal } from "../../components/Modal/Modal";
+import { Modal } from "../../components/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Input } from "../../components/Input/Input";
-import { Button } from "../../components/Button/Button";
+import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
 import { toast } from "react-toastify";
-import { Loader } from "../../components/Loader/Loader";
-import { DisplayError } from "../../components/DisplayInfo/DisplayInfo";
+import { Loader } from "../../components/Loader";
+import { DisplayInfo } from "../../components/DisplayInfo";
 import Switch from "react-switch";
 import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import { AxiosResponse } from "axios";
 import { CreateContestBody } from "../../hooks/useMyContestList";
 import { User } from "../../types/models";
-import { Icon, IconList } from "../../components/Icon/Icon";
+import { Icon, IconList } from "../../components/Icon";
 
 type CreateContestProps = {
   createContest: (
@@ -161,7 +161,10 @@ const CreateContestForm = ({
       </form>
       {isLoading && <Loader />}
       {queryError && (
-        <DisplayError errorMessage="Error Creating Contest, Please Try Again Later!" />
+        <DisplayInfo
+          type="error"
+          message="Error Creating Contest, Please Try Again Later!"
+        />
       )}
     </div>
   );
