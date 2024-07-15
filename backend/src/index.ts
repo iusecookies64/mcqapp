@@ -13,6 +13,13 @@ import { GlobalErrorHandler } from "./controllers/errorController";
 import CustomError from "./utils/CustomError";
 import { SocketHandler } from "./controllers/socketController";
 import cookieParser from "cookie-parser";
+import redisClient from "./models/redis";
+
+setTimeout(async () => {
+  const result = await redisClient.keys("contest:*");
+  console.log(result);
+  console.log(typeof result[0]);
+}, 1000);
 
 const port = process.env.PORT || 3000;
 // ssl certificates
