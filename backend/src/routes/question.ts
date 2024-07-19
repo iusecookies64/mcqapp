@@ -4,7 +4,6 @@ import {
   CreateQuestion,
   DeleteQuestion,
   GetContestQuestions,
-  GetResponse,
   ReorderQuestions,
   UpdateQuestion,
 } from "../controllers/questionController";
@@ -31,7 +30,5 @@ router.get(
   isUserCreatedContest,
   GetContestQuestions
 );
-
-router.get("/response", authorizeUser, GetResponse);
 
 export default router;

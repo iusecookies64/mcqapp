@@ -124,12 +124,14 @@ export const CreateQuestionForm = ({
           ) : null}
           <Button
             type="button"
-            onClick={() =>
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("somalia");
               append({
                 title: `Option ${fields.length + 1}`,
                 option_number: fields.length + 1,
-              })
-            }
+              });
+            }}
             className="bg-transparent bg-slate-400 px-2 py-1 w-24 text-sm"
           >
             Add Option

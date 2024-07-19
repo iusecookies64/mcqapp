@@ -10,7 +10,6 @@ import { OptionsTable } from "../types/models";
 import CustomError from "../utils/CustomError";
 import { getQuestions } from "../utils/getQuestions";
 import { CustomRequest } from "../middlewares";
-import { manager } from "./gameController";
 
 const createQuestionQuery = `
 INSERT INTO questions (contest_id, title, answer, difficulty, question_number) VALUES ($1, $2, $3, $4, $5) RETURNING *
@@ -176,31 +175,4 @@ export const GetContestQuestions = asyncErrorHandler(async (req, res) => {
     status: "success",
     data: questions,
   });
-});
-
-const getResponseQuery = `SELECT * FROM response WHERE question_id=$1 AND user_id=$2`;
-export const GetResponse = asyncErrorHandler(async (req, res) => {
-  // checking if contest response are still in manager
-  const { question_id, contest_id } = req.body;
-  const { user_id } = req as CustomRequest;
-  if (manager.isPresent(contest_id)) {
-    const userResponse = manager
-      .getAllResponse(contest_id)
-      .filter((response) => response.user_id == user_id);
-    res.status(200).json({
-      message: "All user response",
-      status: "success",
-      data: userResponse,
-    });
-  } else {
-    const queryResult = await client.query(getResponseQuery, [
-      question_id,
-      user_id,
-    ]);
-    res.status(200).json({
-      message: "All user response",
-      status: "success",
-      data: queryResult.rows,
-    });
-  }
 });

@@ -18,7 +18,7 @@ export const Expandable = ({ children }: Props) => {
         {children}
       </motion.div>
       <Button
-        className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 z-1"
+        className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
         type="button"
         variant="secondary"
         size="sm"

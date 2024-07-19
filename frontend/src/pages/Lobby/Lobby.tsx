@@ -11,10 +11,13 @@ import { DisplayInfo } from "../../components/DisplayInfo";
 import AnimatedCountdown from "../../components/AnimatedCountdown";
 import Countdown from "react-countdown";
 import { Icon, IconList } from "../../components/Icon";
+import { QuestionWithOptions, ResponseTable } from "../../types/models";
 
 export const Lobby = () => {
   const [searchParams] = useSearchParams();
-  const [questionNumber, setQuestionNumber] = useState(0);
+  const [questionNumber, setQuestionNumber] = useState(1);
+  const [currQuestion, setCurrQuestion] = useState<QuestionWithOptions>();
+  const [currResponse, setCurrResponse] = useState<ResponseTable>();
   const {
     contestData,
     isHost,
@@ -46,6 +49,19 @@ export const Lobby = () => {
     }
   }, [joined, isLocked]);
 
+  useEffect(() => {
+    const question = questions.find(
+      (q) => q.question_number === questionNumber
+    );
+    if (question) {
+      setCurrQuestion(question);
+      const currQuestionResponse = response.find(
+        (q) => q.question_id === question.question_id
+      );
+      setCurrResponse(currQuestionResponse);
+    }
+  }, [questionNumber, questions]);
+
   return (
     <div className="lobby-container">
       <div className="w-full h-full flex flex-col p-6">
@@ -61,7 +77,9 @@ export const Lobby = () => {
               <div>
                 Time Remaining:{" "}
                 <Countdown
-                  date={Date.now() + contestData.duration * 60 * 1000}
+                  date={
+                    contestData.start_time + contestData.duration * 60 * 1000
+                  }
                   onComplete={() => setCompletedModal(true)}
                 />
               </div>
@@ -71,22 +89,22 @@ export const Lobby = () => {
         {joined &&
           !isHost &&
           countdownState === CountdownState.ended &&
-          questions.length && (
+          questions.length &&
+          currQuestion && (
             <div className="questions-container">
               <div className="flex flex-col p-8 rounded-lg gap-6 bg-gray-light dark:bg-gray-dark w-full">
                 <div className="text-xl font-medium">
-                  Question {questionNumber + 1}
+                  Question {questionNumber}
                 </div>
-                <div>Q. {questions[questionNumber].title}</div>
+                <div>Q. {currQuestion.title}</div>
                 <div className="options-container">
-                  {questions[questionNumber].options.map((option, indx) => (
+                  {currQuestion.options.map((option, indx) => (
                     <div
                       className="option"
                       onClick={() => {
-                        const question_id =
-                          questions[questionNumber].question_id;
+                        const question_id = currQuestion.question_id;
                         //if already answered we dont submit
-                        if (response[question_id]) {
+                        if (currResponse) {
                           toast.error("Question Answered");
                         } else {
                           submitResponse(question_id, option.title);
@@ -97,14 +115,10 @@ export const Lobby = () => {
                     </div>
                   ))}
                 </div>
-                {response[questions[questionNumber].question_id] && (
+                {currResponse && (
                   <div className="flex gap-2">
-                    <div>
-                      Response:{" "}
-                      {response[questions[questionNumber].question_id].response}
-                    </div>
-                    {response[questions[questionNumber].question_id]
-                      .isCorrect ? (
+                    <div>Response: {currResponse.response}</div>
+                    {currResponse.is_correct ? (
                       <Icon
                         className="text-lg text-light-green dark:text-green"
                         icon={IconList.check}
@@ -150,7 +164,7 @@ export const Lobby = () => {
             <div className="w-full h-full flex items-center justify-center gap-6">
               Time Remaining:{" "}
               <Countdown
-                date={Date.now() + contestData.duration * 60 * 1000}
+                date={contestData.start_time + contestData.duration * 60 * 1000}
                 onComplete={() => setCompletedModal(true)}
               />
             </div>

@@ -7,25 +7,27 @@ import {
   SubmitResponseRequest,
 } from "../types/requests";
 import {
-  CONTEST_QUESTIONS,
+  CONTEST_STARTED,
   ERROR_JOINING,
   HOST_JOINED,
   INCORRECT_ANSWER,
   INCORRECT_PASSWORD,
+  JOIN_ROOM,
   JOINED_SUCCESSFULLY,
-  ROOM_LOCKED,
-  SCORES,
+  LEAVE_ROOM,
   START_GAME,
+  SUBMISSION_RESULT,
   SUBMIT_RESPONSE,
   UPDATE_SCORES,
   USER_JOINED,
+  USER_LEFT,
 } from "../types/consts";
 
 export const SocketHandler = (
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 ): void => {
   socket.on(
-    "Join Room",
+    JOIN_ROOM,
     async ({
       contest_id,
       user_id,
@@ -57,17 +59,24 @@ export const SocketHandler = (
       // otherwise joining room successful and we return the payload
       socket.join(contest_id.toString());
       socket.emit(JOINED_SUCCESSFULLY, payload);
-      // emitting user joined in the room
-      if (user_id === payload.created_by) {
-        socket.to(contest_id.toString()).emit(HOST_JOINED, { username });
-      } else {
-        socket.to(contest_id.toString()).emit(USER_JOINED, { username });
+
+      // emitting user joined in the room if contest not started
+      const started = await Contest.isStarted(
+        payload.start_time,
+        payload.duration
+      );
+      if (!started) {
+        if (user_id === payload.created_by) {
+          socket.to(contest_id.toString()).emit(HOST_JOINED, { username });
+        } else {
+          socket.to(contest_id.toString()).emit(USER_JOINED, { username });
+        }
       }
     }
   );
 
   socket.on(
-    "Leave Room",
+    LEAVE_ROOM,
     async ({ contest_id, user_id }: EnterContestRequest) => {
       const isStarted = await Contest.isStarted(contest_id);
       // we only remove user if contest not started
@@ -75,7 +84,7 @@ export const SocketHandler = (
         await Contest.removeParticipant(contest_id, user_id);
         socket
           .to(contest_id.toString())
-          .emit("Scores", Contest.getScores(contest_id));
+          .emit(USER_LEFT, Contest.getScores(contest_id));
       }
     }
   );
@@ -89,12 +98,8 @@ export const SocketHandler = (
       if (isOwner) {
         Contest.setStarted(contest_id);
         // emitting show countdown to all participants
-        socket.to(contest_id.toString()).emit("Start Countdown");
-
-        // giving all questions to the participants
-        socket
-          .to(contest_id.toString())
-          .emit("Questions", Contest.getAllQuestions(contest_id));
+        const questions = await Contest.getAllQuestions(contest_id);
+        socket.to(contest_id.toString()).emit(CONTEST_STARTED, questions);
       }
     }
   );
@@ -107,8 +112,8 @@ export const SocketHandler = (
       req.question_id,
       req.response
     );
-    socket.emit("Submission Result", {
-      isCorrect: result === INCORRECT_ANSWER ? false : true,
+    socket.emit(SUBMISSION_RESULT, {
+      is_correct: result === INCORRECT_ANSWER ? false : true,
       question_id: req.question_id,
       response: req.response,
       points_scored: result,

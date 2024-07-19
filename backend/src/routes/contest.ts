@@ -5,7 +5,7 @@ import {
   DeleteContest,
   GetActiveContests,
   GetMyContests,
-  GetParticipants,
+  GetContestPerformance,
   PublishContest,
   UpdateContest,
 } from "../controllers/contestController";
@@ -24,6 +24,6 @@ router.get("/active-contests", authorizeUser, GetActiveContests);
 
 router.get("/my-contests", authorizeUser, GetMyContests);
 
-router.get("/get-participants", authorizeUser, GetParticipants);
+router.get("/get-performance", authorizeUser, GetContestPerformance);
 
 export default router;

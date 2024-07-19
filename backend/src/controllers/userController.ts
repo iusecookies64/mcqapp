@@ -56,7 +56,7 @@ export const Signin = asyncErrorHandler(async (req, res) => {
     { username, user_id: userObject.user_id },
     jwtSecret,
     {
-      expiresIn: 28 * 60,
+      expiresIn: 1000 * 60,
     }
   );
 
@@ -96,13 +96,13 @@ export const refreshToken = asyncErrorHandler(async (req, res) => {
   const access_token = JWT.sign(
     { username: decoded.username, user_id: decoded.user_id },
     jwtSecret,
-    { expiresIn: 28 * 60 }
+    { expiresIn: 1000 * 60 }
   );
 
   res.status(200).json({
     message: "New Access Token",
     status: "success",
     access_token,
-    expiresIn: 28,
+    expiresIn: 1000,
   });
 });

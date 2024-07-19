@@ -7,12 +7,30 @@ import {
   GameStateFields,
   ActiveGamesType,
 } from "../types/gameState";
-import { ERROR_JOINING, INCORRECT_ANSWER, ROOM_FULL } from "../types/consts";
+import {
+  CONTEST_ENDED,
+  ERROR_JOINING,
+  INCORRECT_ANSWER,
+  ROOM_FULL,
+} from "../types/consts";
+import { QuestionWithOptions, ResponseTable } from "../types/models";
 
-export const addContest = async (contest_id: number): Promise<void> => {
+type JoinContestPayload = {
+  title: string;
+  created_by: number;
+  created_by_username: string;
+  duration: number;
+  max_participants: number;
+  questions: QuestionWithOptions[];
+  start_time: number;
+  scores: { username: string; score: number }[];
+  response: ResponseTable[];
+};
+
+export const addContestToRedis = async (contest_id: number): Promise<void> => {
   try {
     // initializing default game state
-    const gameState: GameState = {
+    const contestData: GameState = {
       contest_id,
       created_by: 0,
       created_by_username: "",
@@ -33,41 +51,31 @@ export const addContest = async (contest_id: number): Promise<void> => {
     // getting contest details
     const getContestDetailsQuery = `SELECT c.*, u.username FROM contests c JOIN users u ON u.user_id = c.created_by WHERE contest_id=$1`;
     const contestQueryResult = await client.query(getContestDetailsQuery, [
-      gameState.contest_id,
+      contestData.contest_id,
     ]);
-    gameState.created_by = contestQueryResult.rows[0].created_by;
-    gameState.created_by_username = contestQueryResult.rows[0].username;
-    gameState.duration = contestQueryResult.rows[0].duration;
-    gameState.is_locked = contestQueryResult.rows[0].is_locked;
-    gameState.password = contestQueryResult.rows[0].password;
-    gameState.title = contestQueryResult.rows[0].title;
-    gameState.max_participants = contestQueryResult.rows[0].max_participants;
+    contestData.created_by = contestQueryResult.rows[0].created_by;
+    contestData.created_by_username = contestQueryResult.rows[0].username;
+    contestData.duration = contestQueryResult.rows[0].duration;
+    contestData.is_locked = contestQueryResult.rows[0].is_locked;
+    contestData.password = contestQueryResult.rows[0].password;
+    contestData.title = contestQueryResult.rows[0].title;
+    contestData.max_participants = contestQueryResult.rows[0].max_participants;
 
     // getting all questions
-    gameState.questions = await getQuestions(gameState.contest_id);
+    contestData.questions = await getQuestions(contestData.contest_id);
 
     // for each question adding its answer to answers
-    gameState.questions.forEach((question) => {
-      gameState.answers[question.question_id] = question.answer;
-      gameState.difficulty[question.question_id] = question.difficulty;
+    contestData.questions.forEach((question) => {
+      contestData.answers[question.question_id] = question.answer;
+      contestData.difficulty[question.question_id] = question.difficulty;
       // removing the answer from the questions list so it doesn't reach client
       question.answer = "";
     });
 
-    // storing gameState in redis
-    Object.entries(gameState).forEach(async ([key, value]) => {
-      if (typeof value !== "string") {
-        // if value is not string they storing it as string string
-        await redisClient.hSet(
-          "contest:" + contest_id,
-          key,
-          JSON.stringify(value)
-        );
-      } else {
-        await redisClient.hSet("contest:" + contest_id, key, value);
-      }
-    });
+    // storing contestData in redis
+    await setContestData(contest_id, contestData);
   } catch (err) {
+    console.log("Error adding contest to redis");
     console.log(err);
   }
 };
@@ -155,7 +163,8 @@ export const removeFinishedContests = async (): Promise<void> => {
 
     allContestIds.forEach(async (contest_id) => {
       // checking if game ended
-      if (!isEnded(contest_id)) return;
+      const ended = await isEnded(contest_id);
+      if (!ended) return;
 
       // contest ended so getting all of the game state
       const gameState = await getContestDataAll(contest_id);
@@ -164,6 +173,7 @@ export const removeFinishedContests = async (): Promise<void> => {
       }
       // pushing gameState in db and then deleting it from redis
       await pushInDB(gameState);
+      console.log("removing", contest_id);
       await redisClient.del("contest:" + contest_id);
     });
   } catch (err) {
@@ -191,7 +201,7 @@ export const pushInDB = async (gameState: GameState): Promise<void> => {
       ]);
     }
 
-    const insertResponse = `INSERT INTO response (question_id, user_id, response, is_correst) VALUES ($1, $2, $3, $4)`;
+    const insertResponse = `INSERT INTO response (question_id, user_id, response, is_correct) VALUES ($1, $2, $3, $4)`;
     // inserting response
     gameState.response.forEach(async (response) => {
       await client.query(insertResponse, [
@@ -268,7 +278,9 @@ export const getActiveContests = async (): Promise<ActiveGamesType[]> => {
 };
 
 // to check if contest details are in redis
-export const isPresent = async (contest_id: number): Promise<boolean> => {
+export const isPresentInRedis = async (
+  contest_id: number
+): Promise<boolean> => {
   // returns 1 if present otherwise not present
   const result = await redisClient.exists("contest:" + contest_id);
   return result !== 0;
@@ -318,7 +330,6 @@ export const isEnded = async (
     // start time not set yet, return false
     if (!start_time) return false;
 
-    //
     const currentTime = Date.now();
     return currentTime >= start_time + duration * 60 * 1000;
   } else {
@@ -537,18 +548,23 @@ export const joinUserAndGetPayload = async (
   contest_id: number,
   user_id: number,
   username: string
-): Promise<GameStateFields | string> => {
+): Promise<JoinContestPayload | string> => {
   try {
     const contestData = await getContestDataAll(contest_id);
     if (!contestData) throw Error("No Contest Found");
-    // checking if new user joining and room not full
+    // checking if new user that is not owner joining and room full
     if (
+      user_id !== contestData.created_by &&
       !contestData.scores[user_id] &&
       contestData.curr_participants >= contestData.max_participants
     )
       return ROOM_FULL;
 
-    // if user not the owner so we add it to scores
+    // checking if contest has ended
+    const ended = await isEnded(contestData.start_time, contestData.duration);
+    if (ended) return CONTEST_ENDED;
+
+    // if user not the owner so we add it to scores record
     if (contestData.created_by != user_id) {
       contestData.scores[user_id] = { username, score: 0 };
       contestData.curr_participants++;
@@ -559,16 +575,26 @@ export const joinUserAndGetPayload = async (
       });
     }
 
-    const payload: GameStateFields = {
+    const started = await isStarted(
+      contestData.start_time,
+      contestData.duration
+    );
+
+    // questions and response are sent if contest started
+    const payload: JoinContestPayload = {
       title: contestData.title,
       created_by: contestData.created_by,
       created_by_username: contestData.created_by_username,
       duration: contestData.duration,
       max_participants: contestData.max_participants,
-      questions: contestData.questions,
+      questions: started ? contestData.questions : [],
       start_time: contestData.start_time,
-      scores: contestData.scores,
-      response: contestData.response.filter((r) => r.user_id === user_id),
+      scores: Object.entries(contestData.scores).map(
+        ([id, { username, score }]) => ({ username, score })
+      ),
+      response: started
+        ? contestData.response.filter((r) => r.user_id === user_id)
+        : [],
     };
 
     return payload;
@@ -580,4 +606,4 @@ export const joinUserAndGetPayload = async (
 };
 
 // scheduling a job to remove finished games from redis every 5 minutes
-scheduleJob(`*/5 * * * *`, removeFinishedContests);
+scheduleJob(`*/5 * * * * *`, removeFinishedContests);

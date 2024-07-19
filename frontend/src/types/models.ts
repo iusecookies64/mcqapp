@@ -50,8 +50,7 @@ export type Participants = {
   score: number;
 };
 
-export type Response = {
-  response_id: number;
+export type ResponseTable = {
   question_id: number;
   user_id: number;
   response: string;

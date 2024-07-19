@@ -7,8 +7,13 @@ import {
 } from "../types/requests";
 import client from "../models";
 import { CustomRequest } from "../middlewares";
-import { manager } from "./gameController";
-import { ContestTable } from "../types/models";
+import {
+  addContestToRedis,
+  getActiveContests,
+  isPresentInRedis,
+  joinUserAndGetPayload,
+} from "./gameController";
+import { getQuestions } from "../utils/getQuestions";
 
 const createContestQuery = `
 INSERT INTO contests (created_by, title, max_participants, is_locked, password, duration)
@@ -91,8 +96,8 @@ export const PublishContest = asyncErrorHandler(async (req, res) => {
   const { user_id } = req as CustomRequest;
   await client.query(publishContestQuery, [contest_id, user_id]);
 
-  // adding contest to manager
-  manager.addContest(contest_id);
+  // adding contest to redis
+  await addContestToRedis(contest_id);
 
   res.status(200).json({
     message: "Contest Published Successfully",
@@ -102,7 +107,7 @@ export const PublishContest = asyncErrorHandler(async (req, res) => {
 
 export const GetActiveContests = asyncErrorHandler(async (req, res) => {
   // getting all active games from games manager
-  const result = manager.getActiveContests();
+  const result = await getActiveContests();
   res.status(200).json({
     message: "All Active Contests",
     status: "success",
@@ -133,23 +138,40 @@ WHERE
   participants.contest_id=$1
 `;
 
-export const GetParticipants = asyncErrorHandler(async (req, res) => {
+const getContestDataQuery = "SELECT * FROM contests WHERE contest_id=$1";
+const getResponseQuery =
+  "SELECT * FROM responses WHERE contest_id=$1 AND user_id=$2";
+
+// post contest result
+export const GetContestPerformance = asyncErrorHandler(async (req, res) => {
   const { contest_id } = req.body as GetParticipantsBody;
-  const { user_id } = req as CustomRequest;
+  const { user_id, username } = req as CustomRequest;
   // checking if contest are still in manager, then scores are not updated
-  if (manager.isPresent(contest_id)) {
-    const scores = manager.getScores(contest_id);
+  const isPresent = await isPresentInRedis(contest_id);
+  if (isPresent) {
+    const payload = await joinUserAndGetPayload(contest_id, user_id, username);
     res.status(200).json({
       message: "All participants score",
       status: "success",
-      data: scores,
+      data: payload,
     });
   } else {
-    const queryResult = await client.query(getParticipantsQuery, [contest_id]);
+    const scores = await client.query(getParticipantsQuery, [contest_id]);
+    const contestData = await client.query(getContestDataQuery, [contest_id]);
+    const questions = await getQuestions(contest_id);
+    const response = await client.query(getResponseQuery, [
+      contest_id,
+      user_id,
+    ]);
     res.status(200).json({
       message: "All participants score",
       status: "success",
-      data: queryResult.rows,
+      data: {
+        ...contestData.rows[0],
+        scores: scores.rows,
+        questions,
+        response: response.rows,
+      },
     });
   }
 });

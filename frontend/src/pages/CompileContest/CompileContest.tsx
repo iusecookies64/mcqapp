@@ -201,7 +201,7 @@ const DisplayQuestion = ({
   error: boolean;
 }) => {
   return (
-    <div className="flex flex-row flex-wrap gap-6 select-none overflow-x-hidden overflow-y-scroll h-full px-3 relative">
+    <div className="flex flex-col flex-wrap gap-6 select-none overflow-x-hidden overflow-y-scroll h-full px-3 relative">
       {questions.map((question) => (
         <QuestionCard
           key={question.question_id}

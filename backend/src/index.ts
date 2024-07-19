@@ -3,7 +3,6 @@ import { config } from "dotenv";
 config();
 import express from "express";
 import { Server } from "socket.io";
-import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import cors from "cors";
 import userRouter from "./routes/user";
@@ -13,20 +12,8 @@ import { GlobalErrorHandler } from "./controllers/errorController";
 import CustomError from "./utils/CustomError";
 import { SocketHandler } from "./controllers/socketController";
 import cookieParser from "cookie-parser";
-import redisClient from "./models/redis";
-
-setTimeout(async () => {
-  const result = await redisClient.keys("contest:*");
-  console.log(result);
-  console.log(typeof result[0]);
-}, 1000);
 
 const port = process.env.PORT || 3000;
-// ssl certificates
-const options = {
-  key: readFileSync("server.key"),
-  cert: readFileSync("server.cert"),
-};
 
 const app = express();
 const server = createServer(app);

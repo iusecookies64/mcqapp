@@ -40,6 +40,7 @@ const ActiveContestTable = ({
   const navigate = useNavigate();
   const [isJoinContestModalOpen, setIsJoinContestModalOpen] = useState(false);
   const [contestId, setContestId] = useState<number>(0);
+
   return (
     <div>
       {label}

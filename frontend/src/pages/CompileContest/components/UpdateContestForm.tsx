@@ -93,7 +93,7 @@ const UpdateContestForm = ({ contest_id, setIsModalOpen }: Props) => {
           inputType="number"
           register={register("duration", {
             required: true,
-            min: 10,
+            min: 1,
             max: 60,
             valueAsNumber: true,
           })}

@@ -58,7 +58,7 @@ CREATE TABLE participants(
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE responses (
+CREATE TABLE response (
   response_id SERIAL PRIMARY KEY,
   question_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
