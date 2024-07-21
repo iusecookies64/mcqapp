@@ -4,14 +4,13 @@
   "description": "'A mcq game platform'",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run dev -ws",
+    "build:packages": "npm run build --workspace=packages/validations --workspace=packages/types"
   },
   "author": "Tushar Raghav",
   "license": "ISC",
   "workspaces": [
-    "packages/validations",
-    "apps/api",
-    "apps/client",
-    "apps/websocket"
+    "packages/*",
+    "apps/*"
   ]
 }

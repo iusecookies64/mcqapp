@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import "./Signup.style.css";
@@ -8,16 +7,9 @@ import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/Loader";
 import { DisplayInfo } from "../../components/DisplayInfo";
 import ThemeToggle from "../../components/Theme";
-
-type SignupForm = {
-  username: string;
-  password: string;
-  confirmPassword: string;
-  email: string;
-};
+import { SignupInput } from "@mcqapp/validations";
 
 export const Signup = () => {
-  const formRef = useRef<HTMLFormElement>(null);
   const { isLoading, error, signup } = useAuth();
   const navigate = useNavigate();
   // if logged in go to home page
@@ -26,9 +18,9 @@ export const Signup = () => {
     watch,
     formState: { errors },
     handleSubmit,
-  } = useForm<SignupForm>();
+  } = useForm<SignupInput>();
 
-  const onSubmit: SubmitHandler<SignupForm> = (data) => {
+  const onSubmit: SubmitHandler<SignupInput> = (data) => {
     signup(data.username, data.email, data.password);
   };
 
@@ -44,11 +36,26 @@ export const Signup = () => {
             Sign Up
           </div>
           <form
-            ref={formRef}
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
           >
+            <Input
+              inputLabel="First Name"
+              inputType="text"
+              placeholder="john"
+              register={register("firstName", { required: true })}
+              error={errors.username}
+              errorMessage="Username is required"
+            />
+            <Input
+              inputLabel="Last Name"
+              inputType="text"
+              placeholder="john"
+              register={register("lastName", { required: true })}
+              error={errors.username}
+              errorMessage="Username is required"
+            />
             <Input
               inputLabel="Username"
               inputType="text"

@@ -2,14 +2,16 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "backend for mcq battle platform",
-  "main": "app.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc -b && node dist/index.js",
+    "build": "tsc -b"
   },
   "author": "iusecookies64",
   "license": "ISC",
   "dependencies": {
     "@mcqapp/validations": "*",
+    "@mcqapp/types": "*",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/node-schedule": "^2.1.7",

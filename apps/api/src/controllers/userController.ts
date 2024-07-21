@@ -5,7 +5,9 @@ import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import client from "../models";
 import CustomError from "../utils/CustomError";
+// import { Use } from "@mcqapp/validations";
 import { SignupSchema } from "@mcqapp/validations";
+import { JOINED_SUCCESSFULLY } from "@mcqapp/types";
 
 const saltRounds = parseInt(process.env.SALT || "0") || 10;
 const jwtSecret = process.env.SECRET || "123456";

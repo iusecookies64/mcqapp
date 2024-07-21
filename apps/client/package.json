@@ -10,7 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mcqapp/validations": "file:../../packages/validations",
+    "@mcqapp/validations": "*",
+    "@mcqapp/types": "*",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.12",
     "marked": "^13.0.2",

@@ -1,15 +1,13 @@
 {
-  "name": "@mcqapp/validations",
+  "name": "@mcqapp/types",
   "version": "1.0.0",
-  "description": "'zod validations of mcq app",
+  "description": "Common types for mcq app",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "devDependencies": {},
   "scripts": {
     "build": "tsc -b"
   },
   "author": "Tushar Raghav",
-  "license": "ISC",
-  "dependencies": {
-    "zod": "^3.23.8"
-  }
+  "license": "ISC"
 }

@@ -7,11 +7,7 @@ import { Loader } from "../../components/Loader";
 import { DisplayInfo } from "../../components/DisplayInfo";
 import ThemeToggle from "../../components/Theme";
 import "./Signin.style.css";
-
-type SigninForm = {
-  username: string;
-  password: string;
-};
+import { SigninInput } from "@mcqapp/validations";
 
 export const Signin = () => {
   const navigate = useNavigate();
@@ -21,9 +17,9 @@ export const Signin = () => {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<SigninForm>();
+  } = useForm<SigninInput>();
 
-  const onSubmit: SubmitHandler<SigninForm> = (data) => {
+  const onSubmit: SubmitHandler<SigninInput> = (data) => {
     signin(data.username, data.password);
   };
 
