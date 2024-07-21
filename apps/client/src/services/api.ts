@@ -44,6 +44,7 @@ api.interceptors.response.use(
     if (
       err.response?.status === 401 &&
       originalRequest &&
+      // @ts-expect-error: adding property to the object
       !originalRequest._retry
     ) {
       // checking if a request for new token sent already
@@ -55,6 +56,7 @@ api.interceptors.response.use(
       const newToken = response.data.access_token;
       setAccessToken(newToken, response.data.expiresIn);
       // marking as retry for original request
+      // @ts-expect-error: adding property to the object
       originalRequest._retry = true;
       originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
 

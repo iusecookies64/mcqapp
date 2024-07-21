@@ -3,7 +3,7 @@ import { useAllContests } from "../../hooks/useAllContests";
 import "./ActiveContests.style.css";
 import { ReactNode, useState } from "react";
 import { Contest } from "../../types/models";
-import { Button } from "../../components/Button";
+import { Button } from "@mcqapp/ui";
 import { Modal } from "../../components/Modal";
 import { Loader } from "../../components/Loader";
 import { DisplayInfo } from "../../components/DisplayInfo";

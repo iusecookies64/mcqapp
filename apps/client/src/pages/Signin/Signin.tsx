@@ -1,4 +1,4 @@
-import { Button } from "../../components/Button";
+import { Button } from "@mcqapp/ui";
 import { Input } from "../../components/Input";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";

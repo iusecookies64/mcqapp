@@ -16,6 +16,8 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "rootDir": "./src",
+    "outDir": "./dist",
 
     /* Linting */
     "strict": true,

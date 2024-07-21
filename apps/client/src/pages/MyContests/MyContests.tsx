@@ -3,7 +3,7 @@ import { Loader } from "../../components/Loader";
 import { DisplayInfo } from "../../components/DisplayInfo";
 import { Contest } from "../../types/models";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/Button";
+import { Button } from "@mcqapp/ui";
 import CreateContest from "./CreateContest";
 import { ReactNode } from "react";
 import "./Contests.style.css";

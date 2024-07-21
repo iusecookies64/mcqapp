@@ -4,6 +4,7 @@
   "description": "Common types for mcq app",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "devDependencies": {},
   "scripts": {
     "build": "tsc -b"

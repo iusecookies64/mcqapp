@@ -4,7 +4,7 @@ import {
   useCompileContest,
 } from "../../hooks/useCompileContest";
 import { QuestionWithOptions } from "../../types/models";
-import { Button } from "../../components/Button";
+import { Button } from "@mcqapp/ui";
 import { useState } from "react";
 import { CreateQuestionForm } from "./components/CreateQuestionForm";
 import "./CompileContest.style.css";

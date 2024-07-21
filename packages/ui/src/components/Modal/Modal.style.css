@@ -1,0 +1,7 @@
+.custom-modal {
+  @apply fixed top-0 left-0 h-[100dvh] w-[100dvw] bg-black bg-opacity-50 backdrop-blur-[2px] z-10 flex justify-center items-center;
+}
+
+.modal-container {
+  @apply rounded-xl bg-white dark:bg-gray-dark shadow-md p-6 relative flex flex-col opacity-0;
+}

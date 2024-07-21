@@ -5,7 +5,7 @@ import {
 import { Modal } from "../../../components/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Input } from "../../../components/Input";
-import { Button } from "../../../components/Button";
+import { Button } from "@mcqapp/ui";
 import { toast } from "react-toastify";
 import { Loader } from "../../../components/Loader";
 import { DisplayInfo } from "../../../components/DisplayInfo";

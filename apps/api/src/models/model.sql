@@ -13,19 +13,10 @@ CREATE TABLE users (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE contests (
-  contest_id SERIAL PRIMARY KEY,
-  created_by INTEGER NOT NULL,
-  title VARCHAR(100) NOT NULL,
-  number_of_participants INTEGER DEFAULT 0,
-  max_participants INTEGER NOT NULL CHECK (max_participants <= 100),
-  duration INTEGER NOT NULL,
-  is_locked BOOLEAN NOT NULL,
-  is_ended BOOLEAN DEFAULT FALSE,
-  password VARCHAR(100),
-  published BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE CASCADE
+CREATE TABLE games (
+  game_id SERIAL PRIMARY KEY,
+  start_time TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE questions (

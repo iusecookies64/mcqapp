@@ -1,11 +1,12 @@
 {
-  "name": "mcq-battle",
+  "name": "mcqapp",
+  "private": true,
   "version": "1.0.0",
   "description": "'A mcq game platform'",
   "main": "index.js",
   "scripts": {
     "dev": "npm run dev -ws",
-    "build:packages": "npm run build --workspace=packages/validations --workspace=packages/types"
+    "build:packages": "npm run build --workspace=packages/validations --workspace=packages/types --workspace=packages/ui"
   },
   "author": "Tushar Raghav",
   "license": "ISC",

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { UpdateQuestionData } from "../../hooks/useCompileContest";
 import { UpdateQuestionForm } from "../../pages/CompileContest/components/UpdateQuestionForm";
 import { QuestionWithOptions } from "../../types/models";
-import { Button } from "../Button";
+import { Button } from "@mcqapp/ui";
 import { Icon, IconList } from "../Icon";
 import "./QuestionCard.styles.css";
 import { Modal } from "../Modal";

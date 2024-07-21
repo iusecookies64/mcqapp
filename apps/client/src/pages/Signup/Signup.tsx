@@ -1,4 +1,4 @@
-import { Button } from "../../components/Button";
+import { Button } from "@mcqapp/ui";
 import { Input } from "../../components/Input";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ export const Signup = () => {
               inputLabel="First Name"
               inputType="text"
               placeholder="john"
-              register={register("firstName", { required: true })}
+              register={register("username", { required: true })}
               error={errors.username}
               errorMessage="Username is required"
             />

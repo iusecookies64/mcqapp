@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Button } from "../Button";
+import { Button } from "@mcqapp/ui";
 import { Icon, IconList } from "../Icon";
 import { useState } from "react";
 

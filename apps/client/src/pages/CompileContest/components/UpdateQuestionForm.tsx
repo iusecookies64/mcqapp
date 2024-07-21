@@ -3,7 +3,7 @@ import { Modal } from "../../../components/Modal";
 import { UpdateQuestionData } from "../../../hooks/useCompileContest";
 import { Loader } from "../../../components/Loader";
 import { DisplayInfo } from "../../../components/DisplayInfo";
-import { Button } from "../../../components/Button";
+import { Button } from "@mcqapp/ui";
 import "./styles.css";
 import { toast } from "react-toastify";
 import { Textarea } from "../../../components/TextArea";

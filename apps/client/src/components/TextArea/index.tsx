@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import "./textarea.style.css";
 import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
@@ -25,16 +25,18 @@ export const Textarea = ({
   defaultValue,
   value = "",
 }: Props) => {
-  const dynamicHeight = (
-    e: React.FormEvent<HTMLTextAreaElement> | HTMLTextAreaElement
-  ) => {
-    const textarea = e.target || e;
+  const dynamicHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = e.target as HTMLTextAreaElement;
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
+  const initializeHeight = (element: HTMLTextAreaElement) => {
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`;
+  };
   useEffect(() => {
     document.querySelectorAll("textarea").forEach((textarea) => {
-      dynamicHeight(textarea);
+      initializeHeight(textarea);
     });
   }, []);
   if (register) {

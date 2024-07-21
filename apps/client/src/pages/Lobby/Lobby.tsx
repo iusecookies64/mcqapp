@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import "./Lobby.style.css";
 import { CountdownState, useLobby } from "../../hooks/useLobby";
 import { useEffect, useState } from "react";
-import { Button } from "../../components/Button";
+import { Button } from "@mcqapp/ui";
 import { toast } from "react-toastify";
 import { Loader } from "../../components/Loader";
 import { Modal } from "../../components/Modal";
