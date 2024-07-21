@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Button } from "../Button";
+import Button from "../Button";
 import { Icon, IconList } from "../Icon";
 import { useState } from "react";
 
@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const Expandable = ({ children }: Props) => {
+const Expandable = ({ children }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <div className="relative pb-4">
@@ -29,3 +29,5 @@ export const Expandable = ({ children }: Props) => {
     </div>
   );
 };
+
+export default Expandable;

@@ -10,7 +10,7 @@ type Props = {
   tooltip?: string;
 };
 
-export const Button = ({
+const Button = ({
   variant = "primary",
   size = "md",
   onClick,
@@ -31,3 +31,5 @@ export const Button = ({
     </button>
   );
 };
+
+export default Button;

@@ -8,7 +8,7 @@ type Props = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const Panel = ({ children, isOpen, setIsOpen }: Props) => {
+const Panel = ({ children, isOpen, setIsOpen }: Props) => {
   const [position, setPosition] = useState<"0%" | "-100%">("-100%");
   const onClose = () => {
     setPosition("0%");
@@ -33,3 +33,5 @@ export const Panel = ({ children, isOpen, setIsOpen }: Props) => {
     </>
   );
 };
+
+export default Panel;

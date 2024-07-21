@@ -7,7 +7,7 @@ type Props = {
   secondaryColor?: string;
 };
 
-export const Loader = ({
+const Loader = ({
   height = 80,
   width = 80,
   color = "#6200EE",
@@ -25,3 +25,5 @@ export const Loader = ({
     </div>
   );
 };
+
+export default Loader;

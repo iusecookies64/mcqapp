@@ -9,7 +9,7 @@ type Props = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
+const Modal = ({ children, isOpen, setIsOpen }: Props) => {
   const [opacity, setOpacity] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.1);
   const onClose = () => {
@@ -70,3 +70,5 @@ export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
     );
   }
 };
+
+export default Modal;

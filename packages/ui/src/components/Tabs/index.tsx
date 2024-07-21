@@ -8,7 +8,7 @@ type Props = {
   setActiveTab: (value: string) => void;
 };
 
-export const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
+const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
   const [animationState, setAnimationBoxState] = useState({
     x: 0,
     width: 0,
@@ -55,3 +55,5 @@ export const Tabs = ({ tabs, activeTab, setActiveTab }: Props) => {
     </div>
   );
 };
+
+export default Tabs;

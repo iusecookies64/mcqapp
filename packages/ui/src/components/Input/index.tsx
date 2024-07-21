@@ -14,7 +14,7 @@ interface Props {
   defaultValue?: string;
 }
 
-export const Input = ({
+const Input = ({
   inputLabel,
   register,
   error,
@@ -61,3 +61,5 @@ export const Input = ({
     );
   }
 };
+
+export default Input;

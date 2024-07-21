@@ -14,7 +14,7 @@ interface Props {
   defaultValue?: string;
 }
 
-export const Textarea = ({
+const Textarea = ({
   inputLabel,
   register,
   error,
@@ -72,3 +72,5 @@ export const Textarea = ({
     );
   }
 };
+
+export default Textarea;

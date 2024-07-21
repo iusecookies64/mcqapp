@@ -82,3 +82,5 @@ export const Icon = ({ icon, className }: Props) => {
     </>
   );
 };
+
+export default Icon;

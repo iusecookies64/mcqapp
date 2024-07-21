@@ -5,8 +5,7 @@ import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import client from "../models";
 import CustomError from "../utils/CustomError";
-// import { Use } from "@mcqapp/validations";
-import { SignupSchema } from "@mcqapp/validations";
+import { SignupInput } from "@mcqapp/validations";
 import { JOINED_SUCCESSFULLY } from "@mcqapp/types";
 
 const saltRounds = parseInt(process.env.SALT || "0") || 10;
@@ -17,7 +16,7 @@ INSERT INTO users (username, email, password) VALUES ($1, $2, $3);
 `;
 // function to handle signup requests
 export const Signup = asyncErrorHandler(async (req, res) => {
-  const { success, data } = SignupSchema.safeParse(req.body);
+  const { success, data } = SignupInput.safeParse(req.body);
   if (!success) throw new CustomError("Invalid Input", 403);
 
   const { password, email, username } = data;
