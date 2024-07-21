@@ -9,6 +9,7 @@
   "author": "iusecookies64",
   "license": "ISC",
   "dependencies": {
+    "@mcqapp/validations": "*",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/node-schedule": "^2.1.7",
@@ -20,9 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-schedule": "^2.1.1",
     "pg": "^8.12.0",
-    "redis": "^4.6.15",
-    "socket.io": "^4.7.5",
-    "zod": "^3.23.8"
+    "redis": "^4.6.15"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

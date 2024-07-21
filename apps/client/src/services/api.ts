@@ -3,7 +3,7 @@ import { GetAccessToken, setAccessToken } from "./authToken.cookie";
 import { RequestMethods } from "../types/requests";
 import { redirect } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ClearAll } from "../services/authToken.cookie";
+import { ClearAll } from "./authToken.cookie";
 
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 

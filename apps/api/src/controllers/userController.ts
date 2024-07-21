@@ -1,28 +1,24 @@
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 import { UserTable } from "../types/models";
-import { CustomPayload, VerifyToken } from "../utils/verifyToken";
-import JWT, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
-import zod from "zod";
+import { VerifyToken } from "../utils/verifyToken";
+import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import client from "../models";
 import CustomError from "../utils/CustomError";
+import { SignupSchema } from "@mcqapp/validations";
 
 const saltRounds = parseInt(process.env.SALT || "0") || 10;
 const jwtSecret = process.env.SECRET || "123456";
 
-const UsernameCheck = zod.string().min(1).max(50);
-const EmailCheck = zod.string().max(50).email();
-const PasswordCheck = zod.string().min(6).max(50);
 const createUserQuery = `
 INSERT INTO users (username, email, password) VALUES ($1, $2, $3);
 `;
 // function to handle signup requests
 export const Signup = asyncErrorHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-  // validating input
-  UsernameCheck.parse(username);
-  EmailCheck.parse(email);
-  PasswordCheck.parse(password);
+  const { success, data } = SignupSchema.safeParse(req.body);
+  if (!success) throw new CustomError("Invalid Input", 403);
+
+  const { password, email, username } = data;
 
   // converting password to hash value
   const hash = await bcrypt.hash(password, saltRounds);

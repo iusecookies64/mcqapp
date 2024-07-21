@@ -1,0 +1,15 @@
+{
+  "name": "@mcqapp/validations",
+  "version": "1.0.0",
+  "description": "'zod validations of mcq app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tushar Raghav",
+  "license": "ISC",
+  "dependencies": {
+    "@mcqapp/validations": "file:",
+    "zod": "^3.23.8"
+  }
+}
