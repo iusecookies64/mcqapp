@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import JWT, { JwtPayload } from "jsonwebtoken";
-import client from "../models";
+import client from "../db/postgres";
 import CustomError from "../utils/CustomError";
 import { VerifyToken } from "../utils/verifyToken";
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";

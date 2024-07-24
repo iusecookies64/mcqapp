@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import client from "../models";
+import client from "../db/postgres";
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 import { CustomRequest } from ".";
 

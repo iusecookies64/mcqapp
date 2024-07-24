@@ -1,11 +1,10 @@
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 import {
   CreateContestBody,
-  PublishContestBody,
   UpdateContestBody,
   GetParticipantsBody,
 } from "../types/requests";
-import client from "../models";
+import client from "../db/postgres";
 import { CustomRequest } from "../middlewares";
 import {
   addContestToRedis,

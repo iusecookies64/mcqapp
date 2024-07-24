@@ -1,87 +1,110 @@
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
 import { UserTable } from "../types/models";
-import { VerifyToken } from "../utils/verifyToken";
+import { CustomJwtPayload, VerifyToken } from "../utils/verifyToken";
 import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import client from "../models";
+import client from "../db/postgres";
 import CustomError from "../utils/CustomError";
-import { SignupInput } from "@mcqapp/validations";
-import { JOINED_SUCCESSFULLY } from "@mcqapp/types";
+import { SignupInput, SigninInput } from "@mcqapp/validations";
+import {
+  ProtectedResponse,
+  RefreshTokenReponse,
+  SigninResponse,
+  SignupResponse,
+  StatusCodes,
+} from "@mcqapp/types";
+import { CustomRequest } from "../middlewares";
 
 const saltRounds = parseInt(process.env.SALT || "0") || 10;
 const jwtSecret = process.env.SECRET || "123456";
 
-const createUserQuery = `
-INSERT INTO users (username, email, password) VALUES ($1, $2, $3);
-`;
 // function to handle signup requests
+const createUserQuery = `
+INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5);
+`;
 export const Signup = asyncErrorHandler(async (req, res) => {
   const { success, data } = SignupInput.safeParse(req.body);
-  if (!success) throw new CustomError("Invalid Input", 403);
+  if (!success)
+    throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
 
-  const { password, email, username } = data;
+  const { password, email, username, last_name, first_name } = data;
 
   // converting password to hash value
   const hash = await bcrypt.hash(password, saltRounds);
 
-  const result = await client.query(createUserQuery, [username, email, hash]);
+  const result = await client.query(createUserQuery, [
+    username,
+    first_name,
+    last_name,
+    email,
+    hash,
+  ]);
 
-  res.status(200).json({
+  const response: SignupResponse = {
     message: "Account Created Successfully",
     status: "success",
-  });
+    data: null,
+  };
+
+  res.json(response);
 });
 
 // function to handle signin requests
+const expiresIn = 60000;
 const getUserQuery = `Select * FROM users WHERE username=$1`;
 export const Signin = asyncErrorHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const { success, data } = SigninInput.safeParse(req.body);
+  if (!success)
+    throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
+
+  const { username, password } = data;
   const queryResult = await client.query(getUserQuery, [username]);
   // if user not found
   if (queryResult.rowCount === 0)
-    throw new CustomError("Username Not Found", 404);
+    throw new CustomError("Username Not Found", StatusCodes.NotFound);
 
   const userObject = queryResult.rows[0] as UserTable;
 
   // if user found compare password with hashed password
   const comparisionResult = await bcrypt.compare(password, userObject.password);
   if (comparisionResult === false)
-    throw new CustomError("Incorrect Password", 403);
+    throw new CustomError("Incorrect Password", StatusCodes.Unauthorized);
 
   // valid password so we return an auth token to user
-  const access_token = JWT.sign(
-    { username, user_id: userObject.user_id },
-    jwtSecret,
-    {
-      expiresIn: 1000 * 60,
-    }
-  );
+  const payload: CustomJwtPayload = {
+    username,
+    user_id: userObject.user_id,
+  };
 
-  const refresh_token = JWT.sign(
-    { username, user_id: userObject.user_id },
-    jwtSecret
-  );
+  const access_token = JWT.sign(payload, jwtSecret, { expiresIn });
 
-  res.status(200).json({
+  const refresh_token = JWT.sign(payload, jwtSecret);
+
+  const response: SigninResponse = {
     message: "Sign In Successfull",
     status: "success",
-    access_token,
-    refresh_token,
-    expiresIn: 28,
-  });
+    data: {
+      access_token,
+      refresh_token,
+      expiresIn,
+    },
+  };
+
+  res.status(200).json(response);
 });
 
 export const Protected = asyncErrorHandler(async (req, res) => {
-  const access_token = req.headers.authorization?.replace("Bearer ", "");
-  if (!access_token) throw new CustomError("INVALID_TOKEN", 401);
-
-  const decoded = await VerifyToken(access_token);
-
-  res.status(200).json({
+  // request reaches here after passing through auth middleware
+  const { username } = req as CustomRequest;
+  const response: ProtectedResponse = {
     message: "Valid Token",
     status: "success",
-    data: decoded,
-  });
+    data: {
+      username: username,
+    },
+  };
+
+  res.json(response);
 });
 
 export const refreshToken = asyncErrorHandler(async (req, res) => {
@@ -90,16 +113,22 @@ export const refreshToken = asyncErrorHandler(async (req, res) => {
 
   const decoded = await VerifyToken(refresh_token);
 
-  const access_token = JWT.sign(
-    { username: decoded.username, user_id: decoded.user_id },
-    jwtSecret,
-    { expiresIn: 1000 * 60 }
-  );
+  const payload: CustomJwtPayload = {
+    user_id: decoded.user_id,
+    username: decoded.username,
+  };
 
-  res.status(200).json({
+  const access_token = JWT.sign(payload, jwtSecret, { expiresIn });
+
+  const response: RefreshTokenReponse = {
     message: "New Access Token",
     status: "success",
-    access_token,
-    expiresIn: 1000,
-  });
+    data: {
+      access_token,
+      username: decoded.username,
+      expiresIn,
+    },
+  };
+
+  res.json(response);
 });

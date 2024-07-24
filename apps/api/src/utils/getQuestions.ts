@@ -3,7 +3,7 @@ import {
   QuestionTable,
   QuestionWithOptions,
 } from "../types/models";
-import client from "../models";
+import client from "../db/postgres";
 
 export const getQuestions = async (
   contest_id: number

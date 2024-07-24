@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import CustomError from "../utils/CustomError";
-import client from "../models";
+import client from "../db/postgres";
 
 const devErrors = (res: Response, err: CustomError) => {
   res.status(err.statusCode || 500).json({

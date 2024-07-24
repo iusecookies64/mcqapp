@@ -10,8 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mcqapp/validations": "*",
     "@mcqapp/types": "*",
-    "zod": "^3.23.8"
+    "@mcqapp/validations": "*",
+    "redis": "^4.6.15",
+    "ws": "^8.18.0",
+    "jsonwebtoken": "9.0.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/ws": "^8.5.11"
   }
 }

@@ -1,6 +1,6 @@
-import client from "../models";
+import client from "../db/postgres";
 import { scheduleJob } from "node-schedule";
-import redisClient from "../models/redis";
+import redisClient from "../db/redis";
 import { getQuestions } from "../utils/getQuestions";
 import {
   GameState,

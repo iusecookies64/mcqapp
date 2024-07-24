@@ -1,178 +1,126 @@
 import { asyncErrorHandler } from "../utils/asyncErrorHandler";
-import client from "../models";
-import {
-  CreateQuestionData,
-  ReorderOptionsData,
-  ReorderQuestionsData,
-  UpdateQuestionData,
-} from "../types/requests";
-import { OptionsTable } from "../types/models";
+import client from "../db/postgres";
 import CustomError from "../utils/CustomError";
-import { getQuestions } from "../utils/getQuestions";
 import { CustomRequest } from "../middlewares";
+import {
+  CreateQuestionInput,
+  DeleteQuestionInput,
+  UpdateQuestionInput,
+} from "@mcqapp/validations";
+import {
+  CreateQuestionResponse,
+  DeleteQuestionResponse,
+  GetUserQuestionsResponse,
+  StatusCodes,
+  UpdateQuestionResponse,
+} from "@mcqapp/types";
 
 const createQuestionQuery = `
-INSERT INTO questions (contest_id, title, answer, difficulty, question_number) VALUES ($1, $2, $3, $4, $5) RETURNING *
+INSERT INTO questions (created_by, topics, statement, answer, option1, option2, option3, option4, difficulty, time_limit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 `;
-const createOptionsQuery = `
-INSERT INTO options (question_id, title, option_number) VALUES ($1, $2, $3) RETURNING *
-`;
-
 export const CreateQuestion = asyncErrorHandler(async (req, res) => {
-  const { contest_id, title, answer, difficulty, options, question_number } =
-    req.body as CreateQuestionData;
+  const { success, data } = CreateQuestionInput.safeParse(req.body);
+  const { user_id } = req as CustomRequest;
 
-  // checking if answer exist as one of the option
-  const answerIndex = options.findIndex((option) => option.title == answer);
-  if (answerIndex == -1)
-    throw new CustomError("Answer must be among options", 403);
-
-  // begin transaction
-  await client.query("BEGIN");
+  if (!success)
+    throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
 
   // adding question to database
-  const queryResult = await client.query(createQuestionQuery, [
-    contest_id,
-    title,
-    answer,
-    difficulty,
-    question_number,
+  await client.query(createQuestionQuery, [
+    user_id,
+    data.topics,
+    data.statement,
+    data.answer,
+    data.option1,
+    data.option2,
+    data.option3,
+    data.option4,
+    data.difficulty,
+    data.time_limit,
   ]);
 
-  const question_id = queryResult.rows[0].question_id;
-  // inserting all of the options for this question
-  const insertedOptions: OptionsTable[] = [];
-  await Promise.all(
-    options.map(async (option) => {
-      const queryResult = await client.query(createOptionsQuery, [
-        question_id,
-        option.title,
-        option.option_number,
-      ]);
-      insertedOptions.push(queryResult.rows[0]);
-    })
-  );
-  // commit transaction
-  await client.query("COMMIT");
-
-  res.status(200).json({
+  const response: CreateQuestionResponse = {
     message: "Question Added Successfully",
-    data: {
-      ...queryResult.rows[0],
-      options: insertedOptions,
-    },
-    success: true,
-  });
+    status: "success",
+  };
+
+  res.status(200).json(response);
 });
 
 const updateQuestionQuery = `
 UPDATE questions 
-SET title=$1,
-    answer=$2,
-    difficulty=$3
-WHERE question_id=$4 AND contest_id=$5
-RETURNING *
-`;
-
-const updateOptionQuery = `
-UPDATE options SET title=$1 WHERE option_id=$2 RETURNING *
+SET
+  topics=$1,
+  statement=$2,
+  answer=$3,
+  option1=$4,
+  option2=$5,
+  option3=$6,
+  option4=$7,
+  difficulty=$8,
+  time_limit=$9
+WHERE question_id=$10 AND created_by=$11
 `;
 
 export const UpdateQuestion = asyncErrorHandler(async (req, res) => {
-  const { contest_id, question_id, title, answer, difficulty, options } =
-    req.body as UpdateQuestionData;
+  const { success, data } = UpdateQuestionInput.safeParse(req.body);
+  const { user_id } = req as CustomRequest;
+  if (!success)
+    throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
 
-  // checking if answer exist as one of the option
-  const answerIndex = options.findIndex((option) => option.title === answer);
-  if (answerIndex == -1)
-    throw new CustomError("Answer must be among options", 403);
-
-  // begin transaction
-  await client.query("BEGIN");
-
-  // adding question to database
-  const updatedQuestion = await client.query(updateQuestionQuery, [
-    title,
-    answer,
-    difficulty,
-    question_id,
-    contest_id,
+  // updating question in database
+  await client.query(updateQuestionQuery, [
+    data.topics,
+    data.statement,
+    data.answer,
+    data.option1,
+    data.option2,
+    data.option3,
+    data.option4,
+    data.difficulty,
+    data.time_limit,
+    data.question_id,
+    user_id,
   ]);
 
-  // inserting all of the options for this question
-  const updatedOptions: OptionsTable[] = [];
-  await Promise.all(
-    options.map(async (option) => {
-      // if option already existed
-      let queryResult;
-      if (option.option_id) {
-        queryResult = await client.query(updateOptionQuery, [
-          option.title,
-          option.option_id,
-        ]);
-      } else {
-        queryResult = await client.query(createOptionsQuery, [
-          question_id,
-          option.title,
-          option.option_number,
-        ]);
-      }
-      updatedOptions.push(queryResult.rows[0]);
-    })
-  );
-  // commit transaction
-  await client.query("COMMIT");
-
-  res.status(200).json({
+  const response: UpdateQuestionResponse = {
     message: "Question Updated Successfully",
-    success: true,
-    data: {
-      ...updatedQuestion.rows[0],
-      options: updatedOptions,
-    },
-  });
-});
-
-// handler for when the request for reordering questions come
-const updateQuestionNumber = `UPDATE questions SET question_number=$1 WHERE question_id=$2`;
-export const ReorderQuestions = asyncErrorHandler(async (req, res) => {
-  const order = req.body as ReorderQuestionsData;
-  await Promise.all(
-    order.map(async ({ question_id, question_number }) => {
-      await client.query(updateQuestionNumber, [question_number, question_id]);
-    })
-  );
-
-  res.json({
-    message: "Order Updated Successfully",
     status: "success",
-  });
+  };
+
+  res.json(response);
 });
 
 // handler for deleting a question
-const deleteQuestionQuery = `DELETE FROM questions WHERE question_id=$1 AND contest_id=$2`;
+const deleteQuestionQuery = `DELETE FROM questions WHERE question_id=$1 AND created_by=$2`;
 export const DeleteQuestion = asyncErrorHandler(async (req, res) => {
-  const question_id = parseInt(req.query.question_id as string);
-  const contest_id = parseInt(req.query.contest_id as string);
-  const user_id = (req as CustomRequest).user_id;
+  const { success, data } = DeleteQuestionInput.safeParse(req.body);
+
+  if (!success)
+    throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
+
+  const { user_id } = req as CustomRequest;
 
   // deleting question
-  await client.query(deleteQuestionQuery, [question_id, contest_id]);
+  await client.query(deleteQuestionQuery, [data.question_id, user_id]);
 
-  res.status(200).json({
+  const response: DeleteQuestionResponse = {
     message: "Question Deleted Successfully",
     status: "success",
-  });
+  };
+
+  res.status(200).json(response);
 });
 
 // sending questions to user for who created contest
-export const GetContestQuestions = asyncErrorHandler(async (req, res) => {
-  const contest_id = parseInt(req.query.contest_id as string);
-
-  const questions = await getQuestions(contest_id);
-  res.status(200).json({
+const getUserQuestionsQuery = `SELECT * FROM questions WHERE created_by=$1`;
+export const GetUserQuestions = asyncErrorHandler(async (req, res) => {
+  const { user_id } = req as CustomRequest;
+  const result = await client.query(getUserQuestionsQuery, [user_id]);
+  const response: GetUserQuestionsResponse = {
     message: "All questions fetched successfully",
     status: "success",
-    data: questions,
-  });
+    data: result.rows,
+  };
+  res.status(200).json(response);
 });
