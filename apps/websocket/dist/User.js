@@ -7,5 +7,8 @@ class User {
         this.username = userDetails.username;
         this.socket = socket;
     }
+    emit(message) {
+        this.socket.send(message);
+    }
 }
 exports.User = User;

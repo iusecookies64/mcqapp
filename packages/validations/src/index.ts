@@ -51,3 +51,11 @@ export const DeleteQuestionInput = z.object({
 });
 
 export type DeleteQuestionBody = z.infer<typeof DeleteQuestionInput>;
+
+export const InitGameInput = z.object({
+  topic_id: z.number().min(1),
+  is_random: z.boolean(),
+  is_duel: z.boolean(),
+});
+
+export type InitGameBody = z.infer<typeof InitGameInput>;

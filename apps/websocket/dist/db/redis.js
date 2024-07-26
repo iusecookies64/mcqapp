@@ -4,7 +4,7 @@ const redis_1 = require("redis");
 const redisClient = (0, redis_1.createClient)();
 redisClient
     .on("error", () => {
-    console.log("Error Connecting to Redis");
+    console.log("Error connecting to redis");
 })
     .connect();
 exports.default = redisClient;

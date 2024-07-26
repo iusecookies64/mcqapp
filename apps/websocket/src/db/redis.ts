@@ -1,9 +1,10 @@
 import { createClient } from "redis";
 
 const redisClient = createClient();
+
 redisClient
   .on("error", () => {
-    console.log("Error Connecting to Redis");
+    console.log("Error connecting to redis");
   })
   .connect();
 

@@ -11,4 +11,8 @@ export class User {
     this.username = userDetails.username;
     this.socket = socket;
   }
+
+  emit(message: string) {
+    this.socket.send(message);
+  }
 }
