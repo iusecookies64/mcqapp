@@ -1,5 +1,5 @@
 .app {
-  @apply h-[100dvh] w-[100dvw] dark:bg-red bg-white dark:text-slate-50 relative flex flex-col items-center;
+  @apply h-[100dvh] w-[100dvw] dark:bg-slate-950 bg-slate-100 dark:text-slate-50 relative flex flex-col items-center select-none;
 }
 
 ::-webkit-scrollbar {

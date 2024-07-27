@@ -3,19 +3,14 @@
 import { Config } from "tailwindcss";
 import sharedConfig from "@mcqapp/tailwind-config";
 
-console.log("sharedConfig is ", sharedConfig);
-
 const config: Partial<Config> = {
   presets: [sharedConfig],
   darkMode: "selector",
   theme: {
     extend: {
       colors: {
-        blue: "#3700B3",
         pink: "#ff49db",
         orange: "#ff7849",
-        green: "#00ab41",
-        "light-green": "#abf7b1",
         red: "#800000",
         "light-red": "#ff7f50",
         yellow: "#FFDB58",
@@ -23,6 +18,10 @@ const config: Partial<Config> = {
         "gray-dark": "#292929",
         gray: "#989898",
         "gray-light": "#E2E2E2",
+      },
+      boxShadow: {
+        "big-button":
+          "0px 1px 0px 0px rgba(0,0,0,0.22),0px 0px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 1px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 0px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22);",
       },
     },
   },

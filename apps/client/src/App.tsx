@@ -6,13 +6,11 @@ import { Navigate, Outlet, RouterProvider } from "react-router-dom";
 import "./App.css";
 import { Signin } from "./pages/Signin/Signin.tsx";
 import { Signup } from "./pages/Signup/Signup.tsx";
-import { Contests } from "./pages/MyContests/MyContests.tsx";
-import { CompileContest } from "./pages/CompileContest/CompileContest.tsx";
-import { Lobby } from "./pages/Lobby/Lobby.tsx";
 import { createBrowserRouter } from "react-router-dom";
-import ActiveContests from "./pages/ActiveContests/ActiveContests.tsx";
 import { Protected } from "./services/auth.ts";
 import { RecoilRoot } from "recoil";
+import PlayOptions from "./pages/PlayGame/PlayOptions.tsx";
+import MyQuestions from "./pages/MyQuestions/MyQuestions.tsx";
 
 const router = createBrowserRouter([
   {
@@ -22,24 +20,16 @@ const router = createBrowserRouter([
     id: "root",
     children: [
       {
-        path: "/my-contests",
-        element: <Contests />,
-      },
-      {
-        path: "/active-contests",
-        element: <ActiveContests />,
-      },
-      {
-        path: "lobby",
-        element: <Lobby />,
-      },
-      {
-        path: "compile-contest",
-        element: <CompileContest />,
-      },
-      {
         index: true,
-        element: <Navigate to={"/active-contests"} />,
+        element: <PlayOptions />,
+      },
+      {
+        path: "/my-questions",
+        element: <MyQuestions />,
+      },
+      {
+        path: "*",
+        element: <Navigate to={"/"} />,
       },
     ],
   },
@@ -74,7 +64,7 @@ const App = () => {
 
 function Layout() {
   return (
-    <div className="bg-slate-900">
+    <div className="app">
       <NavBar />
       <Outlet />
     </div>

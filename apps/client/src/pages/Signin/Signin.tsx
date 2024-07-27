@@ -19,7 +19,7 @@ export const Signin = () => {
   } = useForm<SigninBody>();
 
   const onSubmit: SubmitHandler<SigninBody> = (data) => {
-    signin(data.username, data.password);
+    signin(data);
   };
 
   return (

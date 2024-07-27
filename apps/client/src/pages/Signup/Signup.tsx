@@ -20,7 +20,7 @@ export const Signup = () => {
   } = useForm<SignupBody>();
 
   const onSubmit: SubmitHandler<SignupBody> = (data) => {
-    signup(data.username, data.email, data.password);
+    signup(data);
   };
 
   return (
@@ -44,9 +44,9 @@ export const Signup = () => {
                 inputLabel="First Name"
                 inputType="text"
                 placeholder="john"
-                register={register("username", { required: true })}
+                register={register("first_name", { required: true })}
                 error={errors.username}
-                errorMessage="Username is required"
+                errorMessage="First Name is required"
               />
               <Input
                 inputLabel="Last Name"
@@ -54,7 +54,7 @@ export const Signup = () => {
                 placeholder="john"
                 register={register("last_name", { required: true })}
                 error={errors.username}
-                errorMessage="Username is required"
+                errorMessage="Last Name is required"
               />
             </div>
             <Input

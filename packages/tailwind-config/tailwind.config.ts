@@ -34,7 +34,7 @@ const config: Partial<Config> = {
         "slide-down-fade": "slide-down-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-left-fade": "slide-left-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         // Navigation menu
-        "enter-from-right": "enter-from-right 0.15s ease",
+        "enter-from-right": "enter-from-right 1s ease",
         "enter-from-left": "enter-from-left 0.15s ease",
         "exit-to-right": "exit-to-right 0.15s ease",
         "exit-to-left": "exit-to-left 0.15s ease",
@@ -81,7 +81,7 @@ const config: Partial<Config> = {
         },
         // Navigation menu
         "enter-from-right": {
-          "0%": { transform: "translateX(200px)", opacity: "0" },
+          "0%": { transform: "translateX(100px)", opacity: "0" },
           "100%": { transform: "translateX(0)", opacity: "1" },
         },
         "enter-from-left": {

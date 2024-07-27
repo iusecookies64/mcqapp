@@ -10,21 +10,29 @@ export const NavBar = () => {
       <div className="title" onClick={() => navigate("/")}>
         MCQ Battle
       </div>
-      <ul className="flex gap-6">
+      <ul className="flex gap-12 text-lg font-medium">
         <li>
           <NavLink
-            to="/active-contests"
+            to="/"
             className={({ isActive }) => (isActive ? "active-link" : "")}
           >
-            Active Contests
+            Play Game
           </NavLink>
         </li>
         <li>
           <NavLink
-            to="/my-contests"
+            to="/my-questions"
             className={({ isActive }) => (isActive ? "active-link" : "")}
           >
-            My Contests
+            My Questions
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/past-games"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            Past Games
           </NavLink>
         </li>
       </ul>

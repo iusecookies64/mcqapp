@@ -23,7 +23,6 @@ const createUserQuery = `
 INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5);
 `;
 export const Signup = asyncErrorHandler(async (req, res) => {
-  console.log(req.body);
   const { success, data } = SignupInput.safeParse(req.body);
   if (!success)
     throw new CustomError("Invalid Input", StatusCodes.InvalidInput);

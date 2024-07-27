@@ -8,16 +8,18 @@ import {
   SetRefreshToken,
   setAccessToken,
 } from "../services/authToken.cookie";
+import { SigninBody, SignupBody } from "@mcqapp/validations";
+import { SigninResponse } from "@mcqapp/types";
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const signup = (username: string, email: string, password: string) => {
+  const signup = (data: SignupBody) => {
     setIsLoading(true);
     setError(false);
-    api.post("/users/signup", { username, email, password }).then(
+    api.post("/users/signup", data).then(
       (response) => {
         setIsLoading(false);
         toast.success(response.data.message);
@@ -32,17 +34,18 @@ export const useAuth = () => {
     );
   };
 
-  const signin = (username: string, password: string) => {
+  const signin = (data: SigninBody) => {
     setIsLoading(true);
     setError(false);
-    api.post("/users/signin", { username, password }).then(
+    api.post("/users/signin", data).then(
       (response) => {
+        const { message, data } = response.data as SigninResponse;
         // storing token in local storage
-        setAccessToken(response.data.access_token, response.data.expiresIn);
-        SetRefreshToken(response.data.refresh_token);
+        setAccessToken(data.access_token, data.expiresIn);
+        SetRefreshToken(data.refresh_token);
         setIsLoading(false);
-        toast.success(response.data.message);
-        navigate("/active-contests");
+        toast.success(message);
+        navigate("/");
       },
       (err) => {
         errorHandler(err);
