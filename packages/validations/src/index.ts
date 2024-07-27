@@ -6,6 +6,7 @@ export const SignupInput = z.object({
   last_name: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
+  confirm_password: z.string().min(6),
 });
 
 export type SignupBody = z.infer<typeof SignupInput>;
@@ -55,7 +56,36 @@ export type DeleteQuestionBody = z.infer<typeof DeleteQuestionInput>;
 export const InitGameInput = z.object({
   topic_id: z.number().min(1),
   is_random: z.boolean(),
-  is_duel: z.boolean(),
 });
 
 export type InitGameBody = z.infer<typeof InitGameInput>;
+
+export const JoinGameInput = z.object({
+  game_id: z.string().min(1),
+});
+
+export type JoinGameBody = z.infer<typeof JoinGameInput>;
+
+export const LeaveGameInput = JoinGameInput;
+
+export type LeaveGameBody = JoinGameBody;
+
+export const NextQuestionInput = JoinGameInput;
+
+export type NextQuestionBody = JoinGameBody;
+
+export const SubmitResponseInput = z.object({
+  game_id: z.string().min(1),
+  question_id: z.number().min(1),
+  response: z.number().min(1),
+});
+
+export type SubmitResponseBody = z.infer<typeof SubmitResponseInput>;
+
+export const SendInvitationInput = z.object({
+  game_id: z.string().min(1),
+  topic: z.string().min(1),
+  user_id: z.number().min(1),
+});
+
+export type SendInvitationBody = z.infer<typeof SendInvitationInput>;

@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import { WebSocketServer } from "ws";
 import extractAuthUser from "./auth/auth";
 import url from "url";
@@ -11,6 +13,7 @@ wss.on("connection", (ws, req) => {
   const userData = extractAuthUser(token);
   if (userData) {
     const user = new User(userData, ws);
+    console.log("user came", user.user_id, user.username);
     UserManager.getInstance().addUser(user);
   }
 });

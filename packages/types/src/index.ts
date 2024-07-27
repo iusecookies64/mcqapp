@@ -86,6 +86,10 @@ export enum SocketMessageType {
   USER_LEFT = "user_left",
   GAME_ENDED = "game_ended",
   NEW_HOST = "new_host",
+  SUBMIT_RESPONSE = "submit_response",
+  USER_RESPONSE = "user_response",
+  SEND_INVITATTION = "send_invitation",
+  INVITATION = "invitation",
 }
 
 export interface SocketMessage {
@@ -93,32 +97,48 @@ export interface SocketMessage {
   payload: any;
 }
 
-export type JoinGameBody = {
-  game_id: string;
-};
-
-export type LeaveGameBody = JoinGameBody;
-
-export type GetNextQuestionBody = JoinGameBody;
-
-export type NewUserBody = {
+export type NewUserResponse = {
   user_id: number;
   username: string;
   score: 0;
 };
 
-export type NewHostBody = {
+export type NewHostResponse = {
   user_id: number;
   username: string;
 };
 
-export type GameCreatedBody = {
+export type GameCreatedResponse = {
   game_id: string;
 };
 
-export type GameStartedBody = {
+export type GameStartedResponse = {
   question: Question;
   questionStartTime: number;
 };
 
-export type NextQuestionBody = GameStartedBody;
+export type UserSubmitResponse = {
+  user_id: number;
+  username: string;
+  question_id: number;
+  is_correct: boolean;
+};
+
+export type JoinGameResponse = {
+  game_id: string;
+  players: {
+    user_id: number;
+    username: string;
+    score: number;
+    isHost: boolean;
+  }[];
+};
+
+export type InvitationResponse = {
+  game_id: string;
+  topic: string;
+  username: string;
+  user_id: number;
+};
+
+export type NextQuestionResponse = GameStartedResponse;

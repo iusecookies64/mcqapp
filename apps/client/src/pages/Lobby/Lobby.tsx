@@ -6,7 +6,7 @@ import { Button } from "@mcqapp/ui";
 import { toast } from "react-toastify";
 import { Loader } from "../../components/Loader";
 import { Modal } from "../../components/Modal";
-import { Input } from "../../components/Input";
+import { Input } from "@mcqapp/ui";
 import { DisplayInfo } from "../../components/DisplayInfo";
 import AnimatedCountdown from "../../components/AnimatedCountdown";
 import Countdown from "react-countdown";

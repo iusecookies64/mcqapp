@@ -5,7 +5,7 @@ export interface userJwtClaims {
   user_id: number;
 }
 
-const JWT_SECRET = "123456";
+const JWT_SECRET = process.env.JWT_SECRET || "";
 
 const extractAuthUser = (token: string): userJwtClaims | null => {
   try {

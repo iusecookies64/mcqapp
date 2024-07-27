@@ -1,17 +1,29 @@
 import {
-  GameCreatedBody,
-  GameStartedBody,
-  NewHostBody,
-  NewUserBody,
-  NextQuestionBody,
+  GameCreatedResponse,
+  GameStartedResponse,
+  InvitationResponse,
+  JoinGameResponse,
+  NewHostResponse,
+  NextQuestionResponse,
   Question,
   Response,
   SocketMessage,
   SocketMessageType,
+  UserSubmitResponse,
 } from "@mcqapp/types";
 import { User } from "./User";
 import client from "./db/postgres";
-import { InitGameBody, InitGameInput } from "@mcqapp/validations";
+import {
+  InitGameBody,
+  InitGameInput,
+  JoinGameInput,
+  LeaveGameInput,
+  NextQuestionInput,
+  SendInvitationBody,
+  SendInvitationInput,
+  SubmitResponseBody,
+  SubmitResponseInput,
+} from "@mcqapp/validations";
 import { randomUUID } from "crypto";
 import redisClient from "./db/redis";
 import { userJwtClaims } from "./auth/auth";
@@ -21,13 +33,12 @@ type GameState = {
   game_id: string;
   questions: Question[];
   response: Response[];
-  players: (userJwtClaims & { score: number })[];
   currQuestionNumber: number;
   currQuestionStartTime: number;
   isStarted: boolean;
-  isDuel: boolean;
-  host: userJwtClaims;
 };
+
+type GamePlayer = userJwtClaims & { score: number; isHost: boolean };
 
 export default class GameManager {
   private static instance: GameManager | null = null;
@@ -44,7 +55,7 @@ export default class GameManager {
 
   private async getGameState(game_id: string): Promise<GameState | null> {
     try {
-      const data = await redisClient.get("game:" + game_id);
+      const data = await redisClient.get("game_state:" + game_id);
       if (data) {
         const game: GameState = JSON.parse(data) as GameState;
         return game;
@@ -60,7 +71,7 @@ export default class GameManager {
 
   private async setGameState(game_id: string, game: GameState) {
     try {
-      await redisClient.set("game:" + game_id, JSON.stringify(game));
+      await redisClient.set("game_state:" + game_id, JSON.stringify(game));
     } catch (err) {
       console.log("Error Setting Game State in redis");
       console.log(err);
@@ -69,9 +80,55 @@ export default class GameManager {
 
   private async deleteGameState(game_id: string) {
     try {
-      await redisClient.del("game:" + game_id);
+      await redisClient.del("game_state:" + game_id);
     } catch (err) {
       console.log("Error deleting game state");
+      console.log(err);
+    }
+  }
+
+  private async getGamePlayers(game_id: string) {
+    try {
+      const data = await redisClient.hGetAll("game_players:" + game_id);
+      const players = Object.values(data).map((v) => JSON.parse(v));
+      return players as GamePlayer[];
+    } catch (err) {
+      console.log("Error getting game players");
+      console.log(err);
+    }
+  }
+
+  private async setGamePlayers(game_id: string, players: GamePlayer[]) {
+    try {
+      const data: Record<string, string> = {};
+      players.forEach((p) => {
+        data[p.username] = JSON.stringify(p);
+      });
+
+      await redisClient.hSet("game_players:" + game_id, data);
+    } catch (err) {
+      console.log("Error setting game players");
+      console.log(err);
+    }
+  }
+
+  private async getGamePlayer(game_id: string, username: string) {
+    try {
+      const data = await redisClient.hGet("game_players:" + game_id, username);
+      if (data) {
+        return JSON.parse(data) as GamePlayer;
+      }
+    } catch (err) {
+      console.log("Error getting game player");
+      console.log(err);
+    }
+  }
+
+  private async deleteGamePlayers(game_id: string) {
+    try {
+      await redisClient.del("game_players:" + game_id);
+    } catch (err) {
+      console.log("Error deleting game players");
       console.log(err);
     }
   }
@@ -89,6 +146,10 @@ export default class GameManager {
 
   private async setWaitingGameId(topic_id: number, game_id: string) {
     await redisClient.set("waiting_list:" + topic_id, game_id);
+  }
+
+  private async deleteWaitingGameId(topid_id: number) {
+    await redisClient.del("waiting_list:" + topid_id);
   }
 
   public addHandlers(user: User) {
@@ -110,27 +171,33 @@ export default class GameManager {
 
         // if message to join a game
         if (type === SocketMessageType.JOIN_GAME) {
-          if (payload.game_id) {
-            this.addUserToGame(user, payload.game_id);
-          }
+          const { success, data } = JoinGameInput.safeParse(payload);
+          if (success) this.addUserToGame(user, data.game_id);
         }
 
         // if message to leave a game
         if (type === SocketMessageType.LEAVE_GAME) {
-          if (payload.game_id) {
-            this.removeUserFromGame(user, payload.game_id);
-          }
+          const { success, data } = LeaveGameInput.safeParse(payload);
+          if (success) this.removeUserFromGame(user, data.game_id);
         }
 
         // if message to get next question
-        if (type === SocketMessageType.NEXT_QUESTION) {
-          if (payload.game_id) {
-            this.getNextQuestion(user, payload.game_id);
-          }
+        if (type === SocketMessageType.GET_NEXT_QUESTION) {
+          const { success, data } = NextQuestionInput.safeParse(payload);
+          if (success) this.getNextQuestion(user, data.game_id);
         }
 
         // if message to submit response
-        if(type === SocketMessageType.)
+        if (type === SocketMessageType.SUBMIT_RESPONSE) {
+          const { success, data } = SubmitResponseInput.safeParse(payload);
+          if (success) this.submitResponse(user, data);
+        }
+
+        // if message to send a user invite
+        if (type === SocketMessageType.SEND_INVITATTION) {
+          const { success, data } = SendInvitationInput.safeParse(payload);
+          if (success) this.sendInvite(user, data);
+        }
       } catch (err) {
         console.log("Error adding handlers to the user");
         console.log(err);
@@ -145,6 +212,8 @@ export default class GameManager {
         const game_id = await this.getWaitingGameId(data.topic_id);
         if (game_id) {
           this.addUserToGame(user, game_id);
+          // we also delete game if from waiting list
+          this.deleteWaitingGameId(data.topic_id);
           return;
         }
       }
@@ -156,18 +225,25 @@ export default class GameManager {
       // creating a game with these questions and adding user to game players
       const game: GameState = {
         game_id: randomUUID(),
-        players: [{ user_id: user.user_id, username: user.username, score: 0 }],
         questions: questions,
         response: [],
         currQuestionNumber: 1,
         currQuestionStartTime: Date.now(),
         isStarted: false,
-        isDuel: data.is_duel,
-        host: { user_id: user.user_id, username: user.username },
       };
+      const players: GamePlayer[] = [
+        {
+          user_id: user.user_id,
+          username: user.username,
+          score: 0,
+          isHost: true,
+        },
+      ];
 
-      // storing game in redis
+      // storing game state in redis
       await this.setGameState(game.game_id, game);
+      // storing players list in redis
+      await this.setGamePlayers(game.game_id, players);
 
       // if game is random we store it in waiting list
       await this.setWaitingGameId(data.topic_id, game.game_id);
@@ -181,7 +257,7 @@ export default class GameManager {
       });
 
       // letting user know game created successfully
-      const payload: GameCreatedBody = {
+      const payload: GameCreatedResponse = {
         game_id: game.game_id,
       };
       user.emit(
@@ -199,27 +275,27 @@ export default class GameManager {
   private async addUserToGame(user: User, game_id: string) {
     try {
       // getting gameState from redis
+      const players = await this.getGamePlayers(game_id);
       const game = await this.getGameState(game_id);
-      if (!game) throw Error("Game Doesnt Exist");
+      if (!players) throw Error("No Player Exists");
+      if (!game) throw Error("No Game Exists");
 
       // if user is joining this game for the first time
-      if (!game.players.find((p) => p.user_id === user.user_id)) {
-        // adding user to list of users
-        game.players.push({
+      if (!players.find((p) => p.user_id === user.user_id)) {
+        // adding user to list of players
+        players.push({
           user_id: user.user_id,
           username: user.username,
           score: 0,
+          isHost: false,
         });
-        // updating game state in redis
-        this.setGameState(game.game_id, game);
+        // updating players list in redis
+        this.setGamePlayers(game_id, players);
       }
-
-      // subscribing user to game_id channel
-      PubSubManager.getInstance().subscribe(user.user_id, game.game_id);
 
       // letting other people in this room know
       PubSubManager.getInstance().publish(
-        game.game_id,
+        game_id,
         JSON.stringify({
           type: SocketMessageType.NEW_USER,
           payload: {
@@ -229,17 +305,24 @@ export default class GameManager {
         })
       );
 
+      // subscribing user to game_id channel
+      PubSubManager.getInstance().subscribe(user.user_id, game_id);
+
       // sending user the participants in this room
+      const payload: JoinGameResponse = {
+        game_id,
+        players,
+      };
       user.emit(
         JSON.stringify({
           type: SocketMessageType.GAME_PLAYERS,
-          payload: game.players,
+          payload,
         })
       );
 
       // if game started sending curr question
       if (game.isStarted) {
-        const payload: GameStartedBody = {
+        const payload: GameStartedResponse = {
           question: game.questions[game.currQuestionNumber - 1],
           questionStartTime: game.currQuestionStartTime,
         };
@@ -250,10 +333,8 @@ export default class GameManager {
             payload,
           })
         );
-      }
-
-      // if game not started and this is a duel game then we start the game
-      if (game.isDuel && !game.isStarted) {
+      } else if (players.length >= 2) {
+        // game not started, if participants >= 2 then we start the game
         this.startGame({ gameState: game });
       }
     } catch (err) {
@@ -265,51 +346,51 @@ export default class GameManager {
   private async removeUserFromGame(user: User, game_id: string) {
     try {
       // getting gameState from redis
-      const game = await this.getGameState(game_id);
-      if (!game) throw Error("Game Not Exist");
+      const players = await this.getGamePlayers(game_id);
+      if (!players) throw Error("No Player Exists");
 
-      // removing user from players list if game not started
-      let isHostUpdated = false;
-      if (!game.isStarted) {
-        game.players = game.players.filter((p) => p.user_id !== user.user_id);
-        // if no players left we delete game from redis
-        if (game.players.length === 0) {
-          this.deleteGameState(game_id);
-          return;
+      let isHost = false;
+      const remainingPlayers = players.filter((p) => {
+        if (p.user_id === user.user_id && p.isHost) {
+          isHost = true;
         }
+        return p.user_id !== user.user_id;
+      });
 
-        // if this user was host then updating host to first player
-        if (game.host.user_id === user.user_id) {
-          game.host = game.players[0];
-          isHostUpdated = true;
-        }
-        // uddating game state in redis
-        this.setGameState(game.game_id, game);
+      // no one left so we delete game
+      if (remainingPlayers.length === 0) {
+        await this.deleteGamePlayers(game_id);
+        await this.deleteGameState(game_id);
+        return;
       }
 
       // unsubscribing user from game_id channel
-      PubSubManager.getInstance().unsubscribe(user.user_id, game.game_id);
+      PubSubManager.getInstance().unsubscribe(user.user_id, game_id);
 
       // publishing user left in game_id channel
       PubSubManager.getInstance().publish(
-        game.game_id,
+        game_id,
         JSON.stringify({
           type: SocketMessageType.USER_LEFT,
           payload: { user_id: user.user_id, username: user.username },
         })
       );
 
-      // if host changed publishing in game_id channel new host
-      if (isHostUpdated) {
-        const payload: NewHostBody = {
-          user_id: game.players[0].user_id,
-          username: game.players[0].username,
+      // if player was host
+      if (isHost) {
+        const payload: NewHostResponse = {
+          user_id: remainingPlayers[0].user_id,
+          username: remainingPlayers[0].username,
         };
         PubSubManager.getInstance().publish(
           game_id,
           JSON.stringify({ type: SocketMessageType.NEW_HOST, payload })
         );
+        remainingPlayers[0].isHost = true;
       }
+
+      // saving new players list in redis
+      await this.setGamePlayers(game_id, remainingPlayers);
     } catch (err) {
       console.log("Error removing User");
       console.log(err);
@@ -330,7 +411,7 @@ export default class GameManager {
         game.currQuestionStartTime = Date.now();
         game.isStarted = true;
         // publishing the game started with first question in the room
-        const payload: GameStartedBody = {
+        const payload: GameStartedResponse = {
           question: game.questions[game.currQuestionNumber - 1],
           questionStartTime: game.currQuestionStartTime,
         };
@@ -350,40 +431,92 @@ export default class GameManager {
     }
   }
 
+  private async submitResponse(user: User, data: SubmitResponseBody) {
+    try {
+      // getting game data
+      const game = await this.getGameState(data.game_id);
+      if (game) {
+        const currQuestion = game.questions[game.currQuestionNumber - 1];
+        const questionStartTime = game.currQuestionStartTime;
+        // if question expired or response not same as current question we return
+        if (
+          this.isQuestionExpired(questionStartTime, currQuestion.time_limit) ||
+          currQuestion.question_id !== data.question_id
+        ) {
+          return;
+        }
+
+        let is_correct = false;
+        if (data.response === currQuestion.answer) {
+          is_correct = true;
+          // updating user score
+          const player = await this.getGamePlayer(data.game_id, user.username);
+          if (player) {
+            player.score += currQuestion.difficulty * 50;
+            await this.setGamePlayers(data.game_id, [player]);
+          }
+        }
+
+        // publish correct answer by user in game_id channel
+        const payload: UserSubmitResponse = {
+          user_id: user.user_id,
+          username: user.username,
+          question_id: data.question_id,
+          is_correct,
+        };
+        PubSubManager.getInstance().publish(
+          data.game_id,
+          JSON.stringify({
+            type: SocketMessageType.USER_RESPONSE,
+            payload,
+          })
+        );
+      }
+    } catch (err) {
+      console.log("Error in submitResponse");
+      console.log(err);
+    }
+  }
+
   private async getNextQuestion(user: User, game_id: string) {
-    // getting game state
-    const game = await this.getGameState(game_id);
-    if (game) {
-      // current question time expired then we send the next question
-      const questionStartTime = game.currQuestionStartTime;
-      const questionTimeLimit =
-        game.questions[game.currQuestionNumber - 1].time_limit;
+    try {
+      // getting game state
+      const game = await this.getGameState(game_id);
+      if (game) {
+        // current question time expired then we send the next question
+        const questionStartTime = game.currQuestionStartTime;
+        const questionTimeLimit =
+          game.questions[game.currQuestionNumber - 1].time_limit;
 
-      // question expired so we increase question number
-      if (this.isQuestionExpired(questionStartTime, questionTimeLimit)) {
-        game.currQuestionNumber += 1;
-        game.currQuestionStartTime = Date.now();
-        // updating game state in redis
-        await this.setGameState(game.game_id, game);
+        // question expired so we increase question number
+        if (this.isQuestionExpired(questionStartTime, questionTimeLimit)) {
+          game.currQuestionNumber += 1;
+          game.currQuestionStartTime = Date.now();
+          // updating game state in redis
+          await this.setGameState(game.game_id, game);
+        }
+
+        // if this is the last question then we send game ended
+        if (game.questions.length === game.currQuestionNumber) {
+          this.gameEnded(user);
+          return;
+        }
+
+        const payload: NextQuestionResponse = {
+          question: game.questions[game.currQuestionNumber - 1],
+          questionStartTime: game.currQuestionStartTime,
+        };
+
+        user.emit(
+          JSON.stringify({
+            type: SocketMessageType.NEXT_QUESTION,
+            payload,
+          })
+        );
       }
-
-      // if this is the last question then we send game ended
-      if (game.questions.length === game.currQuestionNumber) {
-        this.gameEnded(user);
-        return;
-      }
-
-      const payload: NextQuestionBody = {
-        question: game.questions[game.currQuestionNumber - 1],
-        questionStartTime: game.currQuestionStartTime,
-      };
-
-      user.emit(
-        JSON.stringify({
-          type: SocketMessageType.NEXT_QUESTION,
-          payload,
-        })
-      );
+    } catch (err) {
+      console.log("Error in getNextQuestion");
+      console.log(err);
     }
   }
 
@@ -416,6 +549,27 @@ export default class GameManager {
       return result2.rows;
     } catch (err) {
       console.log("Error getting random questions");
+    }
+  }
+
+  private async sendInvite(user: User, data: SendInvitationBody) {
+    try {
+      const payload: InvitationResponse = {
+        game_id: data.game_id,
+        topic: data.topic,
+        user_id: user.user_id,
+        username: user.username,
+      };
+      PubSubManager.getInstance().publish(
+        `user.${data.user_id}`,
+        JSON.stringify({
+          type: SocketMessageType.INVITATION,
+          payload,
+        })
+      );
+    } catch (err) {
+      console.log("Error sending invitation");
+      console.log(err);
     }
   }
 }

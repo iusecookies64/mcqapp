@@ -15,7 +15,7 @@
 }
 
 .scores-container > div:nth-of-type(odd) {
-  @apply bg-slate-100 dark:bg-gray-dark;
+  @apply bg-slate-100 dark:bg-slate-900;
 }
 
 .questions-container {

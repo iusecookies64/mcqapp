@@ -4,7 +4,7 @@ import {
 } from "../../../hooks/useMyContestList";
 import { Modal } from "../../../components/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Input } from "../../../components/Input";
+import { Input } from "@mcqapp/ui";
 import { Button } from "@mcqapp/ui";
 import { toast } from "react-toastify";
 import { Loader } from "../../../components/Loader";

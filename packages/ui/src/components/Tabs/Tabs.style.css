@@ -1,5 +1,5 @@
 .tabs-container {
-  @apply relative dark:text-purple;
+  @apply relative dark:text-purple-500;
 }
 
 .tabs {

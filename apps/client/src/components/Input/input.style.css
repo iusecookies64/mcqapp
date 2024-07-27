@@ -1,7 +1,0 @@
-.custom-input {
-  @apply flex flex-col gap-1 items-start w-full text-sm font-medium dark:text-gray-light;
-}
-
-.custom-input > input {
-  @apply border border-gray-dark text-lg dark:border-b-gray rounded p-2 outline-none w-full dark:bg-inherit;
-}

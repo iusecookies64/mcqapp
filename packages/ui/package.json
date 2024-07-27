@@ -2,9 +2,9 @@
   "name": "@mcqapp/ui",
   "version": "1.0.0",
   "description": "'ui components for mcq app'",
-  "main": "dist/index.js",
-  "module": "src/index.js",
-  "types": "src/index.ts",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
   "scripts": {
     "build": "tsc -b"
   },

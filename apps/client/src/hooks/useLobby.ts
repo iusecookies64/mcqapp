@@ -46,9 +46,8 @@ type ContestDataLobby = {
 
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
-const socket = io(BASE_API_URL);
-
 export const useLobby = (contest_id: number) => {
+  const socket = io(BASE_API_URL);
   const userData = useRouteLoaderData("root") as User;
   const [questions, setQuestions] = useState<QuestionWithOptions[]>([]);
   const [response, setResponse] = useState<ResponseTable[]>([]);

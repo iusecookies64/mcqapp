@@ -12,6 +12,7 @@ import { Lobby } from "./pages/Lobby/Lobby.tsx";
 import { createBrowserRouter } from "react-router-dom";
 import ActiveContests from "./pages/ActiveContests/ActiveContests.tsx";
 import { Protected } from "./services/auth.ts";
+import { RecoilRoot } from "recoil";
 
 const router = createBrowserRouter([
   {
@@ -54,7 +55,7 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <>
+    <RecoilRoot>
       <RouterProvider router={router} />
       <ToastContainer
         position="top-right"
@@ -67,13 +68,13 @@ const App = () => {
         theme="dark"
       />
       <Tooltip id="my-tooltip" />
-    </>
+    </RecoilRoot>
   );
 };
 
 function Layout() {
   return (
-    <div className="app">
+    <div className="bg-slate-900">
       <NavBar />
       <Outlet />
     </div>

@@ -12,5 +12,5 @@
 
 .navbar a:hover,
 .navbar a.active-link {
-  @apply text-white dark:text-yellow bg-primary;
+  @apply text-white dark:text-yellow bg-slate-900;
 }

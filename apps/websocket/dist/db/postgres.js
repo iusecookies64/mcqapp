@@ -6,7 +6,7 @@ const client = new pg_1.Client({
 });
 client.connect((err) => {
     if (err) {
-        console.log("error connecting to db");
+        console.log("error connecting to db postgres");
     }
     else {
         console.log("Connected to db successfully");

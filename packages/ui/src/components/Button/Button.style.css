@@ -1,9 +1,9 @@
 .custom-button {
-  @apply rounded font-medium;
+  @apply rounded-lg font-medium;
 }
 
 .button-primary {
-  @apply bg-black text-gray-light dark:bg-purple;
+  @apply text-white bg-purple-600;
 }
 
 .button-secondary {

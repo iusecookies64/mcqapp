@@ -1,7 +1,7 @@
 .signup-container {
-  @apply h-[100dvh] dark:bg-primary dark:text-gray-light flex flex-col;
+  @apply h-[100dvh] dark:bg-slate-950 dark:text-slate-50 flex flex-col;
 }
 
 .signup-form {
-  @apply dark:bg-gray-dark p-8 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-96 relative;
+  @apply dark:bg-slate-900 p-8 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-lg relative;
 }

@@ -1,5 +1,4 @@
-import { Button } from "@mcqapp/ui";
-import { Input } from "../../components/Input";
+import { Button, Input } from "@mcqapp/ui";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
@@ -7,7 +6,7 @@ import { Loader } from "../../components/Loader";
 import { DisplayInfo } from "../../components/DisplayInfo";
 import ThemeToggle from "../../components/Theme";
 import "./Signin.style.css";
-import { SigninInput } from "@mcqapp/validations";
+import { SigninBody } from "@mcqapp/validations";
 
 export const Signin = () => {
   const navigate = useNavigate();
@@ -17,15 +16,15 @@ export const Signin = () => {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<SigninInput>();
+  } = useForm<SigninBody>();
 
-  const onSubmit: SubmitHandler<SigninInput> = (data) => {
+  const onSubmit: SubmitHandler<SigninBody> = (data) => {
     signin(data.username, data.password);
   };
 
   return (
     <div className="signin-container">
-      <div className="flex justify-between items-center px-12 py-6">
+      <div className="flex justify-between items-center px-12 py-6 ani">
         <div className="text-2xl font-medium cursor-pointer;">MCQ Battle</div>
         <ThemeToggle />
       </div>

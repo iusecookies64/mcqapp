@@ -1,5 +1,4 @@
-import { Button } from "@mcqapp/ui";
-import { Input } from "../../components/Input";
+import { Button, Input } from "@mcqapp/ui";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -7,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/Loader";
 import { DisplayInfo } from "../../components/DisplayInfo";
 import ThemeToggle from "../../components/Theme";
-import { SignupInput } from "@mcqapp/validations";
+import { SignupBody } from "@mcqapp/validations";
 
 export const Signup = () => {
   const { isLoading, error, signup } = useAuth();
@@ -18,9 +17,9 @@ export const Signup = () => {
     watch,
     formState: { errors },
     handleSubmit,
-  } = useForm<SignupInput>();
+  } = useForm<SignupBody>();
 
-  const onSubmit: SubmitHandler<SignupInput> = (data) => {
+  const onSubmit: SubmitHandler<SignupBody> = (data) => {
     signup(data.username, data.email, data.password);
   };
 
@@ -33,29 +32,31 @@ export const Signup = () => {
       <div className="w-full h-full flex justify-center items-center">
         <div className={`signup-form ${(isLoading || error) && "invisible"}`}>
           <div className="text-2xl font-medium flex justify-center">
-            Sign Up
+            Create New Account
           </div>
           <form
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
           >
-            <Input
-              inputLabel="First Name"
-              inputType="text"
-              placeholder="john"
-              register={register("username", { required: true })}
-              error={errors.username}
-              errorMessage="Username is required"
-            />
-            <Input
-              inputLabel="Last Name"
-              inputType="text"
-              placeholder="john"
-              register={register("lastName", { required: true })}
-              error={errors.username}
-              errorMessage="Username is required"
-            />
+            <div className="flex gap-4">
+              <Input
+                inputLabel="First Name"
+                inputType="text"
+                placeholder="john"
+                register={register("username", { required: true })}
+                error={errors.username}
+                errorMessage="Username is required"
+              />
+              <Input
+                inputLabel="Last Name"
+                inputType="text"
+                placeholder="john"
+                register={register("last_name", { required: true })}
+                error={errors.username}
+                errorMessage="Username is required"
+              />
+            </div>
             <Input
               inputLabel="Username"
               inputType="text"
@@ -92,11 +93,11 @@ export const Signup = () => {
               inputLabel="Confirm Password"
               inputType="text"
               placeholder="*******"
-              register={register("confirmPassword", {
+              register={register("confirm_password", {
                 required: true,
                 validate: (value) => value === watch("password"),
               })}
-              error={errors.confirmPassword}
+              error={errors.confirm_password}
               errorMessage="Confirm Password Does Not Match Password"
             />
             <Button className="mt-2" type="submit">
@@ -106,7 +107,7 @@ export const Signup = () => {
           <div className="flex justify-center gap-2">
             Already have an account?{" "}
             <span
-              className="text-slate-300 cursor-pointer"
+              className="text-purple-400 cursor-pointer"
               onClick={() => navigate("/signin")}
             >
               Sign In

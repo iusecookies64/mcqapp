@@ -1,0 +1,32 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SocketMessageType = exports.StatusCodes = void 0;
+var StatusCodes;
+(function (StatusCodes) {
+    StatusCodes[StatusCodes["Success"] = 200] = "Success";
+    StatusCodes[StatusCodes["InvalidInput"] = 422] = "InvalidInput";
+    StatusCodes[StatusCodes["BadRequest"] = 400] = "BadRequest";
+    StatusCodes[StatusCodes["Unauthorized"] = 401] = "Unauthorized";
+    StatusCodes[StatusCodes["AccessForbidden"] = 403] = "AccessForbidden";
+    StatusCodes[StatusCodes["NotFound"] = 404] = "NotFound";
+    StatusCodes[StatusCodes["InternalServerError"] = 500] = "InternalServerError";
+})(StatusCodes || (exports.StatusCodes = StatusCodes = {}));
+var SocketMessageType;
+(function (SocketMessageType) {
+    SocketMessageType["INIT_GAME"] = "initialize_game";
+    SocketMessageType["JOIN_GAME"] = "join_game";
+    SocketMessageType["LEAVE_GAME"] = "leave_game";
+    SocketMessageType["NEW_USER"] = "new_user";
+    SocketMessageType["GAME_CREATED"] = "game_created";
+    SocketMessageType["GAME_STARTED"] = "game_started";
+    SocketMessageType["GAME_PLAYERS"] = "game_players";
+    SocketMessageType["GET_NEXT_QUESTION"] = "get_next_question";
+    SocketMessageType["NEXT_QUESTION"] = "next_question";
+    SocketMessageType["USER_LEFT"] = "user_left";
+    SocketMessageType["GAME_ENDED"] = "game_ended";
+    SocketMessageType["NEW_HOST"] = "new_host";
+    SocketMessageType["SUBMIT_RESPONSE"] = "submit_response";
+    SocketMessageType["USER_RESPONSE"] = "user_response";
+    SocketMessageType["SEND_INVITATTION"] = "send_invitation";
+    SocketMessageType["INVITATION"] = "invitation";
+})(SocketMessageType || (exports.SocketMessageType = SocketMessageType = {}));
