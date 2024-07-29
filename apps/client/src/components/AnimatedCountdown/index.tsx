@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 const AnimatedCountdown = ({
   timeInSec,
@@ -28,24 +27,14 @@ const AnimatedCountdown = ({
   return (
     <div className="w-full h-full flex-grow flex justify-center items-center">
       {!isFinished && (
-        <motion.div
-          className="text-[150px] font-bold opacity-0"
-          animate={{ scale: 0.3, opacity: 1 }}
-          transition={{ ease: "easeIn" }}
-          key={current}
-        >
+        <div className="text-[150px] font-bold opacity-0" key={current}>
           {current}
-        </motion.div>
+        </div>
       )}
       {isFinished && (
-        <motion.div
-          className="text-[150px] font-bold opacity-0"
-          animate={{ scale: 0.5, opacity: 1 }}
-          transition={{ ease: "easeIn" }}
-          key={"start"}
-        >
+        <div className="text-[150px] font-bold opacity-0" key={"start"}>
           Start
-        </motion.div>
+        </div>
       )}
     </div>
   );

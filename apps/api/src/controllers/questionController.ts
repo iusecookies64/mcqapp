@@ -16,7 +16,7 @@ import {
 } from "@mcqapp/types";
 
 const createQuestionQuery = `
-INSERT INTO questions (created_by, topics, statement, answer, option1, option2, option3, option4, difficulty, time_limit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+INSERT INTO questions (created_by, topics, statement, answer, option1, option2, option3, option4, difficulty, time_limit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
 `;
 export const CreateQuestion = asyncErrorHandler(async (req, res) => {
   const { success, data } = CreateQuestionInput.safeParse(req.body);
@@ -26,7 +26,7 @@ export const CreateQuestion = asyncErrorHandler(async (req, res) => {
     throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
 
   // adding question to database
-  await client.query(createQuestionQuery, [
+  const result = await client.query(createQuestionQuery, [
     user_id,
     data.topics,
     data.statement,
@@ -42,6 +42,7 @@ export const CreateQuestion = asyncErrorHandler(async (req, res) => {
   const response: CreateQuestionResponse = {
     message: "Question Added Successfully",
     status: "success",
+    data: result.rows[0],
   };
 
   res.status(200).json(response);

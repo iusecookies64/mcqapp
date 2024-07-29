@@ -1,10 +1,11 @@
-import { Button, Input } from "@mcqapp/ui";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 import "./Signup.style.css";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/Loader";
-import { DisplayInfo } from "../../components/DisplayInfo";
+import DisplayInfo from "../../components/DisplayInfo";
 import ThemeToggle from "../../components/Theme";
 import { SignupBody } from "@mcqapp/validations";
 

@@ -1,0 +1,19 @@
+.dropdown-container {
+  @apply relative;
+}
+
+.dropdown-button {
+  @apply relative z-10 bg-slate-100 dark:bg-slate-950 p-3 border border-slate-400 rounded-sm cursor-pointer;
+}
+
+.dropdown-menu {
+  @apply absolute w-full mt-1 top-full left-0 animate-enter-from-top max-h-96 overflow-x-hidden overflow-y-auto border border-slate-400 dark:border-none bg-slate-100 dark:bg-slate-900 rounded-sm;
+}
+
+.dropdown-item {
+  @apply p-3 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700;
+}
+
+.dropdown-accordion {
+  @apply absolute top-1/2 right-0 -translate-x-1/2 -translate-y-1/2 z-20 transition-all duration-150;
+}

@@ -10,6 +10,7 @@ import { FaGear, FaTrashCan, FaXmark } from "react-icons/fa6";
 import { FiMoon } from "react-icons/fi";
 import { IoMdExit, IoMdSunny } from "react-icons/io";
 import { IoInformationOutline } from "react-icons/io5";
+import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { TbGripVertical } from "react-icons/tb";
 
 export enum IconList {
@@ -27,6 +28,7 @@ export enum IconList {
   moon,
   chevrondown,
   chevronup,
+  search,
 }
 
 type Props = {
@@ -79,6 +81,11 @@ export const Icon = ({ icon, className }: Props) => {
       {icon === IconList.chevronup && (
         <FaChevronUp className={`${className} dark:text-white`} />
       )}
+      {icon === IconList.search && (
+        <HiMiniMagnifyingGlass className={`${className} dark:text-white`} />
+      )}
     </>
   );
 };
+
+export default Icon;

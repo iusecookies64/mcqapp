@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { GetAccessToken, setAccessToken } from "./authToken.cookie";
-import { RequestMethods } from "../types/requests";
 import { redirect } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ClearAll } from "./authToken.cookie";
@@ -72,48 +71,6 @@ api.interceptors.response.use(
   }
 );
 
-// function to handle repetitive task of setting isLoading, error
-export const sendRequest = (
-  method: RequestMethods,
-  url: string,
-  data: object,
-  responseHandler: (response: AxiosResponse) => void,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setError: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  // setting error and loading states
-  setIsLoading(true);
-  setError(false);
-
-  // sending request based on method type
-  if (method !== "post") {
-    api[method](url).then(
-      (response) => {
-        responseHandler(response);
-        setIsLoading(false);
-      },
-      (err) => {
-        setIsLoading(false);
-        setError(true);
-        errorHandler(err);
-      }
-    );
-  } else {
-    api.post(url, data).then(
-      (response) => {
-        responseHandler(response);
-        setIsLoading(false);
-      },
-      (err) => {
-        setIsLoading(false);
-        setError(true);
-        setTimeout(() => setError(false), 5000);
-        errorHandler(err);
-      }
-    );
-  }
-};
-
 export const errorHandler = (err: AxiosError) => {
   if (err.status === 401) {
     // token is invalid so we delete token and redirect to signin
@@ -125,5 +82,22 @@ export const errorHandler = (err: AxiosError) => {
     toast.error(response.data.message);
   }
 };
+
+enum Method {
+  get = "get",
+  post = "post",
+}
+
+export const apiConfig = {
+  signin: { type: Method.post, endpoint: "/users/signin" },
+  signup: { type: Method.post, endpoint: "/users/signup" },
+  protected: { type: Method.get, endpoint: "/users/protected" },
+  createQuestion: { type: Method.post, endpoint: "/question/create" },
+  updateQuestion: { type: Method.post, endpoint: "/question/update" },
+  deleteQuestion: { type: Method.post, endpoint: "/question/delete" },
+  getMyQuestions: { type: Method.get, endpoint: "/question/my-questions" },
+};
+
+export type apiConfigType = typeof apiConfig;
 
 export default api;

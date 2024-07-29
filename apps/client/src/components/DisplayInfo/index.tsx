@@ -5,7 +5,7 @@ type Props = {
   type: "error" | "info";
 };
 
-export const DisplayInfo = ({ message, type }: Props) => {
+const DisplayInfo = ({ message, type }: Props) => {
   return (
     <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center">
       <div className="flex flex-col gap-4 items-center ">
@@ -24,3 +24,5 @@ export const DisplayInfo = ({ message, type }: Props) => {
     </div>
   );
 };
+
+export default DisplayInfo;

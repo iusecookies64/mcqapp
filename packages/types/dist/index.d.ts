@@ -32,7 +32,9 @@ export interface RefreshTokenReponse extends ApiResponse {
         username: string;
     };
 }
-export type CreateQuestionResponse = ApiResponse;
+export interface CreateQuestionResponse extends ApiResponse {
+    data: Question;
+}
 export type UpdateQuestionResponse = ApiResponse;
 export type DeleteQuestionResponse = ApiResponse;
 export type Question = {

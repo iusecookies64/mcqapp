@@ -1,7 +1,0 @@
-.custom-textarea {
-  @apply flex flex-col gap-1 items-start w-full text-sm font-medium dark:text-gray-light;
-}
-
-.custom-textarea > textarea {
-  @apply border border-gray-dark dark:border-b-gray rounded p-2 h-min outline-none w-full dark:bg-inherit overflow-hidden resize-none;
-}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UpdateQuestionData } from "../../hooks/useCompileContest";
+import { UpdateQuestionData } from "../../hooks/useMyQuestions";
 import { UpdateQuestionForm } from "../../pages/CompileContest/components/UpdateQuestionForm";
 import { QuestionWithOptions } from "../../types/models";
 import { Button } from "@mcqapp/ui";

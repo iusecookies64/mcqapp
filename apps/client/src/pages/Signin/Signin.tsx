@@ -1,9 +1,10 @@
-import { Button, Input } from "@mcqapp/ui";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/Loader";
-import { DisplayInfo } from "../../components/DisplayInfo";
+import DisplayInfo from "../../components/DisplayInfo";
 import ThemeToggle from "../../components/Theme";
 import "./Signin.style.css";
 import { SigninBody } from "@mcqapp/validations";
@@ -52,12 +53,9 @@ export const Signin = () => {
               placeholder="*******"
               register={register("password", {
                 required: true,
-                minLength: 6,
-                pattern:
-                  /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,}$/,
               })}
               error={errors.password}
-              errorMessage="Password must be at least 6 characters long, with one uppercase letter, one digit, and one special character."
+              errorMessage="Password is required"
             />
             <Button className="mt-2" type="submit">
               Submit

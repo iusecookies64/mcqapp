@@ -1,7 +1,7 @@
 import { atom } from "recoil";
-import { QuestionWithOptions } from "../types/models";
+import { Question } from "@mcqapp/types";
 
-export const questionsAtom = atom<QuestionWithOptions[]>({
+export const questionsAtom = atom<Question[] | null>({
   key: "questionAtom",
-  default: [],
+  default: null,
 });

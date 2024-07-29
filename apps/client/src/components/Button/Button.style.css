@@ -1,0 +1,31 @@
+.custom-button {
+  @apply rounded-lg font-medium;
+}
+
+.button-primary {
+  @apply text-white bg-purple-600;
+}
+
+.button-secondary {
+  @apply text-white bg-sky-600;
+}
+
+.button-alert {
+  @apply bg-red-600;
+}
+
+.button-tertiary {
+  @apply bg-transparent;
+}
+
+.button-lg {
+  @apply px-4 py-2 text-lg;
+}
+
+.button-md {
+  @apply px-4 py-2;
+}
+
+.button-sm {
+  @apply px-2 py-2 text-sm;
+}

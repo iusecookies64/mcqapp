@@ -1,0 +1,27 @@
+.questions-card-container {
+  @apply mt-3 rounded-lg w-full max-w-screen-lg text-slate-50 animate-enter-from-top border border-slate-500;
+}
+
+.questions-card-header {
+  @apply bg-slate-800 flex justify-between p-3 border-b border-slate-500;
+}
+
+.questions-card-header .badge {
+  @apply w-16 flex justify-center items-center border-2 text-xs font-medium rounded-3xl;
+}
+
+.questions-card-header .badge-hard {
+  @apply border-red-500 text-red-500;
+}
+
+.questions-card-header .badge-easy {
+  @apply border-green-500 text-green-500;
+}
+
+.questions-card-header .badge-medium {
+  @apply border-yellow-500 text-yellow-500;
+}
+
+.question-statement {
+  @apply p-3;
+}

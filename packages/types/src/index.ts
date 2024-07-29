@@ -38,7 +38,9 @@ export interface RefreshTokenReponse extends ApiResponse {
   };
 }
 
-export type CreateQuestionResponse = ApiResponse;
+export interface CreateQuestionResponse extends ApiResponse {
+  data: Question;
+}
 export type UpdateQuestionResponse = ApiResponse;
 export type DeleteQuestionResponse = ApiResponse;
 

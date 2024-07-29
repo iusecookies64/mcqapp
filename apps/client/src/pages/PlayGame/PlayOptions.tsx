@@ -25,13 +25,13 @@ const PlayOptions = () => {
       </div>
       <div className="flex flex-col gap-8 h-[80%] justify-center">
         <div
-          className="play-game-button bg-purple-600 shadow-big-button shadow-purple-800 hover:bg-purple-500"
+          className="play-game-button bg-purple-600 shadow-big-button shadow-purple-900 hover:bg-purple-500"
           onMouseMove={() => setActiveBanner(1)}
         >
           Play vs Random
         </div>
         <div
-          className="play-game-button bg-blue-600 shadow-big-button shadow-blue-800 hover:bg-blue-500"
+          className="play-game-button bg-blue-600 shadow-big-button shadow-blue-900 hover:bg-blue-500"
           onMouseMove={() => setActiveBanner(2)}
         >
           Play vs Friends
