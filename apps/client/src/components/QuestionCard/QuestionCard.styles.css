@@ -1,9 +1,9 @@
 .question-card-container {
-  @apply w-full h-min bg-gray-light dark:bg-gray-dark rounded-lg flex items-center;
+  @apply w-full h-min rounded-lg flex items-center;
 }
 
 .question-card-draggable-container {
-  @apply w-full h-min p-4 bg-gray-light dark:bg-gray-dark rounded-lg flex items-center;
+  @apply w-full h-min p-4 rounded-lg flex items-center;
 }
 
 .question-container {

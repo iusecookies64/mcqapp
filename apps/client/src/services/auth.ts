@@ -1,13 +1,14 @@
-import { redirect } from "react-router-dom";
-import api from "./api";
-import { toast } from "react-toastify";
+import api, { apiConfig } from "./api";
+import { ProtectedResponse } from "@mcqapp/types";
 
 export const Protected = async () => {
   try {
-    const response = await api.get("/users/protected");
-    return response.data.data;
+    const response = await api[apiConfig.protected.type](
+      apiConfig.protected.endpoint
+    );
+    const { data } = response.data as ProtectedResponse;
+    return data;
   } catch (err) {
-    toast.info("Session Expired, Signin Again");
-    return redirect("/signin");
+    return null;
   }
 };

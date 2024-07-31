@@ -14,6 +14,11 @@ export interface ApiResponse {
   data?: any;
 }
 
+export type User = {
+  user_id: number;
+  username: string;
+};
+
 export type SignupResponse = ApiResponse;
 
 export interface SigninResponse extends ApiResponse {
@@ -21,13 +26,12 @@ export interface SigninResponse extends ApiResponse {
     access_token: string;
     refresh_token: string;
     expiresIn: number;
+    user: User;
   };
 }
 
 export interface ProtectedResponse extends ApiResponse {
-  data: {
-    username: string;
-  };
+  data: User;
 }
 
 export interface RefreshTokenReponse extends ApiResponse {
@@ -73,6 +77,18 @@ export type Topic = {
 
 export interface GetUserQuestionsResponse extends ApiResponse {
   data: Question[];
+}
+
+export interface CreateTopicResponse extends ApiResponse {
+  data: Topic;
+}
+
+export type UpdateTopicResponse = ApiResponse;
+
+export type DeleteTopicResponse = ApiResponse;
+
+export interface GetTopicsResponse extends ApiResponse {
+  data: Topic[];
 }
 
 export enum SocketMessageType {

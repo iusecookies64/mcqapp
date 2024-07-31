@@ -19,7 +19,7 @@ export const SigninInput = SignupInput.pick({
 export type SigninBody = z.infer<typeof SigninInput>;
 
 export const CreateQuestionInput = z.object({
-  topics: z.array(z.string().min(1)),
+  topic_id: z.number().min(1),
   statement: z.string().min(1),
   answer: z.number().min(1).max(4),
   option1: z.string().min(1),
@@ -34,7 +34,7 @@ export type CreateQuestionBody = z.infer<typeof CreateQuestionInput>;
 
 export const UpdateQuestionInput = z.object({
   question_id: z.number().min(1),
-  topics: z.array(z.string().min(1)),
+  topic_id: z.number().min(1),
   statement: z.string().min(1),
   answer: z.number().min(1).max(4),
   option1: z.string().min(1),
@@ -52,6 +52,25 @@ export const DeleteQuestionInput = z.object({
 });
 
 export type DeleteQuestionBody = z.infer<typeof DeleteQuestionInput>;
+
+export const CreateTopicInput = z.object({
+  title: z.string().min(1),
+});
+
+export type CreateTopicBody = z.infer<typeof CreateTopicInput>;
+
+export const UpdateTopicInput = z.object({
+  topic_id: z.number().min(1),
+  new_title: z.string().min(1),
+});
+
+export type UpdateTopicBody = z.infer<typeof UpdateTopicInput>;
+
+export const DeleteTopicInput = z.object({
+  topic_id: z.number().min(1),
+});
+
+export type DeleteTopicBody = z.infer<typeof DeleteTopicInput>;
 
 export const InitGameInput = z.object({
   topic_id: z.number().min(1),

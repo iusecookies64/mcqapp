@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SendInvitationInput = exports.SubmitResponseInput = exports.NextQuestionInput = exports.LeaveGameInput = exports.JoinGameInput = exports.InitGameInput = exports.DeleteQuestionInput = exports.UpdateQuestionInput = exports.CreateQuestionInput = exports.SigninInput = exports.SignupInput = void 0;
+exports.SendInvitationInput = exports.SubmitResponseInput = exports.NextQuestionInput = exports.LeaveGameInput = exports.JoinGameInput = exports.InitGameInput = exports.DeleteTopicInput = exports.UpdateTopicInput = exports.CreateTopicInput = exports.DeleteQuestionInput = exports.UpdateQuestionInput = exports.CreateQuestionInput = exports.SigninInput = exports.SignupInput = void 0;
 const zod_1 = require("zod");
 exports.SignupInput = zod_1.z.object({
     username: zod_1.z.string().min(1),
@@ -15,7 +15,7 @@ exports.SigninInput = exports.SignupInput.pick({
     password: true,
 });
 exports.CreateQuestionInput = zod_1.z.object({
-    topics: zod_1.z.array(zod_1.z.string().min(1)),
+    topic_id: zod_1.z.number().min(1),
     statement: zod_1.z.string().min(1),
     answer: zod_1.z.number().min(1).max(4),
     option1: zod_1.z.string().min(1),
@@ -27,7 +27,7 @@ exports.CreateQuestionInput = zod_1.z.object({
 });
 exports.UpdateQuestionInput = zod_1.z.object({
     question_id: zod_1.z.number().min(1),
-    topics: zod_1.z.array(zod_1.z.string().min(1)),
+    topic_id: zod_1.z.number().min(1),
     statement: zod_1.z.string().min(1),
     answer: zod_1.z.number().min(1).max(4),
     option1: zod_1.z.string().min(1),
@@ -39,6 +39,16 @@ exports.UpdateQuestionInput = zod_1.z.object({
 });
 exports.DeleteQuestionInput = zod_1.z.object({
     question_id: zod_1.z.number().min(1),
+});
+exports.CreateTopicInput = zod_1.z.object({
+    title: zod_1.z.string().min(1),
+});
+exports.UpdateTopicInput = zod_1.z.object({
+    topic_id: zod_1.z.number().min(1),
+    new_title: zod_1.z.string().min(1),
+});
+exports.DeleteTopicInput = zod_1.z.object({
+    topic_id: zod_1.z.number().min(1),
 });
 exports.InitGameInput = zod_1.z.object({
     topic_id: zod_1.z.number().min(1),

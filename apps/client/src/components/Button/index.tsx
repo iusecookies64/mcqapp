@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import "./Button.style.css";
+
 type Props = {
   variant?: "primary" | "secondary" | "tertiary" | "alert";
   size?: "sm" | "md" | "lg" | "xl";

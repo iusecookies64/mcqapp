@@ -7,39 +7,47 @@ import "./App.css";
 import { Signin } from "./pages/Signin/Signin.tsx";
 import { Signup } from "./pages/Signup/Signup.tsx";
 import { createBrowserRouter } from "react-router-dom";
-import { Protected } from "./services/auth.ts";
 import { RecoilRoot } from "recoil";
 import PlayOptions from "./pages/PlayGame/PlayOptions.tsx";
 import MyQuestions from "./pages/MyQuestions/MyQuestions.tsx";
+import { AuthProvider } from "./components/AuthContext/index.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute/index.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    loader: Protected,
     id: "root",
     children: [
       {
         index: true,
-        element: <PlayOptions />,
+        element: (
+          <ProtectedRoute>
+            <PlayOptions />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/my-questions",
-        element: <MyQuestions />,
+        element: (
+          <ProtectedRoute>
+            <MyQuestions />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "*",
         element: <Navigate to={"/"} />,
       },
+      {
+        path: "/signin",
+        element: <Signin />,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
+      },
     ],
-  },
-  {
-    path: "/signin",
-    element: <Signin />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
   },
 ]);
 
@@ -64,10 +72,14 @@ const App = () => {
 
 function Layout() {
   return (
-    <div className="app">
-      <NavBar />
-      <Outlet />
-    </div>
+    <AuthProvider>
+      <div className="app">
+        <NavBar />
+        <div className="outlet-container">
+          <Outlet />
+        </div>
+      </div>
+    </AuthProvider>
   );
 }
 

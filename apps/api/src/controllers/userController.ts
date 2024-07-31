@@ -87,6 +87,7 @@ export const Signin = asyncErrorHandler(async (req, res) => {
       access_token,
       refresh_token,
       expiresIn,
+      user: queryResult.rows[0],
     },
   };
 
@@ -95,12 +96,13 @@ export const Signin = asyncErrorHandler(async (req, res) => {
 
 export const Protected = asyncErrorHandler(async (req, res) => {
   // request reaches here after passing through auth middleware
-  const { username } = req as CustomRequest;
+  const { username, user_id } = req as CustomRequest;
   const response: ProtectedResponse = {
     message: "Valid Token",
     status: "success",
     data: {
-      username: username,
+      username,
+      user_id,
     },
   };
 

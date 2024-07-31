@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npm run dev -ws",
-    "build:packages": "npm run build --workspace=packages/validations --workspace=packages/types --workspace=packages/ui"
+    "build:packages": "npm run build --workspace=packages/validations --workspace=packages/types"
   },
   "author": "Tushar Raghav",
   "license": "ISC",

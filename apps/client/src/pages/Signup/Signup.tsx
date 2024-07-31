@@ -6,8 +6,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/Loader";
 import DisplayInfo from "../../components/DisplayInfo";
-import ThemeToggle from "../../components/Theme";
 import { SignupBody } from "@mcqapp/validations";
+import { toast } from "react-toastify";
 
 export const Signup = () => {
   const { isLoading, error, signup } = useAuth();
@@ -18,18 +18,19 @@ export const Signup = () => {
     watch,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<SignupBody>();
 
   const onSubmit: SubmitHandler<SignupBody> = (data) => {
-    signup(data);
+    signup(data, () => {
+      toast.success("Account Created Successfully");
+      navigate("/signin");
+      reset();
+    });
   };
 
   return (
     <div className="signup-container">
-      <div className="flex justify-between items-center px-12 py-6">
-        <div className="text-2xl font-medium cursor-pointer;">MCQ Battle</div>
-        <ThemeToggle />
-      </div>
       <div className="w-full h-full flex justify-center items-center">
         <div className={`signup-form ${(isLoading || error) && "invisible"}`}>
           <div className="text-2xl font-medium flex justify-center">
@@ -46,7 +47,7 @@ export const Signup = () => {
                 inputType="text"
                 placeholder="john"
                 register={register("first_name", { required: true })}
-                error={errors.username}
+                error={errors.first_name}
                 errorMessage="First Name is required"
               />
               <Input
@@ -54,7 +55,7 @@ export const Signup = () => {
                 inputType="text"
                 placeholder="john"
                 register={register("last_name", { required: true })}
-                error={errors.username}
+                error={errors.last_name}
                 errorMessage="Last Name is required"
               />
             </div>
@@ -108,7 +109,7 @@ export const Signup = () => {
           <div className="flex justify-center gap-2">
             Already have an account?{" "}
             <span
-              className="text-purple-400 cursor-pointer"
+              className="text-indigo-500 cursor-pointer"
               onClick={() => navigate("/signin")}
             >
               Sign In

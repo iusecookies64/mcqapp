@@ -3,9 +3,10 @@ import { config } from "dotenv";
 config();
 import express from "express";
 import cors from "cors";
-import userRouter from "./routes/user";
+import userRouter from "./routes/users";
 import contestRouter from "./routes/games";
-import questionRouter from "./routes/question";
+import questionRouter from "./routes/questions";
+import topicsRouter from "./routes/topics";
 import { GlobalErrorHandler } from "./controllers/errorController";
 import CustomError from "./utils/CustomError";
 import cookieParser from "cookie-parser";
@@ -27,7 +28,8 @@ app.use(express.static("./public"));
 
 app.use("/users", userRouter);
 app.use("/games", contestRouter);
-app.use("/question", questionRouter);
+app.use("/questions", questionRouter);
+app.use("/topics", topicsRouter);
 
 app.all("*", (req, res, next) => {
   throw new CustomError("Oops! Error 404 Not Found", 404);

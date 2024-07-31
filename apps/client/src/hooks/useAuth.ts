@@ -1,29 +1,25 @@
 import { useState } from "react";
-import api from "../services/api";
+import api, { apiConfig } from "../services/api";
 import { errorHandler } from "../services/api";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import {
   ClearAll,
   SetRefreshToken,
   setAccessToken,
 } from "../services/authToken.cookie";
 import { SigninBody, SignupBody } from "@mcqapp/validations";
-import { SigninResponse } from "@mcqapp/types";
+import { SigninResponse, User } from "@mcqapp/types";
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const navigate = useNavigate();
 
-  const signup = (data: SignupBody) => {
+  const signup = (data: SignupBody, onSuccess?: () => void) => {
     setIsLoading(true);
     setError(false);
-    api.post("/users/signup", data).then(
-      (response) => {
+    api[apiConfig.signup.type](apiConfig.signup.endpoint, data).then(
+      () => {
         setIsLoading(false);
-        toast.success(response.data.message);
-        navigate("/signin");
+        if (onSuccess) onSuccess();
       },
       (err) => {
         setIsLoading(false);
@@ -34,18 +30,17 @@ export const useAuth = () => {
     );
   };
 
-  const signin = (data: SigninBody) => {
+  const signin = (data: SigninBody, onSuccess: (data: User) => void) => {
     setIsLoading(true);
     setError(false);
-    api.post("/users/signin", data).then(
+    api[apiConfig.signin.type](apiConfig.signin.endpoint, data).then(
       (response) => {
-        const { message, data } = response.data as SigninResponse;
+        const { data } = response.data as SigninResponse;
         // storing token in local storage
         setAccessToken(data.access_token, data.expiresIn);
         SetRefreshToken(data.refresh_token);
         setIsLoading(false);
-        toast.success(message);
-        navigate("/");
+        onSuccess(data.user);
       },
       (err) => {
         errorHandler(err);
@@ -57,8 +52,7 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    ClearAll();
-    navigate("/signin");
+    ClearAll(); // clearing all cookies
   };
 
   return {

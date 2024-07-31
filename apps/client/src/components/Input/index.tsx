@@ -1,4 +1,3 @@
-import Icon from "../Icon";
 import "./input.style.css";
 import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
@@ -8,7 +7,7 @@ interface Props {
   placeholder?: string;
   register?: UseFormRegisterReturn;
   onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined;
-  value?: string;
+  value?: string | number;
   error?: FieldError;
   errorMessage?: string;
   className?: string;
@@ -30,7 +29,11 @@ const Input = ({
   if (register) {
     return (
       <div className="custom-input">
-        {inputLabel && <label>{inputLabel}</label>}
+        {inputLabel && (
+          <label className="text-sm text-text-secondary dark:text-dark-text-secondary">
+            {inputLabel}
+          </label>
+        )}
         <input
           aria-label={inputLabel}
           defaultValue={defaultValue || ""}
@@ -39,9 +42,7 @@ const Input = ({
           type={inputType}
           placeholder={placeholder}
         />
-        {error && (
-          <span className="text-sm text-light-red">{errorMessage}</span>
-        )}
+        {error && <span className="text-sm text-red-500">{errorMessage}</span>}
       </div>
     );
   } else {
@@ -55,9 +56,7 @@ const Input = ({
           placeholder={placeholder}
           onChange={onChange}
         />
-        {error && (
-          <span className="text-sm text-light-red">{errorMessage}</span>
-        )}
+        {error && <span className="text-sm text-red-500">{errorMessage}</span>}
       </div>
     );
   }

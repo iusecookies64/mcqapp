@@ -6,16 +6,15 @@ import {
   GetUserQuestions,
   UpdateQuestion,
 } from "../controllers/questionController";
-import { isUserCreatedContest } from "../middlewares/isUserCreatedContest";
 
 const router = Router();
 
 router.get("/my-questions", authorizeUser, GetUserQuestions);
 
-router.post("/create", authorizeUser, isUserCreatedContest, CreateQuestion);
+router.post("/create", authorizeUser, CreateQuestion);
 
-router.post("/update", authorizeUser, isUserCreatedContest, UpdateQuestion);
+router.post("/update", authorizeUser, UpdateQuestion);
 
-router.post("/delete", authorizeUser, isUserCreatedContest, DeleteQuestion);
+router.post("/delete", authorizeUser, DeleteQuestion);
 
 export default router;

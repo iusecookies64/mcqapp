@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS participants;
 DROP TABLE IF EXISTS responses;
+DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS games;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS topics;
@@ -44,7 +44,7 @@ CREATE TABLE questions (
   CHECK (difficulty IN (1, 2, 3)),
   CHECK (answer IN (1, 2, 3, 4)),
   FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL,
-  FOREIGN KEY (topic) REFERENCES topics(topic_id)
+  FOREIGN KEY (topic_id) REFERENCES topics(topic_id)
 );
 
 CREATE TABLE responses (
@@ -64,6 +64,3 @@ CREATE TABLE participants (
   score INTEGER NOT NULL,
   FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE
 );
-
-INSERT INTO users (username, first_name, last_name, email, password) VALUES ('admin', 'admin', 'admin', 'admin@admin.com', '123456');
-INSERT INTO topics (title) VALUES ('Common Sense');

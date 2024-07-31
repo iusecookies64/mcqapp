@@ -25,9 +25,9 @@ const ThemeToggle = () => {
       } Mode`}
     >
       {theme === "dark" ? (
-        <Icon icon={IconList.sun} className="h-6 w-6" />
+        <Icon icon={IconList.sun} className="h-4 w-4" />
       ) : (
-        <Icon icon={IconList.moon} className="h-6 w-6" />
+        <Icon icon={IconList.moon} className="h-4 w-4" />
       )}
     </div>
   );

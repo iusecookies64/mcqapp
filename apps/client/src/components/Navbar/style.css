@@ -1,0 +1,16 @@
+.navbar {
+  @apply w-full max-w-screen-xl flex justify-between items-center p-2;
+}
+
+.title {
+  @apply font-extrabold cursor-pointer;
+}
+
+.navbar a {
+  @apply p-2 rounded;
+}
+
+.navbar a:hover,
+.navbar a.active-link {
+  @apply text-indigo-500;
+}

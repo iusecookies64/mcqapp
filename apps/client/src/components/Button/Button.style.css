@@ -1,21 +1,21 @@
 .custom-button {
-  @apply rounded-lg font-medium;
+  @apply rounded-lg;
 }
 
 .button-primary {
-  @apply text-white bg-purple-600;
+  @apply bg-indigo-400 text-text dark:text-dark-text dark:bg-indigo-700;
 }
 
 .button-secondary {
-  @apply text-white bg-sky-600;
+  @apply text-white dark:bg-dark-secondary bg-opacity-25 dark:bg-opacity-25;
 }
 
 .button-alert {
-  @apply bg-red-600;
+  @apply text-white bg-red-600;
 }
 
 .button-tertiary {
-  @apply bg-transparent;
+  @apply rounded-lg border border-border-secondary hover:dark:bg-dark-secondary;
 }
 
 .button-lg {

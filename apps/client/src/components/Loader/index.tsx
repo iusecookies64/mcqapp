@@ -4,6 +4,7 @@ type Props = {
   height?: number;
   width?: number;
   color?: string;
+  strokeWidth?: number;
   secondaryColor?: string;
 };
 
@@ -11,6 +12,7 @@ export const Loader = ({
   height = 80,
   width = 80,
   color = "#6200EE",
+  strokeWidth = 2,
   secondaryColor = "black",
 }: Props) => {
   return (
@@ -20,6 +22,7 @@ export const Loader = ({
         width={width}
         visible={true}
         color={color}
+        strokeWidth={strokeWidth}
         secondaryColor={secondaryColor}
       />
     </div>

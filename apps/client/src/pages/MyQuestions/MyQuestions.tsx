@@ -1,127 +1,210 @@
-import DropDown, { DropdownOption } from "../../components/DropDown";
-import { useState } from "react";
+import DropDown from "../../components/DropDown";
+import { useEffect, useState } from "react";
 import { useMyQuestions } from "../../hooks/useMyQuestions";
 import { Question } from "@mcqapp/types";
-import { DeleteQuestionBody, UpdateQuestionBody } from "@mcqapp/validations";
 import "./MyQuestions.style.css";
-import Input from "../../components/Input";
-import { Textarea } from "../../components/TextArea";
-
-const topics = [
-  { id: Math.random(), label: "Common Sense" },
-  { id: Math.random(), label: "Javascript" },
-  { id: Math.random(), label: "Data Structure & Algorithms" },
-  { id: Math.random(), label: "Operating Systems" },
-  { id: Math.random(), label: "Networks" },
-  { id: Math.random(), label: "Database Managment" },
-  { id: Math.random(), label: "Common Sense" },
-  { id: Math.random(), label: "Javascript" },
-  { id: Math.random(), label: "Data Structure & Algorithms" },
-  { id: Math.random(), label: "Operating Systems" },
-  { id: Math.random(), label: "Networks" },
-  { id: Math.random(), label: "Database Managment" },
-  { id: Math.random(), label: "Common Sense" },
-  { id: Math.random(), label: "Javascript" },
-  { id: Math.random(), label: "Data Structure & Algorithms" },
-  { id: Math.random(), label: "Operating Systems" },
-  { id: Math.random(), label: "Networks" },
-  { id: Math.random(), label: "Database Managment" },
-];
+import Icon, { IconList } from "../../components/Icon";
+import Button from "../../components/Button";
+import { Modal } from "../../components/Modal";
+import TopicSelector from "../../components/TopicSelector";
+import { useRecoilState } from "recoil";
+import { selectedTopicAtom } from "../../atoms/topicsAtom";
+import { toast } from "react-toastify";
+import { CreateQuestionModal, UpdateQuestionModal } from "./QuestionModals";
 
 const sorts = [
-  { id: Math.random(), label: "From Latest to Oldest" },
-  { id: Math.random(), label: "From Oldest to Latest" },
+  { id: 1, label: "From Latest to Oldest" },
+  { id: 2, label: "From Oldest to Latest" },
 ];
 
 const MyQuestions = () => {
-  const [topic, setTopic] = useState<DropdownOption>(topics[0]);
-  const [sort, setSort] = useState<DropdownOption>(sorts[0]);
   const {
     myQuestions,
     createQuestion,
     updateQuestion,
     deleteQuestion,
-    isLoading,
+    isLoadingAction,
+    isLoadingQuestion,
     error,
   } = useMyQuestions();
+  const [selectedTopic, setSelectedTopic] = useRecoilState(selectedTopicAtom);
+  const [sort, setSort] = useState(sorts[0]);
+  const [filteredList, setFilteredList] = useState<Question[]>([]);
+  const [updateQuestionModal, setUpdateQuestionModal] = useState(false);
+  const [createQuestionModal, setCreateQuestionModal] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question>();
+  const [deleteModal, setDeleteModal] = useState(false);
+
+  useEffect(() => {
+    if (myQuestions && selectedTopic) {
+      setFilteredList(
+        myQuestions.filter((q) => q.topic_id === selectedTopic.topic_id)
+      );
+    }
+  }, [myQuestions, selectedTopic]);
 
   return (
-    <div className="w-full h-full p-4 overflow-hidden">
-      <div className="flex justify-center gap-1">
-        <DropDown
-          className="min-w-96"
-          label="Topic"
-          value={topic}
-          options={topics}
-          onChange={setTopic}
+    <div className="my-questions-container">
+      <div className="w-full flex justify-start gap-3">
+        <TopicSelector
+          currentTopic={selectedTopic}
+          setCurrentTopic={setSelectedTopic}
         />
         <DropDown
           className="min-w-96"
           label="Sort By"
+          placeholder="Select A Sort Option"
           value={sort}
           options={sorts}
+          idKey={"id"}
+          labelKey={"label"}
           onChange={setSort}
         />
+        <Button
+          className="flex justify-between items-center gap-2 py-2"
+          tooltip="Create a new question"
+          onClick={() => setCreateQuestionModal(true)}
+        >
+          <Icon icon={IconList.plus} /> <span>New Question</span>
+        </Button>
       </div>
-      <div className="h-full w-full flex flex-col items-center overflow-x-hidden overflow-y-auto mt-3">
-        {myQuestions &&
-          myQuestions.map((question, index) => (
-            <QuestionCard
-              key={question.question_id}
-              index={index}
-              question={question}
-              updateQuestion={updateQuestion}
-              deleteQuestion={deleteQuestion}
-            />
-          ))}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 items-center">
+        {filteredList.map((question, index) => (
+          <QuestionCard
+            isLoading={isLoadingQuestion}
+            key={question.question_id}
+            index={index}
+            question={question}
+            setDeleteModal={setDeleteModal}
+            setUpdateModal={setUpdateQuestionModal}
+            setSelectedQuestion={setSelectedQuestion}
+          />
+        ))}
       </div>
+      <UpdateQuestionModal
+        question={selectedQuestion}
+        isLoading={isLoadingAction}
+        error={error}
+        updateQuestion={updateQuestion}
+        isOpen={updateQuestionModal}
+        setIsOpen={setUpdateQuestionModal}
+      />
+      <CreateQuestionModal
+        createQuestion={createQuestion}
+        isLoading={isLoadingAction}
+        error={error}
+        isOpen={createQuestionModal}
+        setIsOpen={setCreateQuestionModal}
+      />
+      <Modal isOpen={deleteModal} setIsOpen={setDeleteModal}>
+        <div>
+          <div className="text-xl">Delete Question</div>
+          <div className="p-6">
+            Are you sure you want to delete this question?
+          </div>
+          <div className="w-full flex justify-end gap-3">
+            <Button variant="tertiary">Cancel</Button>
+            <Button
+              variant="alert"
+              onClick={() => {
+                if (selectedQuestion?.question_id) {
+                  deleteQuestion(
+                    { question_id: selectedQuestion.question_id },
+                    () => {
+                      toast.success("Question Deleted");
+                      setDeleteModal(false);
+                    }
+                  );
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
 
 type QuestionCardProps = {
   question: Question;
+  setUpdateModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedQuestion: React.Dispatch<
+    React.SetStateAction<Question | undefined>
+  >;
+  setDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
   index: number;
-  updateQuestion: (
-    updatedQuestionData: UpdateQuestionBody,
-    onSuccess?: () => void
-  ) => void;
-  deleteQuestion: (data: DeleteQuestionBody, onSuccess?: () => void) => void;
+  isLoading: boolean;
 };
 
 const QuestionCard = ({
   question,
-  updateQuestion,
-  deleteQuestion,
+  setUpdateModal,
+  setDeleteModal,
+  setSelectedQuestion,
   index,
 }: QuestionCardProps) => {
   return (
     <div className="questions-card-container delay-100">
       <div className="questions-card-header">
         <div className="text-lg">Question {index + 1}</div>
-        {question.difficulty === 1 && (
-          <div className="badge badge-easy">Easy</div>
-        )}
-        {question.difficulty === 2 && (
-          <div className="badge badge-medium">Meduim</div>
-        )}
-        {question.difficulty === 3 && (
-          <div className="badge badge-hard">Hard</div>
-        )}
+        <div className="flex gap-1 items-center">
+          <span className="text-[14px]">Difficulty:</span>
+          {question.difficulty === 1 && (
+            <div className="text-[14px] font-bold text-green-500 dark:text-green-600">
+              Easy
+            </div>
+          )}
+          {question.difficulty === 2 && (
+            <div className="text-[14px] font-bold text-yellow-500">Medium</div>
+          )}
+          {question.difficulty === 3 && (
+            <div className="text-[14px] font-bold text-red-500">Hard</div>
+          )}
+        </div>
+        <div className="flex gap-3 items-center">
+          <Button
+            size="sm"
+            tooltip="Edit Question"
+            onClick={() => {
+              setSelectedQuestion(question);
+              setUpdateModal(true);
+            }}
+          >
+            <Icon icon={IconList.pen} />
+          </Button>
+          <Button
+            variant="alert"
+            size="sm"
+            tooltip="Delete Question"
+            onClick={() => {
+              setSelectedQuestion(question);
+              setDeleteModal(true);
+            }}
+          >
+            <Icon icon={IconList.trash} />
+          </Button>
+        </div>
       </div>
-      <form>
-        <fieldset disabled={true}>
-          <div className="question-statement">
-            <Textarea inputLabel="Question" value={question.statement} />
-          </div>
-          <div>
-            <div>{question.option1}</div>
-            <div>{question.option2}</div>
-            <div>{question.option3}</div>
-            <div>{question.option4}</div>
-          </div>
-        </fieldset>
-      </form>
+      <div className="p-3 flex flex-col gap-1">
+        <div className="text-sm text-slate-400 font-medium">Question</div>
+        <div className="question-statement">{question.statement}</div>
+      </div>
+      <div className="options-container">
+        <div className={question.answer === 1 ? "correct-answer" : ""}>
+          A) {question.option1}
+        </div>
+        <div className={question.answer === 2 ? "correct-answer" : ""}>
+          B) {question.option2}
+        </div>
+        <div className={question.answer === 3 ? "correct-answer" : ""}>
+          C) {question.option3}
+        </div>
+        <div className={question.answer === 4 ? "correct-answer" : ""}>
+          D) {question.option4}
+        </div>
+      </div>
     </div>
   );
 };

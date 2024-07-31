@@ -38,7 +38,7 @@ export declare const SigninInput: z.ZodObject<Pick<{
 }>;
 export type SigninBody = z.infer<typeof SigninInput>;
 export declare const CreateQuestionInput: z.ZodObject<{
-    topics: z.ZodArray<z.ZodString, "many">;
+    topic_id: z.ZodNumber;
     statement: z.ZodString;
     answer: z.ZodNumber;
     option1: z.ZodString;
@@ -48,7 +48,7 @@ export declare const CreateQuestionInput: z.ZodObject<{
     difficulty: z.ZodNumber;
     time_limit: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    topics: string[];
+    topic_id: number;
     statement: string;
     answer: number;
     option1: string;
@@ -58,7 +58,7 @@ export declare const CreateQuestionInput: z.ZodObject<{
     difficulty: number;
     time_limit: number;
 }, {
-    topics: string[];
+    topic_id: number;
     statement: string;
     answer: number;
     option1: string;
@@ -71,7 +71,7 @@ export declare const CreateQuestionInput: z.ZodObject<{
 export type CreateQuestionBody = z.infer<typeof CreateQuestionInput>;
 export declare const UpdateQuestionInput: z.ZodObject<{
     question_id: z.ZodNumber;
-    topics: z.ZodArray<z.ZodString, "many">;
+    topic_id: z.ZodNumber;
     statement: z.ZodString;
     answer: z.ZodNumber;
     option1: z.ZodString;
@@ -81,7 +81,7 @@ export declare const UpdateQuestionInput: z.ZodObject<{
     difficulty: z.ZodNumber;
     time_limit: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    topics: string[];
+    topic_id: number;
     statement: string;
     answer: number;
     option1: string;
@@ -92,7 +92,7 @@ export declare const UpdateQuestionInput: z.ZodObject<{
     time_limit: number;
     question_id: number;
 }, {
-    topics: string[];
+    topic_id: number;
     statement: string;
     answer: number;
     option1: string;
@@ -112,6 +112,33 @@ export declare const DeleteQuestionInput: z.ZodObject<{
     question_id: number;
 }>;
 export type DeleteQuestionBody = z.infer<typeof DeleteQuestionInput>;
+export declare const CreateTopicInput: z.ZodObject<{
+    title: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    title: string;
+}, {
+    title: string;
+}>;
+export type CreateTopicBody = z.infer<typeof CreateTopicInput>;
+export declare const UpdateTopicInput: z.ZodObject<{
+    topic_id: z.ZodNumber;
+    new_title: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    topic_id: number;
+    new_title: string;
+}, {
+    topic_id: number;
+    new_title: string;
+}>;
+export type UpdateTopicBody = z.infer<typeof UpdateTopicInput>;
+export declare const DeleteTopicInput: z.ZodObject<{
+    topic_id: z.ZodNumber;
+}, "strip", z.ZodTypeAny, {
+    topic_id: number;
+}, {
+    topic_id: number;
+}>;
+export type DeleteTopicBody = z.infer<typeof DeleteTopicInput>;
 export declare const InitGameInput: z.ZodObject<{
     topic_id: z.ZodNumber;
     is_random: z.ZodBoolean;

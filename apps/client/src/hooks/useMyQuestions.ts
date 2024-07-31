@@ -15,12 +15,15 @@ import { AxiosError } from "axios";
 
 export const useMyQuestions = () => {
   const [myQuestions, setMyQuestions] = useRecoilState(questionsAtom);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
+  const [isLoadingQuestion, setIsLoadingQuestion] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
   const handleError = (err: AxiosError) => {
-    setIsLoading(false);
+    setIsLoadingAction(false);
     setError(true);
+    setIsLoadingQuestion(false);
+    setTimeout(() => setError(false), 5000);
     errorHandler(err);
   };
 
@@ -28,14 +31,14 @@ export const useMyQuestions = () => {
     updatedQuestionData: UpdateQuestionBody,
     onSuccess?: () => void
   ) => {
-    setIsLoading(true);
+    setIsLoadingAction(true);
     setError(false);
     api[apiConfig.updateQuestion.type](
       apiConfig.updateQuestion.endpoint,
       updatedQuestionData
     )
       .then(() => {
-        setIsLoading(false);
+        setIsLoadingAction(false);
         if (onSuccess) onSuccess();
       })
       .catch(handleError);
@@ -45,7 +48,7 @@ export const useMyQuestions = () => {
     questionData: CreateQuestionBody,
     onSuccess?: () => void
   ) => {
-    setIsLoading(true);
+    setIsLoadingAction(true);
     setError(false);
     api[apiConfig.createQuestion.type](
       apiConfig.createQuestion.endpoint,
@@ -57,18 +60,18 @@ export const useMyQuestions = () => {
           if (prevList) return [...prevList, data];
           else return [data];
         });
-        setIsLoading(false);
+        setIsLoadingAction(false);
         if (onSuccess) onSuccess();
       })
       .catch(handleError);
   };
 
   const deleteQuestion = (data: DeleteQuestionBody, onSuccess?: () => void) => {
-    setIsLoading(true);
+    setIsLoadingAction(true);
     setError(false);
     api[apiConfig.deleteQuestion.type](apiConfig.deleteQuestion.endpoint, data)
       .then(() => {
-        setIsLoading(false);
+        setIsLoadingAction(false);
         if (onSuccess) onSuccess();
       })
       .catch(handleError);
@@ -81,14 +84,18 @@ export const useMyQuestions = () => {
         .then((response) => {
           const { data } = response.data as GetUserQuestionsResponse;
           setMyQuestions(data);
+          setIsLoadingQuestion(false);
         })
         .catch(handleError);
+    } else {
+      setIsLoadingQuestion(false);
     }
   }, []);
 
   return {
     myQuestions,
-    isLoading,
+    isLoadingQuestion,
+    isLoadingAction,
     error,
     updateQuestion,
     createQuestion,

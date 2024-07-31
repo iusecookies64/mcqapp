@@ -5,10 +5,6 @@ const config: Partial<Config> = {
   darkMode: "selector",
   theme: {
     extend: {
-      fontFamily: {
-        display: ["var(--font-satoshi)", "system-ui", "sans-serif"],
-        default: ["var(--font-inter)", "system-ui", "sans-serif"],
-      },
       boxShadow: {
         "big-button":
           "0px 1px 0px 0px rgba(0,0,0,0.22),0px 0px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 1px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 2px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 3px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 4px 0px 0px rgba(0,0,0,0.22),0px 5px 0px 0px rgba(0,0,0,0.22),0px 5px 0px 0px rgba(0,0,0,0.22);",
@@ -152,18 +148,15 @@ const config: Partial<Config> = {
         },
       },
       colors: {
-        brown: {
-          50: "#fdf8f6",
-          100: "#f2e8e5",
-          200: "#eaddd7",
-          300: "#e0cec7",
-          400: "#d2bab0",
-          500: "#bfa094",
-          600: "#a18072",
-          700: "#977669",
-          800: "#846358",
-          900: "#43302b",
-        },
+        text: "#060814",
+        "text-secondary": "#141933",
+        primary: "#eff2fa",
+        "dark-text": "#eaedf9",
+        "dark-text-secondary": "#8f96b3",
+        "dark-primary": "#171717",
+        "dark-secondary": "#232323",
+        border: "#2E2E2E",
+        "border-secondary": "#404040",
       },
     },
   },

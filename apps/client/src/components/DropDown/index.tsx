@@ -5,20 +5,29 @@ import "./style.css";
 
 import { useRef, useState } from "react";
 
-export type DropdownOption = {
-  id: number;
-  label: string;
-};
-
-type Props = {
-  value: DropdownOption;
-  options: DropdownOption[];
-  onChange: (value: DropdownOption) => void;
+type Props<T> = {
+  idKey: keyof T;
+  labelKey: keyof T;
+  value: T | null;
+  placeholder: string;
+  options: T[];
+  onChange: (value: T) => void;
   label?: string;
   className?: string;
+  error?: string;
 };
 
-const DropDown = ({ value, onChange, options, label, className }: Props) => {
+const DropDown = <T extends { [key: string]: string | number }>({
+  idKey,
+  labelKey,
+  value,
+  onChange,
+  options,
+  label,
+  className,
+  placeholder,
+  error,
+}: Props<T>) => {
   // const [isOpen, setIsOpen] = useState<boolean>(false);
   const DropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -27,23 +36,31 @@ const DropDown = ({ value, onChange, options, label, className }: Props) => {
   useOutsideClick(DropdownRef, () => setIsOpen(false)); // closes dropdown on outside click
 
   return (
-    <div className={`dropdown-container ${className}`} ref={DropdownRef}>
+    <div
+      key={value ? value[idKey] : undefined}
+      className={`dropdown-container ${className}`}
+      ref={DropdownRef}
+    >
       <div className="dropdown-button" onClick={toggleDropdown}>
-        {label && <span className="font-bold">{label}: </span>}
-        {value.label}
+        {label && (
+          <span className="text-text-secondary dark:text-dark-text-secondary">
+            {label}:{" "}
+          </span>
+        )}
+        {value ? value[labelKey] : placeholder}
       </div>
       {isOpen && (
         <div onClick={toggleDropdown} className="dropdown-menu">
           {options.map((option) => (
             <div
-              key={option.id}
+              key={option[idKey]}
               onClick={() => {
-                toggleDropdown();
+                setIsOpen(false);
                 onChange(option);
               }}
               className="dropdown-item"
             >
-              {option.label}
+              {option[labelKey]}
             </div>
           ))}
         </div>
@@ -51,6 +68,7 @@ const DropDown = ({ value, onChange, options, label, className }: Props) => {
       <div className={`dropdown-accordion `}>
         <Icon icon={isOpen ? IconList.chevronup : IconList.chevrondown} />
       </div>
+      {error && <div className="text-sm text-red-500">{error}</div>}
     </div>
   );
 };

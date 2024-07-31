@@ -1,46 +1,37 @@
-import { ReactElement, ReactNode, useState } from "react";
+import { ReactElement, ReactNode } from "react";
 import "./Modal.style.css";
 import { Icon, IconList } from "../Icon";
-import { motion } from "framer-motion";
 
 type Props = {
   children: ReactNode | ((onClose: () => void) => ReactElement);
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose?: () => void;
 };
 
-export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
-  const [opacity, setOpacity] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1.1);
-  const onClose = () => {
-    setOpacity(0);
-    setScale(1);
-    setTimeout(() => {
-      setIsOpen(false);
-      setOpacity(1);
-      setScale(1.1);
-    }, 150);
+export const Modal = ({ children, isOpen, setIsOpen, onClose }: Props) => {
+  const closeModal = () => {
+    setIsOpen(false);
+    if (onClose) onClose();
   };
 
   if (typeof children === "function") {
     return (
       <>
         {isOpen && (
-          <div className="custom-modal" onClick={onClose}>
-            <motion.div
-              animate={{ opacity, scale }}
-              transition={{ duration: 0.2 }}
+          <div className="custom-modal" onClick={() => closeModal()}>
+            <div
               className="modal-container"
               onClick={(e) => e.stopPropagation()}
             >
               <div
                 className="absolute top-0 right-0 flex justify-end p-2 cursor-pointer"
-                onClick={onClose}
+                onClick={() => closeModal()}
               >
                 <Icon icon={IconList.xmark} />
               </div>
-              {children(onClose)}
-            </motion.div>
+              {children(closeModal)}
+            </div>
           </div>
         )}
       </>
@@ -49,21 +40,19 @@ export const Modal = ({ children, isOpen, setIsOpen }: Props) => {
     return (
       <>
         {isOpen && (
-          <div className="custom-modal" onClick={onClose}>
-            <motion.div
-              animate={{ opacity, scale }}
-              transition={{ duration: 0.2 }}
+          <div className="custom-modal" onClick={() => closeModal()}>
+            <div
               className="modal-container"
               onClick={(e) => e.stopPropagation()}
             >
               <div
                 className="absolute top-0 right-0 flex justify-end p-3 cursor-pointer"
-                onClick={onClose}
+                onClick={() => closeModal()}
               >
                 <Icon icon={IconList.xmark} />
               </div>
               {children}
-            </motion.div>
+            </div>
           </div>
         )}
       </>

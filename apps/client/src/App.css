@@ -1,5 +1,9 @@
 .app {
-  @apply h-[100dvh] w-[100dvw] dark:bg-slate-950 bg-slate-100 dark:text-slate-50 relative flex flex-col items-center select-none;
+  @apply h-[100dvh] w-[100dvw] dark:bg-dark-primary bg-primary dark:text-dark-text text-text relative flex flex-col items-center select-none;
+}
+
+.outlet-container {
+  @apply w-full max-w-screen-xl flex-grow overflow-x-hidden overflow-y-scroll;
 }
 
 ::-webkit-scrollbar {

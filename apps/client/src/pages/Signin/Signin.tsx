@@ -5,14 +5,16 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { Loader } from "../../components/Loader";
 import DisplayInfo from "../../components/DisplayInfo";
-import ThemeToggle from "../../components/Theme";
-import "./Signin.style.css";
 import { SigninBody } from "@mcqapp/validations";
+import "./Signin.style.css";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../../components/AuthContext";
+import { toast } from "react-toastify";
 
 export const Signin = () => {
   const navigate = useNavigate();
   const { isLoading, error, signin } = useAuth();
-
+  const { user, setUser } = useContext(AuthContext);
   const {
     register,
     formState: { errors },
@@ -20,15 +22,20 @@ export const Signin = () => {
   } = useForm<SigninBody>();
 
   const onSubmit: SubmitHandler<SigninBody> = (data) => {
-    signin(data);
+    signin(data, (user) => {
+      toast.success("Logged In Successfully");
+      if (setUser) setUser(user);
+    });
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="signin-container">
-      <div className="flex justify-between items-center px-12 py-6 ani">
-        <div className="text-2xl font-medium cursor-pointer;">MCQ Battle</div>
-        <ThemeToggle />
-      </div>
       <div className="w-full h-full flex justify-center items-center">
         <div className={`signin-form ${(isLoading || error) && "invisible"}`}>
           <div className="text-2xl font-medium flex justify-center">
@@ -64,7 +71,7 @@ export const Signin = () => {
           <div className="flex justify-center gap-2">
             Don't have an account?{" "}
             <span
-              className="text-slate-300 cursor-pointer"
+              className="text-indigo-500 cursor-pointer"
               onClick={() => navigate("/signup")}
             >
               Sign Up

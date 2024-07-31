@@ -16,19 +16,19 @@ import {
 } from "@mcqapp/types";
 
 const createQuestionQuery = `
-INSERT INTO questions (created_by, topics, statement, answer, option1, option2, option3, option4, difficulty, time_limit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
+INSERT INTO questions (created_by, topic_id, statement, answer, option1, option2, option3, option4, difficulty, time_limit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
 `;
 export const CreateQuestion = asyncErrorHandler(async (req, res) => {
-  const { success, data } = CreateQuestionInput.safeParse(req.body);
+  const { success, data, error } = CreateQuestionInput.safeParse(req.body);
   const { user_id } = req as CustomRequest;
-
+  if (error) console.log(error);
   if (!success)
     throw new CustomError("Invalid Input", StatusCodes.InvalidInput);
 
   // adding question to database
   const result = await client.query(createQuestionQuery, [
     user_id,
-    data.topics,
+    data.topic_id,
     data.statement,
     data.answer,
     data.option1,
@@ -51,7 +51,7 @@ export const CreateQuestion = asyncErrorHandler(async (req, res) => {
 const updateQuestionQuery = `
 UPDATE questions 
 SET
-  topics=$1,
+  topic_id=$1,
   statement=$2,
   answer=$3,
   option1=$4,
@@ -71,7 +71,7 @@ export const UpdateQuestion = asyncErrorHandler(async (req, res) => {
 
   // updating question in database
   await client.query(updateQuestionQuery, [
-    data.topics,
+    data.topic_id,
     data.statement,
     data.answer,
     data.option1,
