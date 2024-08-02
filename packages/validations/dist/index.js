@@ -79,7 +79,7 @@ exports.InitCustomGameInput = zod_1.z.object({
         difficulty: zod_1.z.number().min(1).max(4),
         time_limit: zod_1.z.number().min(10).max(120),
     }))
-        .min(10),
+        .min(5),
 });
 exports.JoinGameInput = zod_1.z.object({
     game_id: zod_1.z.string().min(1),

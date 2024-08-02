@@ -12,8 +12,10 @@ import PlayOptions from "./pages/PlayGame/PlayOptions.tsx";
 import MyQuestions from "./pages/MyQuestions/MyQuestions.tsx";
 import { AuthProvider } from "./components/AuthContext/index.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute/index.tsx";
-import { Game } from "./pages/Lobby/Game.tsx";
+import { Game } from "./pages/Game/Game.tsx";
 import { MyTopics } from "./pages/MyTopics/MyTopics.tsx";
+import { CreateCustomGame } from "./pages/CreateCustomGame/CreateCustomGame.tsx";
+import { PastGames } from "./pages/PastGames/PastGames.tsx";
 
 const router = createBrowserRouter([
   {
@@ -46,10 +48,26 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/custom-game",
+        element: (
+          <ProtectedRoute>
+            <CreateCustomGame />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/game",
         element: (
           <ProtectedRoute>
             <Game />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/past-games",
+        element: (
+          <ProtectedRoute>
+            <PastGames />
           </ProtectedRoute>
         ),
       },

@@ -26,10 +26,6 @@
   @apply p-3 border border-border-secondary hover:border-blue-500 rounded-lg cursor-pointer;
 }
 
-.option-button {
-  @apply h-10 w-10 flex justify-center items-center border border-border-secondary rounded-lg cursor-pointer;
-}
-
 .selected-option {
   @apply border-blue-500 text-blue-500 !important;
 }
@@ -40,4 +36,12 @@
 
 .wrong-answer {
   @apply border-red-600 dark:border-red-400 text-red-600 dark:text-red-400 !important;
+}
+
+.wrong-user-response > div {
+  @apply h-10 w-10 flex justify-center items-center rounded-xl border border-red-600 dark:border-red-400 text-red-600 dark:text-red-400;
+}
+
+.correct-user-response > div {
+  @apply h-10 w-10 flex justify-center items-center rounded-xl border border-green-600 dark:border-green-400 text-green-600 dark:text-green-400;
 }

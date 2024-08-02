@@ -40,6 +40,7 @@ import api, { apiConfig, errorHandler } from "../../services/api";
 import Input from "../../components/Input";
 import Icon, { IconList } from "../../components/Icon";
 import Button from "../../components/Button";
+import { Leaderboard } from "../../components/Leaderboard";
 
 export const Game = () => {
   const gameid = "gameid";
@@ -99,6 +100,7 @@ export const Game = () => {
   };
 
   const submitResponse = (response: number) => {
+    if (isCustom && host?.user_id === user?.user_id) return;
     if (currQuestion?.question_id && currGameId) {
       setLoadingResponse(true);
       const payload: SubmitResponseBody = {
@@ -176,7 +178,7 @@ export const Game = () => {
       id: handlerId,
       handler: (event: MessageEvent) => {
         const data = JSON.parse(event.data) as SocketMessage;
-        console.log(data);
+
         if (data.type === SocketMessageType.GAME_CREATED) {
           const payload = data.payload as GameCreatedResponse;
           setSearchParams({ gameid: payload.game_id });
@@ -205,6 +207,7 @@ export const Game = () => {
           setCurrGameId(payload.game_id);
           setPlayers(payload.players);
           setIsRandom(payload.is_random);
+          setIsCustom(payload.is_custom);
           setHost(payload.host);
           setGameJoined(true);
           setIsLoading(false);
@@ -338,37 +341,11 @@ export const Game = () => {
                   </div>
                 )}
             </div>
-            <div className="leaderboard">
-              <div className="leaderboard-title">Leaderboard</div>
-              <div>
-                {players.map((player) => {
-                  const currResponse = currQuestionResponses.find(
-                    (r) => r.user_id === player.user_id
-                  );
-                  if (currResponse) {
-                    return (
-                      <div
-                        key={player.user_id}
-                        className={`leaderboard-item ${
-                          currResponse.is_correct
-                            ? "correct-response"
-                            : "wrong-response"
-                        }`}
-                      >
-                        <div>{player.username}</div>
-                        <div>{player.score}</div>
-                      </div>
-                    );
-                  }
-                  return (
-                    <div key={player.user_id} className="leaderboard-item">
-                      <div>{player.username}</div>
-                      <div>{player.score}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <Leaderboard
+              players={players}
+              responses={currQuestionResponses}
+              in_game={true}
+            />
           </div>
         </div>
       )}

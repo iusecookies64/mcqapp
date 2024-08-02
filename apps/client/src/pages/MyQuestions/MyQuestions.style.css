@@ -1,3 +1,7 @@
 .my-questions-container {
   @apply w-full h-full p-3;
 }
+
+.option-button {
+  @apply h-10 w-10 flex justify-center items-center border border-border-secondary rounded-lg cursor-pointer;
+}

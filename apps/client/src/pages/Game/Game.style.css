@@ -1,0 +1,7 @@
+.game-container {
+  @apply h-full w-full;
+}
+
+.game-main-section {
+  @apply min-h-full w-full flex justify-center items-center;
+}

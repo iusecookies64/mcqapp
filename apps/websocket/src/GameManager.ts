@@ -1,5 +1,6 @@
 import {
   CustomGameCreatedResponse,
+  Game,
   GameCreatedResponse,
   GameStartedResponse,
   Host,
@@ -50,7 +51,7 @@ type GameState = {
   is_random: boolean;
   is_custom: boolean;
   host: Host;
-  is_pushed: boolean;
+  is_ended: boolean;
 };
 
 export default class GameManager {
@@ -256,7 +257,7 @@ export default class GameManager {
           user_id: user.user_id,
           username: user.username,
         },
-        is_pushed: false,
+        is_ended: false,
       };
       const players: Player[] = [
         {
@@ -321,15 +322,11 @@ export default class GameManager {
         user_id: user.user_id,
         username: user.username,
       },
-      is_pushed: false,
+      is_ended: false,
     };
-
-    const players: Player[] = [];
 
     // storing game state in redis
     await this.setGameState(game.game_id, game);
-    // storing players list in redis
-    await this.setGamePlayers(game.game_id, players);
 
     // adding leave handler if user connection breaks
     user.socket.on("close", () => {
@@ -354,9 +351,9 @@ export default class GameManager {
   private async addUserToGame(user: User, game_id: string) {
     try {
       // getting gameState from redis
-      const players = await this.getGamePlayers(game_id);
+      let players: Player[] | undefined = await this.getGamePlayers(game_id);
       const game = await this.getGameState(game_id);
-      if (!players) throw Error("No Player Exists");
+      if (!players) players = [];
       if (!game) {
         user.emit(
           JSON.stringify({
@@ -571,7 +568,8 @@ export default class GameManager {
           game.response.find(
             (r) =>
               r.question_id === data.question_id && r.user_id === user.user_id
-          )
+          ) ||
+          (game.is_custom && game.host.user_id === user.user_id)
         ) {
           return;
         }
@@ -604,6 +602,15 @@ export default class GameManager {
             payload,
           })
         );
+
+        game.response.push({
+          game_id: game.game_id,
+          user_id: user.user_id,
+          question_id: data.question_id,
+          is_correct,
+          response: data.response,
+        });
+        await this.setGameState(data.game_id, game);
       }
     } catch (err) {
       console.log("Error in submitResponse");
@@ -616,6 +623,11 @@ export default class GameManager {
       // getting game state
       const game = await this.getGameState(game_id);
       if (game) {
+        // if game endee then we send game ended
+        if (game.is_ended) {
+          this.emitGameEnded(user);
+          return;
+        }
         // current question time expired then we send the next question
         const questionStartTime = game.currQuestionStartTime;
         const questionTimeLimit =
@@ -623,17 +635,19 @@ export default class GameManager {
 
         // question expired so we increase question number
         if (this.isQuestionExpired(questionStartTime, questionTimeLimit)) {
-          game.currQuestionNumber += 1;
-          game.currQuestionStartTime = Date.now();
-          // updating game state in redis
-          await this.setGameState(game.game_id, game);
-        }
-
-        // if this is the last question then we send game ended
-        if (game.questions.length === game.currQuestionNumber) {
-          this.gameEnded(user);
-          this.pushToDb(game);
-          return;
+          // if this is the last question then we send game ended
+          if (game.questions.length === game.currQuestionNumber) {
+            game.is_ended = true;
+            await this.setGameState(game_id, game);
+            await this.pushToDb(game);
+            this.emitGameEnded(user);
+            return;
+          } else {
+            game.currQuestionNumber += 1;
+            game.currQuestionStartTime = Date.now();
+            // updating game state in redis
+            await this.setGameState(game.game_id, game);
+          }
         }
 
         const payload: NextQuestionResponse = {
@@ -654,13 +668,70 @@ export default class GameManager {
     }
   }
 
-  private gameEnded(user: User) {
+  private emitGameEnded(user: User) {
     user.emit(JSON.stringify({ type: SocketMessageType.GAME_ENDED }));
   }
 
-  private pushToDb(game: GameState) {
-    if (game.is_pushed) return;
+  private async pushToDb(game: GameState) {
+    try {
+      const players = await this.getGamePlayers(game.game_id);
+      if (!players) throw Error("No player in this game?");
+
+      // starting transaction
+      client.query("BEGIN");
+      // pushing game into db
+      const question_ids = game.questions
+        .map((q) => q.question_id)
+        .filter((id) => id !== undefined) as number[];
+      const gameBody: Game = {
+        game_id: game.game_id,
+        topic_id: game.questions[0].topic_id,
+        player_ids: players.map((p) => p.user_id),
+        question_ids,
+      };
+      const insertGameQuery = `INSERT INTO games (game_id, topic_id, player_ids, question_ids) VALUES ($1, $2, $3, $4);`;
+      await client.query(insertGameQuery, [
+        gameBody.game_id,
+        gameBody.topic_id,
+        gameBody.player_ids,
+        gameBody.question_ids,
+      ]);
+
+      // pushing participants into db
+      const insertParticipantQuery = `INSERT INTO participants (game_id, user_id, username, score) VALUES ($1, $2, $3, $4);`;
+      await Promise.all(
+        players.map(async (player) => {
+          await client.query(insertParticipantQuery, [
+            gameBody.game_id,
+            player.user_id,
+            player.username,
+            player.score,
+          ]);
+        })
+      );
+
+      // pushing user responses to the db
+      const insertResponseQuery = `INSERT INTO responses (game_id, user_id, question_id, response, is_correct) VALUES ($1, $2, $3, $4, $5);`;
+      await Promise.all(
+        game.response.map(async (response) => {
+          await client.query(insertResponseQuery, [
+            response.game_id,
+            response.user_id,
+            response.question_id,
+            response.response,
+            response.is_correct,
+          ]);
+        })
+      );
+      client.query("COMMIT;");
+    } catch (err) {
+      client.query("ROLLBACK;");
+      console.log("Error pushing game to db");
+      console.log(err);
+    }
   }
+
+  private removeStaleGames() {}
 
   private isQuestionExpired(
     start_time: number,

@@ -232,7 +232,7 @@ class GameManager {
                         user_id: user.user_id,
                         username: user.username,
                     },
-                    is_pushed: false,
+                    is_ended: false,
                 };
                 const players = [
                     {
@@ -292,13 +292,10 @@ class GameManager {
                     user_id: user.user_id,
                     username: user.username,
                 },
-                is_pushed: false,
+                is_ended: false,
             };
-            const players = [];
             // storing game state in redis
             yield this.setGameState(game.game_id, game);
-            // storing players list in redis
-            yield this.setGamePlayers(game.game_id, players);
             // adding leave handler if user connection breaks
             user.socket.on("close", () => {
                 this.removeUserFromGame(user, game.game_id);
@@ -320,10 +317,10 @@ class GameManager {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // getting gameState from redis
-                const players = yield this.getGamePlayers(game_id);
+                let players = yield this.getGamePlayers(game_id);
                 const game = yield this.getGameState(game_id);
                 if (!players)
-                    throw Error("No Player Exists");
+                    players = [];
                 if (!game) {
                     user.emit(JSON.stringify({
                         type: types_1.SocketMessageType.GAME_NOT_FOUND,
@@ -495,7 +492,8 @@ class GameManager {
                     // if question expired or response not same as current question or user already answered this we return
                     if (this.isQuestionExpired(questionStartTime, currQuestion.time_limit) ||
                         currQuestion.question_id !== data.question_id ||
-                        game.response.find((r) => r.question_id === data.question_id && r.user_id === user.user_id)) {
+                        game.response.find((r) => r.question_id === data.question_id && r.user_id === user.user_id) ||
+                        (game.is_custom && game.host.user_id === user.user_id)) {
                         return;
                     }
                     let is_correct = false, new_score = 0;
@@ -521,6 +519,14 @@ class GameManager {
                         type: types_1.SocketMessageType.USER_RESPONSE,
                         payload,
                     }));
+                    game.response.push({
+                        game_id: game.game_id,
+                        user_id: user.user_id,
+                        question_id: data.question_id,
+                        is_correct,
+                        response: data.response,
+                    });
+                    yield this.setGameState(data.game_id, game);
                 }
             }
             catch (err) {
@@ -535,21 +541,30 @@ class GameManager {
                 // getting game state
                 const game = yield this.getGameState(game_id);
                 if (game) {
+                    // if game endee then we send game ended
+                    if (game.is_ended) {
+                        this.emitGameEnded(user);
+                        return;
+                    }
                     // current question time expired then we send the next question
                     const questionStartTime = game.currQuestionStartTime;
                     const questionTimeLimit = game.questions[game.currQuestionNumber - 1].time_limit;
                     // question expired so we increase question number
                     if (this.isQuestionExpired(questionStartTime, questionTimeLimit)) {
-                        game.currQuestionNumber += 1;
-                        game.currQuestionStartTime = Date.now();
-                        // updating game state in redis
-                        yield this.setGameState(game.game_id, game);
-                    }
-                    // if this is the last question then we send game ended
-                    if (game.questions.length === game.currQuestionNumber) {
-                        this.gameEnded(user);
-                        this.pushToDb(game);
-                        return;
+                        // if this is the last question then we send game ended
+                        if (game.questions.length === game.currQuestionNumber) {
+                            game.is_ended = true;
+                            yield this.setGameState(game_id, game);
+                            yield this.pushToDb(game);
+                            this.emitGameEnded(user);
+                            return;
+                        }
+                        else {
+                            game.currQuestionNumber += 1;
+                            game.currQuestionStartTime = Date.now();
+                            // updating game state in redis
+                            yield this.setGameState(game.game_id, game);
+                        }
                     }
                     const payload = {
                         question: game.questions[game.currQuestionNumber - 1],
@@ -567,13 +582,65 @@ class GameManager {
             }
         });
     }
-    gameEnded(user) {
+    emitGameEnded(user) {
         user.emit(JSON.stringify({ type: types_1.SocketMessageType.GAME_ENDED }));
     }
     pushToDb(game) {
-        if (game.is_pushed)
-            return;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const players = yield this.getGamePlayers(game.game_id);
+                if (!players)
+                    throw Error("No player in this game?");
+                // starting transaction
+                postgres_1.default.query("BEGIN");
+                // pushing game into db
+                const question_ids = game.questions
+                    .map((q) => q.question_id)
+                    .filter((id) => id !== undefined);
+                const gameBody = {
+                    game_id: game.game_id,
+                    topic_id: game.questions[0].topic_id,
+                    player_ids: players.map((p) => p.user_id),
+                    question_ids,
+                };
+                const insertGameQuery = `INSERT INTO games (game_id, topic_id, player_ids, question_ids) VALUES ($1, $2, $3, $4);`;
+                yield postgres_1.default.query(insertGameQuery, [
+                    gameBody.game_id,
+                    gameBody.topic_id,
+                    gameBody.player_ids,
+                    gameBody.question_ids,
+                ]);
+                // pushing participants into db
+                const insertParticipantQuery = `INSERT INTO participants (game_id, user_id, username, score) VALUES ($1, $2, $3, $4);`;
+                yield Promise.all(players.map((player) => __awaiter(this, void 0, void 0, function* () {
+                    yield postgres_1.default.query(insertParticipantQuery, [
+                        gameBody.game_id,
+                        player.user_id,
+                        player.username,
+                        player.score,
+                    ]);
+                })));
+                // pushing user responses to the db
+                const insertResponseQuery = `INSERT INTO responses (game_id, user_id, question_id, response, is_correct) VALUES ($1, $2, $3, $4, $5);`;
+                yield Promise.all(game.response.map((response) => __awaiter(this, void 0, void 0, function* () {
+                    yield postgres_1.default.query(insertResponseQuery, [
+                        response.game_id,
+                        response.user_id,
+                        response.question_id,
+                        response.response,
+                        response.is_correct,
+                    ]);
+                })));
+                postgres_1.default.query("COMMIT;");
+            }
+            catch (err) {
+                postgres_1.default.query("ROLLBACK;");
+                console.log("Error pushing game to db");
+                console.log(err);
+            }
+        });
     }
+    removeStaleGames() { }
     isQuestionExpired(start_time, durationInSec) {
         const end_time = start_time + durationInSec * 1000;
         if (Date.now() > end_time)

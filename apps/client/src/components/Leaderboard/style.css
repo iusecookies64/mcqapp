@@ -1,13 +1,5 @@
-.game-container {
-  @apply h-full w-full;
-}
-
-.game-main-section {
-  @apply min-h-full w-full flex justify-center items-center;
-}
-
 .leaderboard {
-  @apply min-w-72 bg-secondary dark:bg-dark-secondary border border-border dark:border rounded-xl mt-3;
+  @apply min-w-96 bg-secondary dark:bg-dark-secondary border border-border dark:border rounded-xl mt-3;
 }
 
 .leaderboard .leaderboard-title {
@@ -24,8 +16,4 @@
 
 .wrong-response {
   @apply bg-red-400 dark:bg-red-600;
-}
-
-.diconnected {
-  @apply opacity-50;
 }

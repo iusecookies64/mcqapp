@@ -60,7 +60,7 @@ export type Question = {
   created_by: number;
   topic_id: number;
   statement: string;
-  answer?: number;
+  answer: number;
   option1: string;
   option2: string;
   option3: string;
@@ -69,18 +69,33 @@ export type Question = {
   time_limit: number;
 };
 
-export type Response = {
-  response_id?: number;
-  game_id: number;
-  user_id: number;
-  question_id: number;
-  response: number;
-};
-
 export type Topic = {
   topic_id?: number;
   created_by: number;
   title: string;
+};
+
+export type Game = {
+  game_id: string;
+  topic_id: number;
+  player_ids: number[];
+  question_ids: number[];
+};
+
+export type Response = {
+  response_id?: number;
+  game_id: string;
+  user_id: number;
+  question_id: number;
+  response: number;
+  is_correct: boolean;
+};
+
+export type Participant = {
+  game_id?: string;
+  user_id: number;
+  username: string;
+  score: number;
 };
 
 export interface GetUserQuestionsResponse extends ApiResponse {
@@ -97,6 +112,19 @@ export type DeleteTopicResponse = ApiResponse;
 
 export interface GetTopicsResponse extends ApiResponse {
   data: Topic[];
+}
+
+export type PastGame = {
+  game_id: string;
+  created_at: string;
+  title: string;
+  participants: Participant[];
+  questions: Question[];
+  responses: Response[];
+};
+
+export interface PastGameResponse extends ApiResponse {
+  data: PastGame[];
 }
 
 export enum SocketMessageType {

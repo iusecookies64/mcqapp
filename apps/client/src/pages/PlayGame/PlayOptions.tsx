@@ -43,6 +43,7 @@ const PlayOptions = () => {
         <div
           className="play-game-button bg-slate-400 hover:bg-slate-300 dark:bg-slate-600 shadow-big-button shadow-slate-500 dark:shadow-slate-800 dark:hover:bg-slate-500"
           onMouseMove={() => setActiveBanner(3)}
+          onClick={() => navigate("/custom-game")}
         >
           Create Custom Game
         </div>

@@ -101,6 +101,7 @@ export const apiConfig = {
   createTopic: { type: Method.post, endpoint: "/topics/create" },
   upadteTopic: { type: Method.post, endpoint: "/topics/update" },
   deleteTopic: { type: Method.post, endpoint: "/topics/delete" },
+  getPastGames: { type: Method.get, endpoint: "/games/past-games" },
 };
 
 export type apiConfigType = typeof apiConfig;

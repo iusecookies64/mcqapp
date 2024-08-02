@@ -4,7 +4,7 @@ config();
 import express from "express";
 import cors from "cors";
 import userRouter from "./routes/users";
-import contestRouter from "./routes/games";
+import gamesRouter from "./routes/games";
 import questionRouter from "./routes/questions";
 import topicsRouter from "./routes/topics";
 import { GlobalErrorHandler } from "./controllers/errorController";
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static("./public"));
 
 app.use("/users", userRouter);
-app.use("/games", contestRouter);
+app.use("/games", gamesRouter);
 app.use("/questions", questionRouter);
 app.use("/topics", topicsRouter);
 

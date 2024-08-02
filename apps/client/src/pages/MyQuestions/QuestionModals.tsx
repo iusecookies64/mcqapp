@@ -122,7 +122,7 @@ export const CreateQuestionModal = ({
                   value={value}
                   onChange={onChange}
                   error={errors.option1}
-                  errorMessage={errors.option1?.message}
+                  errorMessage={errors.option2?.message}
                 />
               )}
             />
@@ -137,7 +137,7 @@ export const CreateQuestionModal = ({
                   value={value}
                   onChange={onChange}
                   error={errors.option1}
-                  errorMessage={errors.option1?.message}
+                  errorMessage={errors.option3?.message}
                 />
               )}
             />
@@ -152,7 +152,7 @@ export const CreateQuestionModal = ({
                   value={value}
                   onChange={onChange}
                   error={errors.option1}
-                  errorMessage={errors.option1?.message}
+                  errorMessage={errors.option4?.message}
                 />
               )}
             />
@@ -189,7 +189,7 @@ export const CreateQuestionModal = ({
                 valueAsNumber: true,
               })}
               error={errors.option1}
-              errorMessage={errors.option1?.message}
+              errorMessage={errors.time_limit?.message}
               className="p-2"
             />
           </div>
@@ -399,7 +399,7 @@ export const UpdateQuestionModal = ({
                   value={value}
                   onChange={onChange}
                   error={errors.option1}
-                  errorMessage={errors.option1?.message}
+                  errorMessage={errors.option2?.message}
                 />
               )}
             />
@@ -414,7 +414,7 @@ export const UpdateQuestionModal = ({
                   value={value}
                   onChange={onChange}
                   error={errors.option1}
-                  errorMessage={errors.option1?.message}
+                  errorMessage={errors.option3?.message}
                 />
               )}
             />
@@ -429,7 +429,7 @@ export const UpdateQuestionModal = ({
                   value={value}
                   onChange={onChange}
                   error={errors.option1}
-                  errorMessage={errors.option1?.message}
+                  errorMessage={errors.option4?.message}
                 />
               )}
             />
@@ -466,7 +466,7 @@ export const UpdateQuestionModal = ({
                 valueAsNumber: true,
               })}
               error={errors.option1}
-              errorMessage={errors.option1?.message}
+              errorMessage={errors.time_limit?.message}
               className="p-2"
             />
           </div>

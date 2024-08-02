@@ -111,7 +111,7 @@ export const InitCustomGameInput = z.object({
         time_limit: z.number().min(10).max(120),
       })
     )
-    .min(10),
+    .min(5),
 });
 
 export type InitCustomGameBody = z.infer<typeof InitCustomGameInput>;

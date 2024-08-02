@@ -57,6 +57,7 @@ CREATE TABLE responses (
   question_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   response INTEGER NOT NULL,
+  is_correct BOOLEAN NOT NULL,
   FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
   FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE
@@ -64,6 +65,7 @@ CREATE TABLE responses (
 
 CREATE TABLE participants (
   user_id INTEGER NOT NULL,
+  username TEXT NOT NULL,
   game_id TEXT NOT NULL,
   score INTEGER NOT NULL,
   FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE
