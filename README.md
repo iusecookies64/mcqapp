@@ -6,10 +6,10 @@
 * Clone the repository and run
   `npm install`
 * Then run command `npm run build:packages` to build packages.
-* Then run `npm run dev` to start all the services.
+* Then run `npm run start` to start all the services.
 * Access the client in `http://localhost:5173`.
 
-**Note:** The project required there you to have redis and postgres database either running locally or some somewhere else, add the database connection strings in the .env file.
+**Note:** The project requires redis and postgres database either running locally or some somewhere else, add the database connection strings in the .env file.
 
 ## The Project
 * For the backend I have nodejs.
