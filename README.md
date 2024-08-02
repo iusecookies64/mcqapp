@@ -11,9 +11,10 @@
 * 
 **Note:**The project required there you to have redis and postgres database either running locally or some somewhere else, add the database connection strings in the environment files inside the api and websocket apps.
 
-## The Architecture
+## The Project
 * For the backend I have nodejs.
 * For the realtime communications, I have used websockets along with redis pubsub for scalability.
 * For primary database I have used Postgres and for storing game state while games are running I have used redis for high performance.
 * For frontend I have used React along with Recoil for state management.
 * The app uses jsonwebtoken for authentication.
+* The project is a mono repo using npm workspaces, the packages contain the common types and input validations using zod.
