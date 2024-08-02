@@ -12,8 +12,8 @@ import { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import "./MyQuestions.style.css";
 import { toast } from "react-toastify";
-import { useSetRecoilState } from "recoil";
-import { selectedTopicAtom } from "../../atoms/topicsAtom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { selectedTopicAtom, topicsAtom } from "../../atoms/topicsAtom";
 
 type createQuestionModalProps = {
   isLoading: boolean;
@@ -287,6 +287,7 @@ export const UpdateQuestionModal = ({
     values: question,
   });
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const topics = useRecoilValue(topicsAtom);
   const difficultyOptions = [
     { value: 1, label: "Easy" },
     { value: 2, label: "Medium" },
@@ -299,24 +300,33 @@ export const UpdateQuestionModal = ({
 
   useEffect(() => {
     if (question) {
+      const topic = topics?.find((t) => t.topic_id === question.topic_id);
+      if (topic) {
+        setSelectedTopic(topic);
+      }
+    }
+  }, [question, topics]);
+
+  useEffect(() => {
+    if (question) {
       setDifficulty(difficultyOptions[question.difficulty - 1]);
     }
   }, [question]);
 
   const submitHandler = handleSubmit((data) => {
-    if (!selectedTopic) return;
-    if (!data) return;
-    if (!question || question.question_id) return;
+    if (!selectedTopic?.topic_id) return;
+    if (!data.answer) return;
+    if (!question || !question.question_id) return;
     updateQuestion(
       {
-        topic_id: selectedTopic.topic_id || 1,
-        question_id: question.question_id || 1,
+        topic_id: selectedTopic.topic_id,
+        question_id: question.question_id,
         statement: data.statement,
         option1: data.option1,
         option2: data.option2,
         option3: data.option3,
         option4: data.option4,
-        answer: data.answer || 1,
+        answer: data.answer,
         time_limit: data.time_limit,
         difficulty: data.difficulty,
       },

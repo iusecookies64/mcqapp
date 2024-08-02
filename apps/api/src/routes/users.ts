@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  GetMatchingUsers,
   Protected,
   Signin,
   Signup,
@@ -16,5 +17,7 @@ router.post("/signin", Signin);
 router.get("/protected", authorizeUser, Protected);
 
 router.get("/refreshtoken", refreshToken);
+
+router.post("/users-search", authorizeUser, GetMatchingUsers);
 
 export default router;

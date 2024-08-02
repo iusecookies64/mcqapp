@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+// ------------------------------------------------------------------------------------
+// api validations
+// ------------------------------------------------------------------------------------
+
 export const SignupInput = z.object({
   username: z.string().min(1),
   first_name: z.string().min(1),
@@ -29,6 +33,12 @@ export const CreateQuestionInput = z.object({
   difficulty: z.number().min(1).max(4),
   time_limit: z.number().min(10).max(120),
 });
+
+export const GetMatchingUsersInput = z.object({
+  searchString: z.string().min(1),
+});
+
+export type GetMatchingUsersBody = z.infer<typeof GetMatchingUsersInput>;
 
 export type CreateQuestionBody = z.infer<typeof CreateQuestionInput>;
 
@@ -72,6 +82,10 @@ export const DeleteTopicInput = z.object({
 
 export type DeleteTopicBody = z.infer<typeof DeleteTopicInput>;
 
+// ------------------------------------------------------------------------------------
+// websocket input validations
+// ------------------------------------------------------------------------------------
+
 export const InitGameInput = z.object({
   topic_id: z.number().min(1),
   is_random: z.boolean(),
@@ -79,11 +93,38 @@ export const InitGameInput = z.object({
 
 export type InitGameBody = z.infer<typeof InitGameInput>;
 
+export const InitCustomGameInput = z.object({
+  topic_id: z.number().min(1),
+  questions: z
+    .array(
+      z.object({
+        question_id: z.number().min(1),
+        created_by: z.number().min(1),
+        topic_id: z.number().min(1),
+        statement: z.string().min(1),
+        answer: z.number().min(1).max(4),
+        option1: z.string().min(1),
+        option2: z.string().min(1),
+        option3: z.string().min(1),
+        option4: z.string().min(1),
+        difficulty: z.number().min(1).max(4),
+        time_limit: z.number().min(10).max(120),
+      })
+    )
+    .min(10),
+});
+
+export type InitCustomGameBody = z.infer<typeof InitCustomGameInput>;
+
 export const JoinGameInput = z.object({
   game_id: z.string().min(1),
 });
 
 export type JoinGameBody = z.infer<typeof JoinGameInput>;
+
+export const StartGameInput = JoinGameInput;
+
+export type StartGameBody = z.infer<typeof StartGameInput>;
 
 export const LeaveGameInput = JoinGameInput;
 
@@ -103,8 +144,7 @@ export type SubmitResponseBody = z.infer<typeof SubmitResponseInput>;
 
 export const SendInvitationInput = z.object({
   game_id: z.string().min(1),
-  topic: z.string().min(1),
-  user_id: z.number().min(1),
+  user_ids: z.array(z.number().min(1)),
 });
 
 export type SendInvitationBody = z.infer<typeof SendInvitationInput>;

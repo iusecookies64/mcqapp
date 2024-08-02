@@ -5,8 +5,13 @@ import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import client from "../db/postgres";
 import CustomError from "../utils/CustomError";
-import { SignupInput, SigninInput } from "@mcqapp/validations";
 import {
+  SignupInput,
+  SigninInput,
+  GetMatchingUsersInput,
+} from "@mcqapp/validations";
+import {
+  GetMatchingUsersResponse,
   ProtectedResponse,
   RefreshTokenReponse,
   SigninResponse,
@@ -133,4 +138,26 @@ export const refreshToken = asyncErrorHandler(async (req, res) => {
   };
 
   res.json(response);
+});
+
+const getMatchingUsersQuery = "SELECT * FROM users WHERE username LIKE $1";
+export const GetMatchingUsers = asyncErrorHandler(async (req, res) => {
+  const { success, data } = GetMatchingUsersInput.safeParse(req.body);
+  if (success) {
+    // adding % to match all string that starts with searchString
+    const result = await client.query(getMatchingUsersQuery, [
+      data.searchString + "%",
+    ]);
+    const response: GetMatchingUsersResponse = {
+      message: "All Matching Users",
+      status: "success",
+      data: result.rows.map((r) => ({
+        username: r.username,
+        user_id: r.user_id,
+      })),
+    };
+    res.json(response);
+  } else {
+    res.json([]);
+  }
 });

@@ -7,12 +7,21 @@ type Props = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onClose?: () => void;
+  isClosable?: boolean;
 };
 
-export const Modal = ({ children, isOpen, setIsOpen, onClose }: Props) => {
+export const Modal = ({
+  children,
+  isOpen,
+  setIsOpen,
+  onClose,
+  isClosable = true,
+}: Props) => {
   const closeModal = () => {
-    setIsOpen(false);
-    if (onClose) onClose();
+    if (isClosable) {
+      setIsOpen(false);
+      if (onClose) onClose();
+    }
   };
 
   if (typeof children === "function") {
@@ -25,7 +34,9 @@ export const Modal = ({ children, isOpen, setIsOpen, onClose }: Props) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div
-                className="absolute top-0 right-0 flex justify-end p-2 cursor-pointer"
+                className={`absolute top-0 right-0 flex justify-end p-2 cursor-pointer ${
+                  !isClosable && "invisible"
+                }`}
                 onClick={() => closeModal()}
               >
                 <Icon icon={IconList.xmark} />
@@ -46,7 +57,9 @@ export const Modal = ({ children, isOpen, setIsOpen, onClose }: Props) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div
-                className="absolute top-0 right-0 flex justify-end p-3 cursor-pointer"
+                className={`absolute top-0 right-0 flex justify-end p-3 cursor-pointer ${
+                  !isClosable && "invisible"
+                }`}
                 onClick={() => closeModal()}
               >
                 <Icon icon={IconList.xmark} />

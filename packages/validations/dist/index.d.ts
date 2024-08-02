@@ -68,6 +68,14 @@ export declare const CreateQuestionInput: z.ZodObject<{
     difficulty: number;
     time_limit: number;
 }>;
+export declare const GetMatchingUsersInput: z.ZodObject<{
+    searchString: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    searchString: string;
+}, {
+    searchString: string;
+}>;
+export type GetMatchingUsersBody = z.infer<typeof GetMatchingUsersInput>;
 export type CreateQuestionBody = z.infer<typeof CreateQuestionInput>;
 export declare const UpdateQuestionInput: z.ZodObject<{
     question_id: z.ZodNumber;
@@ -150,6 +158,77 @@ export declare const InitGameInput: z.ZodObject<{
     is_random: boolean;
 }>;
 export type InitGameBody = z.infer<typeof InitGameInput>;
+export declare const InitCustomGameInput: z.ZodObject<{
+    topic_id: z.ZodNumber;
+    questions: z.ZodArray<z.ZodObject<{
+        question_id: z.ZodNumber;
+        created_by: z.ZodNumber;
+        topic_id: z.ZodNumber;
+        statement: z.ZodString;
+        answer: z.ZodNumber;
+        option1: z.ZodString;
+        option2: z.ZodString;
+        option3: z.ZodString;
+        option4: z.ZodString;
+        difficulty: z.ZodNumber;
+        time_limit: z.ZodNumber;
+    }, "strip", z.ZodTypeAny, {
+        topic_id: number;
+        statement: string;
+        answer: number;
+        option1: string;
+        option2: string;
+        option3: string;
+        option4: string;
+        difficulty: number;
+        time_limit: number;
+        question_id: number;
+        created_by: number;
+    }, {
+        topic_id: number;
+        statement: string;
+        answer: number;
+        option1: string;
+        option2: string;
+        option3: string;
+        option4: string;
+        difficulty: number;
+        time_limit: number;
+        question_id: number;
+        created_by: number;
+    }>, "many">;
+}, "strip", z.ZodTypeAny, {
+    topic_id: number;
+    questions: {
+        topic_id: number;
+        statement: string;
+        answer: number;
+        option1: string;
+        option2: string;
+        option3: string;
+        option4: string;
+        difficulty: number;
+        time_limit: number;
+        question_id: number;
+        created_by: number;
+    }[];
+}, {
+    topic_id: number;
+    questions: {
+        topic_id: number;
+        statement: string;
+        answer: number;
+        option1: string;
+        option2: string;
+        option3: string;
+        option4: string;
+        difficulty: number;
+        time_limit: number;
+        question_id: number;
+        created_by: number;
+    }[];
+}>;
+export type InitCustomGameBody = z.infer<typeof InitCustomGameInput>;
 export declare const JoinGameInput: z.ZodObject<{
     game_id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
@@ -158,6 +237,14 @@ export declare const JoinGameInput: z.ZodObject<{
     game_id: string;
 }>;
 export type JoinGameBody = z.infer<typeof JoinGameInput>;
+export declare const StartGameInput: z.ZodObject<{
+    game_id: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    game_id: string;
+}, {
+    game_id: string;
+}>;
+export type StartGameBody = z.infer<typeof StartGameInput>;
 export declare const LeaveGameInput: z.ZodObject<{
     game_id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
@@ -190,15 +277,12 @@ export declare const SubmitResponseInput: z.ZodObject<{
 export type SubmitResponseBody = z.infer<typeof SubmitResponseInput>;
 export declare const SendInvitationInput: z.ZodObject<{
     game_id: z.ZodString;
-    topic: z.ZodString;
-    user_id: z.ZodNumber;
+    user_ids: z.ZodArray<z.ZodNumber, "many">;
 }, "strip", z.ZodTypeAny, {
     game_id: string;
-    topic: string;
-    user_id: number;
+    user_ids: number[];
 }, {
     game_id: string;
-    topic: string;
-    user_id: number;
+    user_ids: number[];
 }>;
 export type SendInvitationBody = z.infer<typeof SendInvitationInput>;

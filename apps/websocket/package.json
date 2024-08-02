@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mcqapp/types": "*",
     "@mcqapp/validations": "*",
     "crypto": "^1.0.1",
     "jsonwebtoken": "9.0.2",
@@ -21,6 +20,7 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",
+    "@mcqapp/types": "*",
     "@types/ws": "^8.5.11"
   }
 }

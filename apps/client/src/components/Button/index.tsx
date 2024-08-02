@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import "./Button.style.css";
 
 type Props = {
-  variant?: "primary" | "secondary" | "tertiary" | "alert";
+  variant?: "primary" | "secondary" | "tertiary" | "alert" | "success";
   size?: "sm" | "md" | "lg" | "xl";
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children: ReactNode;

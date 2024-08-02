@@ -16,11 +16,11 @@ export const SetRefreshToken = (refreshToken: string) => {
   });
 };
 
-export const GetAccessToken = () => {
+export const GetAccessToken = (): string => {
   return cookies.get("access_token");
 };
 
-export const GetRefreshToken = () => {
+export const GetRefreshToken = (): string => {
   return cookies.get("refresh_token");
 };
 

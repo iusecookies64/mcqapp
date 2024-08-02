@@ -12,6 +12,8 @@ import PlayOptions from "./pages/PlayGame/PlayOptions.tsx";
 import MyQuestions from "./pages/MyQuestions/MyQuestions.tsx";
 import { AuthProvider } from "./components/AuthContext/index.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute/index.tsx";
+import { Game } from "./pages/Lobby/Game.tsx";
+import { MyTopics } from "./pages/MyTopics/MyTopics.tsx";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +34,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <MyQuestions />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/my-topics",
+        element: (
+          <ProtectedRoute>
+            <MyTopics />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/game",
+        element: (
+          <ProtectedRoute>
+            <Game />
           </ProtectedRoute>
         ),
       },

@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "@mcqapp/validations": "*",
-    "@mcqapp/types": "*",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/node-schedule": "^2.1.7",
@@ -27,6 +26,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "@mcqapp/types": "*",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.9",

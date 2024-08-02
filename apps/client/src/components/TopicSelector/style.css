@@ -1,0 +1,15 @@
+.topic-selector-modal {
+  @apply flex flex-col gap-3 min-w-96;
+}
+
+.topic-selector-modal .selected-topic {
+  @apply bg-secondary dark:bg-dark-secondary;
+}
+
+.topic-selector-modal .topics-list-container {
+  @apply flex flex-col bg-primary dark:bg-dark-primary max-h-96 overflow-y-scroll rounded-xl;
+}
+
+.topic-selector-modal .topics-list-container div {
+  @apply p-3 hover:bg-secondary dark:hover:bg-dark-secondary cursor-pointer;
+}

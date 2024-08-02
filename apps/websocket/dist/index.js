@@ -13,10 +13,12 @@ const User_1 = require("./User");
 const wss = new ws_1.WebSocketServer({ port: 8080 });
 wss.on("connection", (ws, req) => {
     const token = url_1.default.parse(req.url || "", true).query.token;
-    const userData = (0, auth_1.default)(token);
-    if (userData) {
-        const user = new User_1.User(userData, ws);
-        console.log("user came", user.user_id, user.username);
-        UserManager_1.default.getInstance().addUser(user);
+    try {
+        const userData = (0, auth_1.default)(token);
+        if (userData) {
+            const user = new User_1.User(userData, ws);
+            UserManager_1.default.getInstance().addUser(user);
+        }
     }
+    catch (err) { }
 });

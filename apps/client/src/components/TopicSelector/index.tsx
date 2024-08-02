@@ -1,6 +1,7 @@
 import { useTopics } from "../../hooks/useTopics";
 import DropDown from "../DropDown";
 import { Topic } from "@mcqapp/types";
+import "./style.css";
 
 type Props = {
   currentTopic: Topic | null;
@@ -12,7 +13,6 @@ const TopicSelector = ({ currentTopic, setCurrentTopic, error }: Props) => {
   const { topics } = useTopics();
   return (
     <DropDown
-      className="min-w-96"
       label="Topic"
       placeholder="Select A Topic"
       value={currentTopic}

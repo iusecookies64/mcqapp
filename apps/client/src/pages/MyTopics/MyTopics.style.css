@@ -1,0 +1,15 @@
+.my-topics-container {
+  @apply h-full w-full flex flex-col gap-3 p-3;
+}
+
+.my-topics-header {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.topic-card-container {
+  @apply grid grid-cols-2 gap-3 relative;
+}
+
+.topic-card-container > div {
+  @apply flex items-center justify-between p-3 bg-secondary dark:bg-dark-secondary border border-border rounded-xl;
+}

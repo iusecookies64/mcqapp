@@ -1,5 +1,5 @@
 import GameManager from "./GameManager";
-import SubscriptionManager from "./PubSubManager";
+import PubSubManager from "./PubSubManager";
 import { User } from "./User";
 
 export default class UserManager {
@@ -24,14 +24,10 @@ export default class UserManager {
     this.users.set(user.user_id, user);
     // adding all the socket handlers
     GameManager.getInstance().addHandlers(user);
-
     // subscribing to all messages in user.user_id channel
-    SubscriptionManager.getInstance().subscribe(
-      user.user_id,
-      `user.${user.user_id}`
-    );
+    PubSubManager.getInstance().subscribe(user.user_id, `user.${user.user_id}`);
     user.socket.on("close", () => {
-      SubscriptionManager.getInstance().userLeft(user.user_id); // unsubscribe user from all channels
+      PubSubManager.getInstance().userLeft(user.user_id); // unsubscribe user from all channels
     });
   }
 }

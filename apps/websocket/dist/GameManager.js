@@ -150,10 +150,18 @@ class GameManager {
                 // if message to initialize a game
                 if (type === types_1.SocketMessageType.INIT_GAME) {
                     const { success, data } = validations_1.InitGameInput.safeParse(payload);
-                    if (success) {
-                        // if correct input we create a game
+                    if (success)
                         this.createGame(data, user);
-                    }
+                }
+                if (type === types_1.SocketMessageType.INIT_CUSTOM_GAME) {
+                    const { success, data } = validations_1.InitCustomGameInput.safeParse(payload);
+                    if (success)
+                        this.createCustomGame(data, user);
+                }
+                if (type === types_1.SocketMessageType.START_GAME) {
+                    const { success, data } = validations_1.StartGameInput.safeParse(payload);
+                    if (success)
+                        this.startGame({ game_id: data.game_id });
                 }
                 // if message to join a game
                 if (type === types_1.SocketMessageType.JOIN_GAME) {
@@ -168,7 +176,7 @@ class GameManager {
                         this.removeUserFromGame(user, data.game_id);
                 }
                 // if message to get next question
-                if (type === types_1.SocketMessageType.NEXT_QUESTION) {
+                if (type === types_1.SocketMessageType.GET_NEXT_QUESTION) {
                     const { success, data } = validations_1.NextQuestionInput.safeParse(payload);
                     if (success)
                         this.getNextQuestion(user, data.game_id);
@@ -178,6 +186,12 @@ class GameManager {
                     const { success, data } = validations_1.SubmitResponseInput.safeParse(payload);
                     if (success)
                         this.submitResponse(user, data);
+                }
+                // if message to send a user invite
+                if (type === types_1.SocketMessageType.SEND_INVITATTION) {
+                    const { success, data } = validations_1.SendInvitationInput.safeParse(payload);
+                    if (success)
+                        this.sendInvite(user, data);
                 }
             }
             catch (err) {
@@ -210,22 +224,31 @@ class GameManager {
                     response: [],
                     currQuestionNumber: 1,
                     currQuestionStartTime: Date.now(),
+                    created_at: Date.now(),
                     isStarted: false,
+                    is_random: data.is_random,
+                    is_custom: false,
+                    host: {
+                        user_id: user.user_id,
+                        username: user.username,
+                    },
+                    is_pushed: false,
                 };
                 const players = [
                     {
                         user_id: user.user_id,
                         username: user.username,
                         score: 0,
-                        isHost: true,
                     },
                 ];
                 // storing game state in redis
                 yield this.setGameState(game.game_id, game);
                 // storing players list in redis
                 yield this.setGamePlayers(game.game_id, players);
-                // if game is random we store it in waiting list
-                yield this.setWaitingGameId(data.topic_id, game.game_id);
+                if (data.is_random) {
+                    // if game is random we store it in waiting list
+                    yield this.setWaitingGameId(data.topic_id, game.game_id);
+                }
                 // subscribing user to game_id channel
                 PubSubManager_1.default.getInstance().subscribe(user.user_id, game.game_id);
                 // adding leave handler if user connection breaks
@@ -235,6 +258,12 @@ class GameManager {
                 // letting user know game created successfully
                 const payload = {
                     game_id: game.game_id,
+                    is_random: data.is_random,
+                    is_custom: false,
+                    host: {
+                        user_id: user.user_id,
+                        username: user.username,
+                    },
                 };
                 user.emit(JSON.stringify({
                     type: types_1.SocketMessageType.GAME_CREATED,
@@ -247,6 +276,46 @@ class GameManager {
             }
         });
     }
+    createCustomGame(data, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const game = {
+                game_id: (0, crypto_1.randomUUID)(),
+                questions: data.questions,
+                response: [],
+                currQuestionNumber: 1,
+                currQuestionStartTime: Date.now(),
+                created_at: Date.now(),
+                isStarted: false,
+                is_random: false,
+                is_custom: true,
+                host: {
+                    user_id: user.user_id,
+                    username: user.username,
+                },
+                is_pushed: false,
+            };
+            const players = [];
+            // storing game state in redis
+            yield this.setGameState(game.game_id, game);
+            // storing players list in redis
+            yield this.setGamePlayers(game.game_id, players);
+            // adding leave handler if user connection breaks
+            user.socket.on("close", () => {
+                this.removeUserFromGame(user, game.game_id);
+            });
+            // letting user know game created successfully
+            const payload = {
+                game_id: game.game_id,
+                is_random: game.is_random,
+                is_custom: game.is_custom,
+                host: game.host,
+            };
+            user.emit(JSON.stringify({
+                type: types_1.SocketMessageType.CUSTOM_GAME_CREATED,
+                payload,
+            }));
+        });
+    }
     addUserToGame(user, game_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -255,37 +324,60 @@ class GameManager {
                 const game = yield this.getGameState(game_id);
                 if (!players)
                     throw Error("No Player Exists");
-                if (!game)
-                    throw Error("No Game Exists");
-                // if user is joining this game for the first time
-                if (!players.find((p) => p.user_id === user.user_id)) {
+                if (!game) {
+                    user.emit(JSON.stringify({
+                        type: types_1.SocketMessageType.GAME_NOT_FOUND,
+                    }));
+                    return;
+                }
+                // if user already in player list or this is custom game and user is host then we emit user reconnected
+                if (players.find((p) => p.user_id === user.user_id) ||
+                    (game.is_custom && user.user_id === game.host.user_id)) {
+                    const payload = {
+                        user_id: user.user_id,
+                        username: user.username,
+                    };
+                    PubSubManager_1.default.getInstance().publish(game_id, JSON.stringify({
+                        type: types_1.SocketMessageType.USER_RECONNECTED,
+                        payload,
+                    }));
+                }
+                else {
                     // adding user to list of players
                     players.push({
                         user_id: user.user_id,
                         username: user.username,
                         score: 0,
-                        isHost: false,
                     });
                     // updating players list in redis
                     this.setGamePlayers(game_id, players);
-                }
-                // letting other people in this room know
-                PubSubManager_1.default.getInstance().publish(game_id, JSON.stringify({
-                    type: types_1.SocketMessageType.NEW_USER,
-                    payload: {
+                    const response = {
                         user_id: user.user_id,
                         username: user.username,
-                    },
-                }));
+                        score: 0,
+                    };
+                    // letting other people in this room know
+                    PubSubManager_1.default.getInstance().publish(game_id, JSON.stringify({
+                        type: types_1.SocketMessageType.NEW_USER,
+                        payload: response,
+                    }));
+                }
                 // subscribing user to game_id channel
                 PubSubManager_1.default.getInstance().subscribe(user.user_id, game_id);
+                // adding leave handler if user connection breaks
+                user.socket.on("close", () => {
+                    this.removeUserFromGame(user, game.game_id);
+                });
                 // sending user the participants in this room
                 const payload = {
                     game_id,
+                    is_random: game.is_random,
+                    is_custom: game.is_custom,
+                    host: game.host,
                     players,
                 };
                 user.emit(JSON.stringify({
-                    type: types_1.SocketMessageType.GAME_PLAYERS,
+                    type: types_1.SocketMessageType.GAME_JOINED,
                     payload,
                 }));
                 // if game started sending curr question
@@ -299,9 +391,9 @@ class GameManager {
                         payload,
                     }));
                 }
-                else if (players.length >= 2) {
-                    // game not started, if participants >= 2 then we start the game
-                    this.startGame({ gameState: game });
+                else if (players.length === 2 && game.is_random) {
+                    // game not started, if participants >= 2 then we start the game after 10s
+                    setTimeout(() => this.startGame({ gameState: game }), 10000);
                 }
             }
             catch (err) {
@@ -315,36 +407,46 @@ class GameManager {
             try {
                 // getting gameState from redis
                 const players = yield this.getGamePlayers(game_id);
+                const game = yield this.getGameState(game_id);
                 if (!players)
                     throw Error("No Player Exists");
-                let isHost = false;
-                const remainingPlayers = players.filter((p) => {
-                    if (p.user_id === user.user_id && p.isHost) {
-                        isHost = true;
-                    }
-                    return p.user_id !== user.user_id;
-                });
-                // no one left so we delete game
-                if (remainingPlayers.length === 0) {
-                    yield this.deleteGamePlayers(game_id);
-                    yield this.deleteGameState(game_id);
-                    return;
-                }
+                if (!game)
+                    throw Error("No Player Exists");
                 // unsubscribing user from game_id channel
                 PubSubManager_1.default.getInstance().unsubscribe(user.user_id, game_id);
+                // if game started or user host of custom game we only emit user disconnected and not remove them from players list
+                if (game.isStarted ||
+                    (game.is_custom && user.user_id === game.host.user_id)) {
+                    const payload = {
+                        user_id: user.user_id,
+                        username: user.username,
+                    };
+                    PubSubManager_1.default.getInstance().publish(game_id, JSON.stringify({
+                        type: types_1.SocketMessageType.USER_DISCONNECTED,
+                        payload,
+                    }));
+                    return;
+                }
+                const remainingPlayers = players.filter((p) => p.user_id !== user.user_id);
+                const payload = {
+                    user_id: user.user_id,
+                    username: user.username,
+                };
                 // publishing user left in game_id channel
                 PubSubManager_1.default.getInstance().publish(game_id, JSON.stringify({
                     type: types_1.SocketMessageType.USER_LEFT,
-                    payload: { user_id: user.user_id, username: user.username },
+                    payload,
                 }));
-                // if player was host
-                if (isHost) {
-                    const payload = {
+                // if player was host and this is not a custom game
+                if (user.user_id === game.host.user_id) {
+                    game.host = {
                         user_id: remainingPlayers[0].user_id,
                         username: remainingPlayers[0].username,
                     };
+                    const payload = game.host;
                     PubSubManager_1.default.getInstance().publish(game_id, JSON.stringify({ type: types_1.SocketMessageType.NEW_HOST, payload }));
-                    remainingPlayers[0].isHost = true;
+                    // updating game state in redis
+                    yield this.setGameState(game_id, game);
                 }
                 // saving new players list in redis
                 yield this.setGamePlayers(game_id, remainingPlayers);
@@ -390,18 +492,20 @@ class GameManager {
                 if (game) {
                     const currQuestion = game.questions[game.currQuestionNumber - 1];
                     const questionStartTime = game.currQuestionStartTime;
-                    // if question expired or response not same as current question we return
+                    // if question expired or response not same as current question or user already answered this we return
                     if (this.isQuestionExpired(questionStartTime, currQuestion.time_limit) ||
-                        currQuestion.question_id !== data.question_id) {
+                        currQuestion.question_id !== data.question_id ||
+                        game.response.find((r) => r.question_id === data.question_id && r.user_id === user.user_id)) {
                         return;
                     }
-                    let is_correct = false;
+                    let is_correct = false, new_score = 0;
                     if (data.response === currQuestion.answer) {
                         is_correct = true;
                         // updating user score
                         const player = yield this.getGamePlayer(data.game_id, user.username);
                         if (player) {
                             player.score += currQuestion.difficulty * 50;
+                            new_score = player.score;
                             yield this.setGamePlayers(data.game_id, [player]);
                         }
                     }
@@ -411,9 +515,10 @@ class GameManager {
                         username: user.username,
                         question_id: data.question_id,
                         is_correct,
+                        score: new_score,
                     };
                     PubSubManager_1.default.getInstance().publish(data.game_id, JSON.stringify({
-                        type: types_1.SocketMessageType.User_Response,
+                        type: types_1.SocketMessageType.USER_RESPONSE,
                         payload,
                     }));
                 }
@@ -443,6 +548,7 @@ class GameManager {
                     // if this is the last question then we send game ended
                     if (game.questions.length === game.currQuestionNumber) {
                         this.gameEnded(user);
+                        this.pushToDb(game);
                         return;
                     }
                     const payload = {
@@ -464,6 +570,10 @@ class GameManager {
     gameEnded(user) {
         user.emit(JSON.stringify({ type: types_1.SocketMessageType.GAME_ENDED }));
     }
+    pushToDb(game) {
+        if (game.is_pushed)
+            return;
+    }
     isQuestionExpired(start_time, durationInSec) {
         const end_time = start_time + durationInSec * 1000;
         if (Date.now() > end_time)
@@ -484,6 +594,28 @@ class GameManager {
             }
             catch (err) {
                 console.log("Error getting random questions");
+            }
+        });
+    }
+    sendInvite(user, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const payload = {
+                    game_id: data.game_id,
+                    user_id: user.user_id,
+                    username: user.username,
+                };
+                // sending invitation to all the users
+                data.user_ids.forEach((user_id) => {
+                    PubSubManager_1.default.getInstance().publish(`user.${user_id}`, JSON.stringify({
+                        type: types_1.SocketMessageType.INVITATION,
+                        payload,
+                    }));
+                });
+            }
+            catch (err) {
+                console.log("Error sending invitation");
+                console.log(err);
             }
         });
     }

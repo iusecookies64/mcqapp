@@ -1,134 +1,225 @@
+import { Question, UserSubmitResponse } from "@mcqapp/types";
+import Button from "../Button";
+import Icon, { IconList } from "../Icon";
 import { useState } from "react";
-import { UpdateQuestionData } from "../../hooks/useMyQuestions";
-import { UpdateQuestionForm } from "../../pages/CompileContest/components/UpdateQuestionForm";
-import { QuestionWithOptions } from "../../types/models";
-import { Button } from "@mcqapp/ui";
-import { Icon, IconList } from "../Icon";
+import { Loader } from "../Loader";
+import Countdown from "react-countdown";
 import "./QuestionCard.styles.css";
-import { Modal } from "../Modal";
-import { Expandable } from "../Expandable";
-import { Reorder, useDragControls } from "framer-motion";
 
-type Props = {
-  question: QuestionWithOptions;
-  updateQuestion: (
-    updatedQuestionData: UpdateQuestionData,
-    onSuccess: () => void
-  ) => void;
-  deleteQuestion: (question_id: number) => void;
+type QuestionCardProps = {
+  question: Question;
+  setUpdateModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedQuestion: React.Dispatch<
+    React.SetStateAction<Question | undefined>
+  >;
+  setDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
+  index: number;
   isLoading: boolean;
-  error: boolean;
-};
-
-export const QuestionCardDraggable = ({ question }: Props) => {
-  const controls = useDragControls();
-  return (
-    <Reorder.Item
-      key={question.question_id}
-      value={question}
-      className="question-card-draggable-container"
-      dragListener={false}
-      dragControls={controls}
-    >
-      <div key={question.question_id} className="question-container-draggable">
-        <div>
-          <div className="question-labels">Question:</div>
-          <div className="text-[16px] pl-2">{question.title}</div>
-        </div>
-      </div>
-      <div
-        className="h-full flex-grow flex items-center pointer-events-auto"
-        onPointerDown={(e) => controls.start(e)}
-      >
-        <Icon
-          icon={IconList.grip}
-          className="h-8 w-8 dark:text-gray-light cursor-pointer active:cursor-grab"
-        />
-      </div>
-    </Reorder.Item>
-  );
 };
 
 export const QuestionCard = ({
   question,
-  updateQuestion,
-  deleteQuestion,
-  isLoading,
-  error,
-}: Props) => {
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  setUpdateModal,
+  setDeleteModal,
+  setSelectedQuestion,
+  index,
+}: QuestionCardProps) => {
   return (
-    <div key={question.question_id} className="question-card-container">
-      <div key={question.question_id} className="question-container">
-        <div>
-          <div className="question-labels">Question:</div>
-          <div className="text-[16px] pl-2">{question.title}</div>
+    <div className="questions-card-container self-stretch">
+      <div className="questions-card-header">
+        <div className="text-lg">Question {index + 1}</div>
+        <div className="flex gap-1 items-center">
+          <span className="text-[14px]">Difficulty:</span>
+          {question.difficulty === 1 && (
+            <div className="text-[14px] font-bold text-green-500 dark:text-green-600">
+              Easy
+            </div>
+          )}
+          {question.difficulty === 2 && (
+            <div className="text-[14px] font-bold text-yellow-500">Medium</div>
+          )}
+          {question.difficulty === 3 && (
+            <div className="text-[14px] font-bold text-red-500">Hard</div>
+          )}
         </div>
-        <Expandable>
-          <div className="question-labels">Options:</div>
-          <div className="question-options">
-            {question.options.map((option, indx) => (
-              <div key={indx}>
-                {indx + 1}) {option.title}
-              </div>
-            ))}
-          </div>
-          <div className="question-answer">
-            <div className="question-labels">Answer:</div>
-            <div className="pl-2">{question.answer}</div>
-          </div>
-        </Expandable>
-        <div className="w-full pr-8 pb-3 flex justify-end gap-3 absolute bottom-0">
+        <div className="flex gap-3 items-center">
           <Button
-            variant="alert"
             size="sm"
-            onClick={() => setIsDeleteModalOpen(true)}
-            tooltip="Delete"
-          >
-            <Icon icon={IconList.trash} />
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
+            tooltip="Edit Question"
             onClick={() => {
-              setIsUpdateModalOpen(true);
+              setSelectedQuestion(question);
+              setUpdateModal(true);
             }}
-            tooltip="Edit"
           >
             <Icon icon={IconList.pen} />
           </Button>
+          <Button
+            variant="alert"
+            size="sm"
+            tooltip="Delete Question"
+            onClick={() => {
+              setSelectedQuestion(question);
+              setDeleteModal(true);
+            }}
+          >
+            <Icon icon={IconList.trash} />
+          </Button>
         </div>
-        <UpdateQuestionForm
-          setIsOpen={setIsUpdateModalOpen}
-          isOpen={isUpdateModalOpen}
-          updateQuestionHandler={updateQuestion}
-          isLoading={isLoading}
-          error={error}
-          questionData={question}
-        />
-        <Modal setIsOpen={setIsDeleteModalOpen} isOpen={isDeleteModalOpen}>
-          {(onClose) => {
-            return (
-              <div className="max-w-md flex flex-col gap-6 p-6">
-                <div>Are you sure you want to delete the question?</div>
-                <div className="w-full flex justify-between items-center">
-                  <Button variant="tertiary">Cancel</Button>
-                  <Button
-                    variant="alert"
-                    onClick={() => {
-                      deleteQuestion(question.question_id);
-                      onClose();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            );
-          }}
-        </Modal>
+      </div>
+      <div className="p-3 flex flex-col gap-1">
+        <div className="text-sm text-slate-400 font-medium">Question</div>
+        <div className="question-statement">{question.statement}</div>
+      </div>
+      <div className="options-container">
+        <div className={question.answer === 1 ? "correct-answer" : ""}>
+          A) {question.option1}
+        </div>
+        <div className={question.answer === 2 ? "correct-answer" : ""}>
+          B) {question.option2}
+        </div>
+        <div className={question.answer === 3 ? "correct-answer" : ""}>
+          C) {question.option3}
+        </div>
+        <div className={question.answer === 4 ? "correct-answer" : ""}>
+          D) {question.option4}
+        </div>
       </div>
     </div>
   );
 };
+
+type GameQuestionCardProps = {
+  question: Question;
+  start_time: number;
+  getNextQuestion: () => void;
+  response?: UserSubmitResponse;
+  loadingResponse: boolean;
+  submitResponse: (response: number) => void;
+};
+
+export const GameQuestionCard = ({
+  question,
+  start_time,
+  getNextQuestion,
+  response,
+  submitResponse,
+  loadingResponse,
+}: GameQuestionCardProps) => {
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  return (
+    <div key={question.question_id} className="questions-card-container">
+      <div className="questions-card-header">
+        <div className="text-lg">Question</div>
+        <div className="flex gap-3">
+          <span>Time Left:</span>
+          <Countdown
+            date={start_time + question.time_limit * 1000}
+            onComplete={getNextQuestion}
+          />
+        </div>
+        <div className="flex gap-1 items-center">
+          <span className="text-[14px]">Difficulty:</span>
+          {question.difficulty === 1 && (
+            <div className="text-[14px] font-bold text-green-500 dark:text-green-600">
+              Easy
+            </div>
+          )}
+          {question.difficulty === 2 && (
+            <div className="text-[14px] font-bold text-yellow-500">Medium</div>
+          )}
+          {question.difficulty === 3 && (
+            <div className="text-[14px] font-bold text-red-500">Hard</div>
+          )}
+        </div>
+      </div>
+      <div className="p-3 flex flex-col gap-1">
+        <div className="text-sm text-slate-400 font-medium">Question</div>
+        <div className="question-statement">{question.statement}</div>
+      </div>
+      <div className="options-container-game">
+        <div
+          onClick={() => {
+            if (!response) setSelectedOption(1);
+          }}
+          className={`${selectedOption === 1 && "selected-option"} ${
+            selectedOption === 1 &&
+            response &&
+            (response.is_correct ? "correct-answer" : "wrong-answer")
+          }`}
+        >
+          A) {question.option1}
+        </div>
+        <div
+          onClick={() => {
+            if (!response) setSelectedOption(2);
+          }}
+          className={`${selectedOption === 2 && "selected-option"} ${
+            selectedOption === 2 &&
+            response &&
+            (response.is_correct ? "correct-answer" : "wrong-answer")
+          }`}
+        >
+          B) {question.option2}
+        </div>
+        <div
+          onClick={() => {
+            if (!response) setSelectedOption(3);
+          }}
+          className={`${selectedOption === 3 && "selected-option"} ${
+            selectedOption === 3 &&
+            response &&
+            (response.is_correct ? "correct-answer" : "wrong-answer")
+          }`}
+        >
+          C) {question.option3}
+        </div>
+        <div
+          onClick={() => {
+            if (!response) setSelectedOption(4);
+          }}
+          className={`${selectedOption === 4 && "selected-option"} ${
+            selectedOption === 4 &&
+            response &&
+            (response.is_correct ? "correct-answer" : "wrong-answer")
+          }`}
+        >
+          D) {question.option4}
+        </div>
+      </div>
+      <div className="p-3 flex justify-end">
+        <Button
+          variant={
+            !response ? "primary" : response.is_correct ? "success" : "alert"
+          }
+          className="relative"
+          onClick={() => {
+            if (!response && selectedOption) {
+              submitResponse(selectedOption);
+            }
+          }}
+        >
+          {!loadingResponse && !response && "Submit"}
+          {loadingResponse && <Loader height={25} width={25} strokeWidth={5} />}
+          {!loadingResponse && response && response.is_correct && (
+            <Icon icon={IconList.check} />
+          )}
+          {!loadingResponse && response && !response.is_correct && (
+            <Icon icon={IconList.xmark} />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+type QuestionCardSelectProps = {
+  question: Question;
+  selectQuestion: (question: Question) => void;
+  unSelectQuestion: (question: Question) => void;
+};
+
+export const QuestionCardSelect = ({
+  question,
+  selectQuestion,
+  unSelectQuestion,
+}: QuestionCardSelectProps) => {};

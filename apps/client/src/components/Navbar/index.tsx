@@ -4,10 +4,11 @@ import { Logout } from "../Logout";
 import "./style.css";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext";
+import { Invitation } from "../Invitation";
 
 export const NavBar = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, isLoading } = useContext(AuthContext);
   return (
     <div className="w-full border-b border-border flex justify-center">
       <div className="navbar">
@@ -34,6 +35,14 @@ export const NavBar = () => {
             </li>
             <li>
               <NavLink
+                to="/my-topics"
+                className={({ isActive }) => (isActive ? "active-link" : "")}
+              >
+                My Topics
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
                 to="/past-games"
                 className={({ isActive }) => (isActive ? "active-link" : "")}
               >
@@ -47,6 +56,7 @@ export const NavBar = () => {
           {user && <Logout setUser={setUser} />}
         </div>
       </div>
+      {user && !isLoading && <Invitation />}
     </div>
   );
 };

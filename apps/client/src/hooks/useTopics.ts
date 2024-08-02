@@ -43,6 +43,10 @@ export const useTopics = () => {
     setIsLoadingAction(true);
     api[apiConfig.deleteTopic.type](apiConfig.deleteTopic.endpoint, data)
       .then(() => {
+        setTopics((topics) => {
+          if (!topics) return topics;
+          return topics.filter((t) => t.topic_id !== data.topic_id);
+        });
         setIsLoadingAction(false);
         if (onSuccess) onSuccess();
       })

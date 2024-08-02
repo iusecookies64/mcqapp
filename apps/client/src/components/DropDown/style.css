@@ -3,7 +3,7 @@
 }
 
 .dropdown-button {
-  @apply relative p-3 border border-border-secondary rounded-lg cursor-pointer;
+  @apply w-full flex flex-nowrap gap-1 relative p-3 border border-border-secondary rounded-lg cursor-pointer;
 }
 
 .dropdown-menu {
@@ -11,7 +11,7 @@
 }
 
 .dropdown-item {
-  @apply p-3 hover:bg-dark-secondary cursor-pointer;
+  @apply p-3 hover:bg-secondary dark:hover:bg-dark-secondary cursor-pointer;
 }
 
 .dropdown-accordion {

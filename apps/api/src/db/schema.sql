@@ -17,15 +17,19 @@ CREATE TABLE users (
 
 CREATE TABLE games (
   game_id TEXT PRIMARY KEY,
+  topic_id INTEGER NOT NULL,
   player_ids INTEGER[],
   question_ids INTEGER[],
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (topic_id) REFERENCES topics(topic_id) ON DELETE SET NULL
 );
 
 CREATE TABLE topics (
   topic_id SERIAL PRIMARY KEY,
-  title TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_by INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE questions (

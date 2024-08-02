@@ -1,27 +1,43 @@
-.question-card-container {
-  @apply w-full h-min rounded-lg flex items-center;
+.questions-card-container {
+  @apply mt-3 p-5 rounded-3xl w-full max-w-screen-lg  animate-enter-from-top dark:bg-dark-secondary border border-border;
 }
 
-.question-card-draggable-container {
-  @apply w-full h-min p-4 rounded-lg flex items-center;
+.questions-card-header {
+  @apply flex justify-between rounded-t-lg items-center;
 }
 
-.question-container {
-  @apply px-5 pt-3 flex flex-col gap-4 relative w-full;
+.question-statement {
+  @apply border border-border-secondary p-3 rounded-lg;
 }
 
-.question-container-draggable {
-  @apply flex flex-col gap-4 relative w-full;
+.options-container {
+  @apply p-3 grid grid-cols-2 gap-3;
 }
 
-.question-labels {
-  @apply font-semibold mr-2;
+.options-container > div {
+  @apply p-3 border border-border-secondary rounded-lg;
 }
 
-.question-options {
-  @apply flex gap-3 flex-wrap pl-2;
+.options-container-game {
+  @apply p-3 grid grid-cols-2 gap-3;
 }
 
-.question-options div {
-  @apply min-w-[40%];
+.options-container-game > div {
+  @apply p-3 border border-border-secondary hover:border-blue-500 rounded-lg cursor-pointer;
+}
+
+.option-button {
+  @apply h-10 w-10 flex justify-center items-center border border-border-secondary rounded-lg cursor-pointer;
+}
+
+.selected-option {
+  @apply border-blue-500 text-blue-500 !important;
+}
+
+.correct-answer {
+  @apply border-green-600 dark:border-green-400 text-green-600 dark:text-green-400 !important;
+}
+
+.wrong-answer {
+  @apply border-red-600 dark:border-red-400 text-red-600 dark:text-red-400 !important;
 }

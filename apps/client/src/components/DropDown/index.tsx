@@ -13,7 +13,6 @@ type Props<T> = {
   options: T[];
   onChange: (value: T) => void;
   label?: string;
-  className?: string;
   error?: string;
 };
 
@@ -24,7 +23,6 @@ const DropDown = <T extends { [key: string]: string | number }>({
   onChange,
   options,
   label,
-  className,
   placeholder,
   error,
 }: Props<T>) => {
@@ -38,7 +36,7 @@ const DropDown = <T extends { [key: string]: string | number }>({
   return (
     <div
       key={value ? value[idKey] : undefined}
-      className={`dropdown-container ${className}`}
+      className="dropdown-container"
       ref={DropdownRef}
     >
       <div className="dropdown-button" onClick={toggleDropdown}>
