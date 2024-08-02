@@ -454,8 +454,8 @@ class GameManager {
             }
         });
     }
-    startGame({ game_id, gameState, }) {
-        return __awaiter(this, void 0, void 0, function* () {
+    startGame(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ game_id, gameState, }) {
             try {
                 const game = gameState || (yield this.getGameState(game_id || ""));
                 if (game) {

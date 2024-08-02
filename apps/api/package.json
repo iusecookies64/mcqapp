@@ -1,10 +1,10 @@
 {
-  "name": "backend",
+  "name": "api",
   "version": "1.0.0",
   "description": "backend for mcq battle platform",
   "main": "index.ts",
   "scripts": {
-    "dev": "tsc -b && node dist/index.js",
+    "start": "tsc -b && node dist/index.js",
     "build": "tsc -b"
   },
   "author": "iusecookies64",

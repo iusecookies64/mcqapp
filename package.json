@@ -5,7 +5,7 @@
   "description": "'A mcq game platform'",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run dev -ws",
+    "start": "concurrently \"npm --workspace apps/api start\" \"npm --workspace apps/client start\" \"npm --workspace apps/websocket start\"",
     "build:packages": "npm run build --workspace=packages/validations --workspace=packages/types"
   },
   "author": "Tushar Raghav",
@@ -13,5 +13,8 @@
   "workspaces": [
     "packages/*",
     "apps/*"
-  ]
+  ],
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
