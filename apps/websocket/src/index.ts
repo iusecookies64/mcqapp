@@ -6,7 +6,9 @@ import url from "url";
 import UserManager from "./UserManager";
 import { User } from "./User";
 
-const wss = new WebSocketServer({ port: 8080 });
+const PORT = process.env.PORT || "3001";
+
+const wss = new WebSocketServer({ port: parseInt(PORT) });
 
 wss.on("connection", (ws, req) => {
   const token = url.parse(req.url || "", true).query.token as string;
