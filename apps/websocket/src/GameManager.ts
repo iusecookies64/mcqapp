@@ -719,6 +719,15 @@ export default class GameManager {
           ]);
         })
       );
+      // if custom game adding host as a participant so that they can also check this game
+      if (game.is_custom) {
+        await client.query(insertParticipantQuery, [
+          gameBody.game_id,
+          game.host.user_id,
+          game.host.username,
+          0,
+        ]);
+      }
 
       // pushing user responses to the db
       const insertResponseQuery = `INSERT INTO responses (game_id, user_id, question_id, response, is_correct) VALUES ($1, $2, $3, $4, $5);`;
