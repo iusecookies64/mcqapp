@@ -380,7 +380,7 @@ class GameManager {
                 // if game started sending curr question
                 if (game.isStarted) {
                     const payload = {
-                        question: game.questions[game.currQuestionNumber - 1],
+                        question: Object.assign(Object.assign({}, game.questions[game.currQuestionNumber - 1]), { answer: 0 }),
                         questionStartTime: game.currQuestionStartTime,
                     };
                     user.emit(JSON.stringify({
@@ -464,7 +464,7 @@ class GameManager {
                     game.isStarted = true;
                     // publishing the game started with first question in the room
                     const payload = {
-                        question: game.questions[game.currQuestionNumber - 1],
+                        question: Object.assign(Object.assign({}, game.questions[game.currQuestionNumber - 1]), { answer: 0 }),
                         questionStartTime: game.currQuestionStartTime,
                     };
                     PubSubManager_1.default.getInstance().publish(game.game_id, JSON.stringify({
@@ -566,8 +566,9 @@ class GameManager {
                             yield this.setGameState(game.game_id, game);
                         }
                     }
+                    // sending next question and removing answer from object
                     const payload = {
-                        question: game.questions[game.currQuestionNumber - 1],
+                        question: Object.assign(Object.assign({}, game.questions[game.currQuestionNumber - 1]), { answer: 0 }),
                         questionStartTime: game.currQuestionStartTime,
                     };
                     user.emit(JSON.stringify({
@@ -610,7 +611,6 @@ class GameManager {
                     gameBody.player_ids,
                     gameBody.question_ids,
                 ]);
-                console.log("pushed gamestate to db");
                 // pushing participants into db
                 const insertParticipantQuery = `INSERT INTO participants (game_id, user_id, username, score) VALUES ($1, $2, $3, $4);`;
                 yield Promise.all(players.map((player) => __awaiter(this, void 0, void 0, function* () {
@@ -621,7 +621,15 @@ class GameManager {
                         player.score,
                     ]);
                 })));
-                console.log("pushed participants to db");
+                // if custom game adding host as a participant so that they can also check this game
+                if (game.is_custom) {
+                    yield postgres_1.default.query(insertParticipantQuery, [
+                        gameBody.game_id,
+                        game.host.user_id,
+                        game.host.username,
+                        0,
+                    ]);
+                }
                 // pushing user responses to the db
                 const insertResponseQuery = `INSERT INTO responses (game_id, user_id, question_id, response, is_correct) VALUES ($1, $2, $3, $4, $5);`;
                 yield Promise.all(game.response.map((response) => __awaiter(this, void 0, void 0, function* () {
@@ -633,7 +641,6 @@ class GameManager {
                         response.is_correct,
                     ]);
                 })));
-                console.log("pushed responses to db");
                 postgres_1.default.query("COMMIT;");
                 // deleting game state and players from redis
                 yield this.deleteGamePlayers(game.game_id);

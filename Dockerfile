@@ -10,7 +10,9 @@ RUN npm run build:packages
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
 
 
 
