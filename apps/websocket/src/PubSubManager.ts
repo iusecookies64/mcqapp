@@ -2,6 +2,8 @@ import { createClient, RedisClientType } from "redis";
 import { User } from "./User";
 import UserManager from "./UserManager";
 
+const REDIS_STRING = process.env.REDIS_STRING;
+
 export default class PubSubManager {
   private static instance: PubSubManager | null = null;
   private subscriptions: Map<number, string[]>; // mapping user_id with channels that user is interested in
@@ -12,8 +14,8 @@ export default class PubSubManager {
   private constructor() {
     this.subscriptions = new Map<number, string[]>();
     this.reverseSubscriptions = new Map<string, number[]>();
-    this.publishClient = createClient();
-    this.subscribeClient = createClient();
+    this.publishClient = createClient({ url: REDIS_STRING });
+    this.subscribeClient = createClient({ url: REDIS_STRING });
     this.publishClient.connect();
     this.subscribeClient.connect();
   }
