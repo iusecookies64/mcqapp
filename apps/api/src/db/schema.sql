@@ -69,5 +69,7 @@ CREATE TABLE participants (
   username TEXT NOT NULL,
   game_id TEXT NOT NULL,
   score INTEGER NOT NULL,
-  FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE
+  FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+  FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );

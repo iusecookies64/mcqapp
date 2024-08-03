@@ -8,7 +8,7 @@ RUN npm install
 
 RUN npm run build:packages
 
-EXPOSE 5173
+EXPOSE 3001
 
 EXPOSE 3000
 

@@ -71,14 +71,16 @@ export const MyTopics = () => {
   return (
     <div className="my-topics-container">
       <div className="my-topics-header">
-        <Input
-          inputType="text"
-          value={searchString}
-          onChange={(e) => setSearchString(e.target.value)}
-          placeholder="Search Topic"
-        />
+        <div className="max-w-lg">
+          <Input
+            inputType="text"
+            value={searchString}
+            onChange={(e) => setSearchString(e.target.value)}
+            placeholder="Search Topic"
+          />
+        </div>
         <Button
-          className="flex justify-between items-center gap-2 py-2 justify-self-start"
+          className="flex justify-between items-center gap-2 py-2 justify-self-start h-full"
           tooltip="Create a new question"
           onClick={() => setCreateModal(true)}
         >
@@ -87,8 +89,8 @@ export const MyTopics = () => {
       </div>
       <div className="topic-card-container">
         {filteredTopics.map((t) => (
-          <div key={t.topic_id}>
-            <div className="">{t.title}</div>
+          <div key={t.topic_id} className="topic-card">
+            <div>{t.title}</div>
             <div className="flex gap-3 items-center">
               <Button
                 size="sm"
@@ -115,7 +117,9 @@ export const MyTopics = () => {
           </div>
         ))}
         {topics?.length === 0 && (
-          <DisplayInfo type="info" message="No Topics Added Yet" />
+          <div className="min-h-96 relative">
+            <DisplayInfo type="info" message="No Topics Added Yet" />
+          </div>
         )}
       </div>
       <CreateTopicModal

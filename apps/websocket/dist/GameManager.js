@@ -208,8 +208,6 @@ class GameManager {
                     const game_id = yield this.getWaitingGameId(data.topic_id);
                     if (game_id) {
                         this.addUserToGame(user, game_id);
-                        // we also delete game if from waiting list
-                        this.deleteWaitingGameId(data.topic_id);
                         return;
                     }
                 }
@@ -220,6 +218,7 @@ class GameManager {
                 // creating a game with these questions and adding user to game players
                 const game = {
                     game_id: (0, crypto_1.randomUUID)(),
+                    topic_id: data.topic_id,
                     questions: questions,
                     response: [],
                     currQuestionNumber: 1,
@@ -280,6 +279,7 @@ class GameManager {
         return __awaiter(this, void 0, void 0, function* () {
             const game = {
                 game_id: (0, crypto_1.randomUUID)(),
+                topic_id: data.topic_id,
                 questions: data.questions,
                 response: [],
                 currQuestionNumber: 1,
@@ -347,7 +347,7 @@ class GameManager {
                         score: 0,
                     });
                     // updating players list in redis
-                    this.setGamePlayers(game_id, players);
+                    yield this.setGamePlayers(game_id, players);
                     const response = {
                         user_id: user.user_id,
                         username: user.username,
@@ -390,7 +390,11 @@ class GameManager {
                 }
                 else if (players.length === 2 && game.is_random) {
                     // game not started, if participants >= 2 then we start the game after 10s
-                    setTimeout(() => this.startGame({ gameState: game }), 10000);
+                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                        yield this.startGame({ gameState: game });
+                        // since we are starting the game, we delete it from the waiting list
+                        yield this.deleteWaitingGameId(game.topic_id);
+                    }), 10000);
                 }
             }
             catch (err) {
@@ -434,8 +438,8 @@ class GameManager {
                     type: types_1.SocketMessageType.USER_LEFT,
                     payload,
                 }));
-                // if player was host and this is not a custom game
-                if (user.user_id === game.host.user_id) {
+                // if player was host and after he left other players remain then we update the host
+                if (user.user_id === game.host.user_id && remainingPlayers.length) {
                     game.host = {
                         user_id: remainingPlayers[0].user_id,
                         username: remainingPlayers[0].username,
@@ -454,8 +458,8 @@ class GameManager {
             }
         });
     }
-    startGame({ game_id, gameState, }) {
-        return __awaiter(this, void 0, void 0, function* () {
+    startGame(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ game_id, gameState, }) {
             try {
                 const game = gameState || (yield this.getGameState(game_id || ""));
                 if (game) {
@@ -472,7 +476,7 @@ class GameManager {
                         payload,
                     }));
                     // storing game state in redis
-                    this.setGameState(game.game_id, game);
+                    yield this.setGameState(game.game_id, game);
                 }
             }
             catch (err) {
@@ -600,7 +604,7 @@ class GameManager {
                     .filter((id) => id !== undefined);
                 const gameBody = {
                     game_id: game.game_id,
-                    topic_id: game.questions[0].topic_id,
+                    topic_id: game.topic_id,
                     player_ids: players.map((p) => p.user_id),
                     question_ids,
                 };
@@ -642,6 +646,7 @@ class GameManager {
                     ]);
                 })));
                 postgres_1.default.query("COMMIT;");
+                console.log("pushed participants");
                 // deleting game state and players from redis
                 yield this.deleteGamePlayers(game.game_id);
                 yield this.deleteGameState(game.game_id);

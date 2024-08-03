@@ -5,12 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const redis_1 = require("redis");
 const UserManager_1 = __importDefault(require("./UserManager"));
+const REDIS_STRING = process.env.REDIS_STRING;
 class PubSubManager {
     constructor() {
         this.subscriptions = new Map();
         this.reverseSubscriptions = new Map();
-        this.publishClient = (0, redis_1.createClient)();
-        this.subscribeClient = (0, redis_1.createClient)();
+        this.publishClient = (0, redis_1.createClient)({ url: REDIS_STRING });
+        this.subscribeClient = (0, redis_1.createClient)({ url: REDIS_STRING });
         this.publishClient.connect();
         this.subscribeClient.connect();
     }

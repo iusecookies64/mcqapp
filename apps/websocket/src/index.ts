@@ -14,7 +14,7 @@ wss.on("connection", (ws, req) => {
   const token = url.parse(req.url || "", true).query.token as string;
   try {
     const userData = extractAuthUser(token);
-    if (userData) {
+    if (userData?.user_id && userData.username) {
       const user = new User(userData, ws);
       UserManager.getInstance().addUser(user);
     }
