@@ -2,6 +2,8 @@ import { useTopics } from "../../hooks/useTopics";
 import DropDown from "../DropDown";
 import { Topic } from "@mcqapp/types";
 import "./style.css";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../AuthContext";
 
 type Props = {
   currentTopic: Topic | null;
@@ -11,6 +13,14 @@ type Props = {
 
 const TopicSelector = ({ currentTopic, setCurrentTopic, error }: Props) => {
   const { topics } = useTopics();
+  const [userTopics, setUserTopics] = useState<Topic[]>([]);
+  const { user } = useContext(AuthContext);
+  useEffect(() => {
+    if (topics) {
+      setUserTopics(topics.filter((t) => t.created_by === user?.user_id));
+    }
+  }, [user, topics]);
+
   return (
     <DropDown
       label="Topic"
@@ -18,7 +28,7 @@ const TopicSelector = ({ currentTopic, setCurrentTopic, error }: Props) => {
       value={currentTopic}
       labelKey={"title"}
       idKey={"topic_id"}
-      options={topics || []}
+      options={userTopics}
       onChange={setCurrentTopic}
       error={error}
     />

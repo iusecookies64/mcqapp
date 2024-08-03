@@ -56,6 +56,7 @@ export const CreateQuestionModal = ({
     createQuestion(data, () => {
       toast.success("Question Created!");
       setGlobalSelectedTopic(selectedTopic);
+      reset();
       setIsOpen(false);
     });
   });
@@ -185,10 +186,12 @@ export const CreateQuestionModal = ({
               inputType="number"
               placeholder="30s"
               register={register("time_limit", {
-                required: true,
+                required: "Time limit ranges from 10s to 120s",
                 valueAsNumber: true,
+                min: 10,
+                max: 120,
               })}
-              error={errors.option1}
+              error={errors.time_limit}
               errorMessage={errors.time_limit?.message}
               className="p-2"
             />
@@ -240,7 +243,13 @@ export const CreateQuestionModal = ({
             )}
           />
           <div className="flex justify-end gap-3 mt-3">
-            <Button variant="tertiary">Cancel</Button>
+            <Button
+              type="button"
+              variant="tertiary"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>
             <Button type="submit" variant="primary" className="relative">
               {isLoading && <Loader height={25} width={25} strokeWidth={5} />}
               <div className={isLoading ? "invisible" : ""}>Create</div>
@@ -398,7 +407,7 @@ export const UpdateQuestionModal = ({
                   placeholder="Enter Option B"
                   value={value}
                   onChange={onChange}
-                  error={errors.option1}
+                  error={errors.option2}
                   errorMessage={errors.option2?.message}
                 />
               )}
@@ -413,7 +422,7 @@ export const UpdateQuestionModal = ({
                   placeholder="Enter Option C"
                   value={value}
                   onChange={onChange}
-                  error={errors.option1}
+                  error={errors.option3}
                   errorMessage={errors.option3?.message}
                 />
               )}
@@ -428,7 +437,7 @@ export const UpdateQuestionModal = ({
                   placeholder="Enter Option D"
                   value={value}
                   onChange={onChange}
-                  error={errors.option1}
+                  error={errors.option4}
                   errorMessage={errors.option4?.message}
                 />
               )}
@@ -462,10 +471,12 @@ export const UpdateQuestionModal = ({
               inputType="number"
               placeholder="30s"
               register={register("time_limit", {
-                required: true,
+                required: "Time limit ranges from 10s to 120s",
                 valueAsNumber: true,
+                min: 10,
+                max: 120,
               })}
-              error={errors.option1}
+              error={errors.time_limit}
               errorMessage={errors.time_limit?.message}
               className="p-2"
             />
@@ -517,7 +528,13 @@ export const UpdateQuestionModal = ({
             )}
           />
           <div className="flex justify-end gap-3 mt-3">
-            <Button variant="tertiary">Cancel</Button>
+            <Button
+              type="button"
+              variant="tertiary"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>
             <Button type="submit" variant="primary" className="relative">
               {isLoading && <Loader height={25} width={25} strokeWidth={5} />}
               <div className={isLoading ? "invisible" : ""}>Update</div>

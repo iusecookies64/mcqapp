@@ -430,7 +430,10 @@ export default class GameManager {
       // if game started sending curr question
       if (game.isStarted) {
         const payload: GameStartedResponse = {
-          question: game.questions[game.currQuestionNumber - 1],
+          question: {
+            ...game.questions[game.currQuestionNumber - 1],
+            answer: 0,
+          },
           questionStartTime: game.currQuestionStartTime,
         };
 
@@ -535,7 +538,10 @@ export default class GameManager {
         game.isStarted = true;
         // publishing the game started with first question in the room
         const payload: GameStartedResponse = {
-          question: game.questions[game.currQuestionNumber - 1],
+          question: {
+            ...game.questions[game.currQuestionNumber - 1],
+            answer: 0,
+          },
           questionStartTime: game.currQuestionStartTime,
         };
         PubSubManager.getInstance().publish(
@@ -650,8 +656,12 @@ export default class GameManager {
           }
         }
 
+        // sending next question and removing answer from object
         const payload: NextQuestionResponse = {
-          question: game.questions[game.currQuestionNumber - 1],
+          question: {
+            ...game.questions[game.currQuestionNumber - 1],
+            answer: 0,
+          },
           questionStartTime: game.currQuestionStartTime,
         };
 
@@ -723,15 +733,18 @@ export default class GameManager {
           ]);
         })
       );
+
       client.query("COMMIT;");
+
+      // deleting game state and players from redis
+      await this.deleteGamePlayers(game.game_id);
+      await this.deleteGameState(game.game_id);
     } catch (err) {
       client.query("ROLLBACK;");
       console.log("Error pushing game to db");
       console.log(err);
     }
   }
-
-  private removeStaleGames() {}
 
   private isQuestionExpired(
     start_time: number,

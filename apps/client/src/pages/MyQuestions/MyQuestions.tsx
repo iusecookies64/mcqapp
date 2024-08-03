@@ -42,15 +42,27 @@ const MyQuestions = () => {
 
   useEffect(() => {
     if (myQuestions && selectedTopic) {
-      setFilteredList(
-        myQuestions.filter(
-          (q) =>
-            q.topic_id === selectedTopic.topic_id &&
-            q.statement.toLowerCase().includes(debouncedSearchValue)
-        )
+      const filteredListTemp = myQuestions.filter(
+        (q) =>
+          q.topic_id === selectedTopic.topic_id &&
+          q.statement.toLowerCase().includes(debouncedSearchValue)
       );
+      filteredListTemp.sort((a, b) => {
+        if (sort.id === sorts[0].id) {
+          return (
+            new Date(b.created_at || "").getTime() -
+            new Date(a.created_at || "").getTime()
+          );
+        } else {
+          return (
+            new Date(a.created_at || "").getTime() -
+            new Date(b.created_at || "").getTime()
+          );
+        }
+      });
+      setFilteredList(filteredListTemp);
     }
-  }, [myQuestions, selectedTopic, debouncedSearchValue]);
+  }, [myQuestions, selectedTopic, debouncedSearchValue, sort]);
 
   const DeleteQuestionHandler = () => {
     if (selectedQuestion?.question_id) {
@@ -60,8 +72,6 @@ const MyQuestions = () => {
       });
     }
   };
-
-  console.log;
 
   return (
     <div className="my-questions-container">

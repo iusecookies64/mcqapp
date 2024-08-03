@@ -64,6 +64,7 @@ CREATE TABLE responses (
 );
 
 CREATE TABLE participants (
+  participant_id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL,
   username TEXT NOT NULL,
   game_id TEXT NOT NULL,

@@ -33,7 +33,7 @@ export const useTopics = () => {
           if (topics) return [data, ...topics];
           else return [data];
         });
-        setIsLoadingAction(true);
+        setIsLoadingAction(false);
         if (onSuccess) onSuccess();
       })
       .catch(handleError);

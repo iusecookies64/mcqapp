@@ -197,6 +197,7 @@ const CreateTopicModal = ({
             onClick={() => {
               if (title) {
                 createTopic({ title: title });
+                setTitle("");
               }
             }}
           >

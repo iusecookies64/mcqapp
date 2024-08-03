@@ -67,6 +67,7 @@ export type Question = {
   option4: string;
   difficulty: number;
   time_limit: number;
+  created_at?: string;
 };
 
 export type Topic = {

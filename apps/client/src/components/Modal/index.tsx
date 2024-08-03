@@ -1,6 +1,7 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, useRef } from "react";
 import "./Modal.style.css";
 import { Icon, IconList } from "../Icon";
+import { CSSTransition } from "react-transition-group";
 
 type Props = {
   children: ReactNode | ((onClose: () => void) => ReactElement);
@@ -17,6 +18,7 @@ export const Modal = ({
   onClose,
   isClosable = true,
 }: Props) => {
+  const nodeRef = useRef(null);
   const closeModal = () => {
     if (isClosable) {
       setIsOpen(false);
@@ -26,49 +28,59 @@ export const Modal = ({
 
   if (typeof children === "function") {
     return (
-      <>
-        {isOpen && (
-          <div className="custom-modal" onClick={() => closeModal()}>
+      <CSSTransition
+        nodeRef={nodeRef}
+        in={isOpen}
+        timeout={300}
+        unmountOnExit
+        classNames="enter-from-bottom"
+      >
+        <div className="custom-modal" onClick={() => closeModal()}>
+          <div
+            ref={nodeRef}
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div
-              className="modal-container"
-              onClick={(e) => e.stopPropagation()}
+              className={`absolute top-0 right-0 flex justify-end p-2 cursor-pointer ${
+                !isClosable && "invisible"
+              }`}
+              onClick={() => closeModal()}
             >
-              <div
-                className={`absolute top-0 right-0 flex justify-end p-2 cursor-pointer ${
-                  !isClosable && "invisible"
-                }`}
-                onClick={() => closeModal()}
-              >
-                <Icon icon={IconList.xmark} />
-              </div>
-              {children(closeModal)}
+              <Icon icon={IconList.xmark} />
             </div>
+            {children(closeModal)}
           </div>
-        )}
-      </>
+        </div>
+      </CSSTransition>
     );
   } else {
     return (
-      <>
-        {isOpen && (
-          <div className="custom-modal" onClick={() => closeModal()}>
+      <CSSTransition
+        nodeRef={nodeRef}
+        in={isOpen}
+        timeout={200}
+        unmountOnExit
+        classNames="enter-from-bottom"
+      >
+        <div className="custom-modal" onClick={() => closeModal()}>
+          <div
+            ref={nodeRef}
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div
-              className="modal-container"
-              onClick={(e) => e.stopPropagation()}
+              className={`absolute top-0 right-0 flex justify-end p-3 cursor-pointer ${
+                !isClosable && "invisible"
+              }`}
+              onClick={() => closeModal()}
             >
-              <div
-                className={`absolute top-0 right-0 flex justify-end p-3 cursor-pointer ${
-                  !isClosable && "invisible"
-                }`}
-                onClick={() => closeModal()}
-              >
-                <Icon icon={IconList.xmark} />
-              </div>
-              {children}
+              <Icon icon={IconList.xmark} />
             </div>
+            {children}
           </div>
-        )}
-      </>
+        </div>
+      </CSSTransition>
     );
   }
 };

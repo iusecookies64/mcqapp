@@ -7,7 +7,7 @@
 }
 
 .dropdown-menu {
-  @apply absolute w-full mt-1 top-full left-0 animate-enter-from-top max-h-96 overflow-x-hidden overflow-y-auto rounded-lg border border-border bg-primary dark:bg-dark-primary z-10;
+  @apply absolute w-full mt-1 top-full left-0 max-h-96 overflow-x-hidden overflow-y-auto rounded-lg border border-border bg-primary dark:bg-dark-primary z-10;
 }
 
 .dropdown-item {
@@ -16,4 +16,20 @@
 
 .dropdown-accordion {
   @apply absolute top-1/2 right-1 -translate-x-1/2 -translate-y-1/2 transition-all duration-150;
+}
+
+.enter-from-top-enter {
+  @apply opacity-0 -translate-y-12 !important;
+}
+
+.enter-from-top-enter-active {
+  @apply opacity-100 translate-y-0 transition-all ease-in !important;
+}
+
+.enter-from-top-exit {
+  @apply opacity-100 translate-y-0 !important;
+}
+
+.enter-from-top-exit-active {
+  @apply opacity-0 -translate-y-12 transition-all ease-out !important;
 }

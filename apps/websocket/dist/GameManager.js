@@ -454,8 +454,8 @@ class GameManager {
             }
         });
     }
-    startGame(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ game_id, gameState, }) {
+    startGame({ game_id, gameState, }) {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
                 const game = gameState || (yield this.getGameState(game_id || ""));
                 if (game) {
@@ -610,6 +610,7 @@ class GameManager {
                     gameBody.player_ids,
                     gameBody.question_ids,
                 ]);
+                console.log("pushed gamestate to db");
                 // pushing participants into db
                 const insertParticipantQuery = `INSERT INTO participants (game_id, user_id, username, score) VALUES ($1, $2, $3, $4);`;
                 yield Promise.all(players.map((player) => __awaiter(this, void 0, void 0, function* () {
@@ -620,6 +621,7 @@ class GameManager {
                         player.score,
                     ]);
                 })));
+                console.log("pushed participants to db");
                 // pushing user responses to the db
                 const insertResponseQuery = `INSERT INTO responses (game_id, user_id, question_id, response, is_correct) VALUES ($1, $2, $3, $4, $5);`;
                 yield Promise.all(game.response.map((response) => __awaiter(this, void 0, void 0, function* () {
@@ -631,7 +633,11 @@ class GameManager {
                         response.is_correct,
                     ]);
                 })));
+                console.log("pushed responses to db");
                 postgres_1.default.query("COMMIT;");
+                // deleting game state and players from redis
+                yield this.deleteGamePlayers(game.game_id);
+                yield this.deleteGameState(game.game_id);
             }
             catch (err) {
                 postgres_1.default.query("ROLLBACK;");
@@ -640,7 +646,6 @@ class GameManager {
             }
         });
     }
-    removeStaleGames() { }
     isQuestionExpired(start_time, durationInSec) {
         const end_time = start_time + durationInSec * 1000;
         if (Date.now() > end_time)

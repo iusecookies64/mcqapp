@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Game.style.css";
 import { useContext, useEffect, useState } from "react";
 import WebSocketManager, { SocketMessageType } from "../../services/websocket";
@@ -475,10 +475,21 @@ const GameEndedModal = ({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const navigate = useNavigate();
   return (
     <Modal isClosable={false} isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div className="">
-        <div>Contest Ended</div>
+      <div className="min-w-72 flex flex-col gap-3">
+        <div className="text-2xl font-meduim p-3 text-center">
+          Game has ended
+        </div>
+        <div className="flex justify-end gap-3">
+          <Button variant="tertiary" onClick={() => navigate("/")}>
+            Go Back
+          </Button>
+          <Button onClick={() => navigate("/past-games?refresh=true")}>
+            See Performance
+          </Button>
+        </div>
       </div>
     </Modal>
   );

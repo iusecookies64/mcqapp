@@ -3,5 +3,21 @@
 }
 
 .modal-container {
-  @apply rounded-xl bg-neutral-200 dark:bg-neutral-800 shadow-md p-6 relative flex flex-col animate-scale-in;
+  @apply rounded-xl bg-neutral-200 dark:bg-neutral-800 shadow-md p-6 relative flex flex-col;
+}
+
+.enter-from-bottom-enter {
+  @apply opacity-0 translate-y-12 !important;
+}
+
+.enter-from-bottom-enter-active {
+  @apply opacity-100 translate-y-0 transition-all ease-in !important;
+}
+
+.enter-from-bottom-exit {
+  @apply opacity-100 translate-y-0 !important;
+}
+
+.enter-from-bottom-exit-active {
+  @apply opacity-0 translate-y-12 transition-all ease-out !important;
 }
