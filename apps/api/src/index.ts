@@ -12,6 +12,11 @@ import CustomError from "./utils/CustomError";
 import cookieParser from "cookie-parser";
 import { rateLimit } from "express-rate-limit";
 
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 min window
+  limit: 20, // 20 requests per window
+});
+
 const port = process.env.PORT || 3000;
 
 const app = express();
@@ -21,11 +26,6 @@ app.use(
     origin: "*",
   })
 );
-
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 min window
-  limit: 20, // 20 requests per window
-});
 
 app.use(limiter);
 app.use(express.json()); // req.body parser
