@@ -1,3 +1,4 @@
+## Live Link: http://mcqapp.iusecookies64.xyz/
 # Mcq Battle Platform
 * Users get to test their knowledge by participating in short mcq games in topic of their choice and then compete against random players or their friends.
 * Users can also create topics of their own, and create questions and challenge their friends to play their game.
