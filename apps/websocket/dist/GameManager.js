@@ -646,7 +646,6 @@ class GameManager {
                     ]);
                 })));
                 postgres_1.default.query("COMMIT;");
-                console.log("pushed participants");
                 // deleting game state and players from redis
                 yield this.deleteGamePlayers(game.game_id);
                 yield this.deleteGameState(game.game_id);

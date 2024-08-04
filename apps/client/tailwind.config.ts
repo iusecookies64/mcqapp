@@ -3,6 +3,7 @@ import type { Config } from "tailwindcss";
 const config: Partial<Config> = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   darkMode: "selector",
+  plugins: [require("tailwindcss-animate")],
   theme: {
     extend: {
       boxShadow: {
@@ -23,6 +24,7 @@ const config: Partial<Config> = {
         "enter-from-right": "enter-from-right 0.3s ease",
         "enter-from-left": "enter-from-left 0.15s ease",
         "enter-from-top": "enter-from-top 0.15s ease",
+        "exit-to-bottom": "exit-to-bottom 0.15s ease",
         "exit-to-right": "exit-to-right 0.15s ease",
         "exit-to-left": "exit-to-left 0.15s ease",
         "scale-in-content": "scale-in-content 0.2s ease",
@@ -78,6 +80,10 @@ const config: Partial<Config> = {
         "enter-from-top": {
           "0%": { opacity: "0", transform: "translateY(-100px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "exit-to-bottom": {
+          "0%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0", transform: "translateY(100px)" },
         },
         "exit-to-right": {
           "0%": { transform: "translateX(0)", opacity: "1" },

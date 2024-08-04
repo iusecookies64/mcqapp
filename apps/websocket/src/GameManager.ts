@@ -37,7 +37,6 @@ import {
 } from "@mcqapp/validations";
 import { randomUUID } from "crypto";
 import redisClient from "./db/redis";
-import { userJwtClaims } from "./auth/auth";
 import PubSubManager from "./PubSubManager";
 
 type GameState = {
@@ -711,7 +710,6 @@ export default class GameManager {
         gameBody.player_ids,
         gameBody.question_ids,
       ]);
-
       // pushing participants into db
       const insertParticipantQuery = `INSERT INTO participants (game_id, user_id, username, score) VALUES ($1, $2, $3, $4);`;
       await Promise.all(
@@ -733,7 +731,6 @@ export default class GameManager {
           0,
         ]);
       }
-
       // pushing user responses to the db
       const insertResponseQuery = `INSERT INTO responses (game_id, user_id, question_id, response, is_correct) VALUES ($1, $2, $3, $4, $5);`;
       await Promise.all(
@@ -749,8 +746,6 @@ export default class GameManager {
       );
 
       client.query("COMMIT;");
-
-      console.log("pushed participants");
 
       // deleting game state and players from redis
       await this.deleteGamePlayers(game.game_id);

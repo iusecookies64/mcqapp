@@ -219,10 +219,10 @@ export const Game = () => {
 
         if (data.type === SocketMessageType.GAME_STARTED) {
           const payload = data.payload as GameStartedResponse;
+          setIsLoading(false);
+          setIsStarted(true);
           setCurrQuestion(payload.question);
           setQuestionStartTime(payload.questionStartTime);
-          setIsStarted(true);
-          setIsLoading(false);
         }
 
         if (data.type === SocketMessageType.GAME_ENDED) {
@@ -274,6 +274,8 @@ export const Game = () => {
 
         if (data.type === SocketMessageType.NEXT_QUESTION) {
           const payload = data.payload as NextQuestionResponse;
+          // setting show card to false for 200ms for animation
+          setLoadingResponse(false);
           setCurrQuestion(payload.question);
           setQuestionStartTime(payload.questionStartTime);
           setCurrQuestionResponses([]);
@@ -303,7 +305,7 @@ export const Game = () => {
         <div className="p-3">
           <div className="flex justify-between p-3 items-center">
             {host && <div>Host: {host.username}</div>}
-            {(isCustom || !isRandom) && (
+            {(isCustom || !isRandom) && host?.user_id === user?.user_id && (
               <Button onClick={() => setSendInviteModal(true)}>
                 Send Invites
               </Button>
