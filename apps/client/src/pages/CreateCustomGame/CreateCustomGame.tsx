@@ -37,7 +37,7 @@ export const CreateCustomGame = () => {
           q.question_id &&
           selectedQuestionsIds.find((id) => id === q.question_id)
       );
-      // @ts-ignore
+
       const payload: InitCustomGameBody = {
         topic_id: selectedTopic.topic_id,
         questions: selectedQuestions,

@@ -56,7 +56,7 @@ export type UpdateQuestionResponse = ApiResponse;
 export type DeleteQuestionResponse = ApiResponse;
 
 export type Question = {
-  question_id?: number;
+  question_id: number;
   created_by: number;
   topic_id: number;
   statement: string;
